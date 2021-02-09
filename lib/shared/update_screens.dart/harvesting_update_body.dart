@@ -56,16 +56,17 @@ class _HarvestingUpdateBodyState extends State<HarvestingUpdateBody> {
   ];
 
   insertHarvesting(context) async {
+    String date = DateTime.now().toIso8601String();
     Harvesting harvesting = new Harvesting(
-      harvestingTypeController.text,
-      idCardNoController.text,
-      double.parse(qtyController.text),
-      _unitSelected,
-      double.parse(totalQtyStockController.text),
-      double.parse(acreageController.text),
-      int.parse(machineIDController.text),
-      int.parse(seedIDController.text),
-    );
+        harvestingTypeController.text,
+        idCardNoController.text,
+        double.parse(qtyController.text),
+        _unitSelected,
+        double.parse(totalQtyStockController.text),
+        double.parse(acreageController.text),
+        int.parse(machineIDController.text),
+        int.parse(seedIDController.text),
+        date);
     print("Planting Type is ${harvestingTypeController.text}");
     print("Id Card No is ${idCardNoController.text}");
     print("Quantity is ${qtyController.text}");

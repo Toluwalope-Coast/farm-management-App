@@ -282,7 +282,9 @@ class DatabaseHelper {
               $columnHarvestMachineID INTEGER NOT NULL,
               $columnHarvestSeedsID INTEGER NOT NULL,
               $columnHarvestAcreage INTEGER NULL,
+              $columnHarvestTotalQtyStock INTEGER NULL,
               $columnHarvestQty REAL NOT NULL,
+               $columnHarvestUnit TEXT NOT NULL,
               $columnHarvestDate Text NULL,
               FOREIGN KEY ($columnHarvestIDCardNo) REFERENCES $staffTable ($columnStaffIDCardNo) 
                 ON DELETE NO ACTION ON UPDATE NO ACTION,
@@ -370,7 +372,9 @@ class DatabaseHelper {
     Database db = await this.database;
 
     int result = await db
-        .rawDelete('DELETE FROM $usersTable WHERE $columnUsersId = $index');
+        .delete("$usersTable", where: "$columnUsersId = ?", whereArgs: [index]);
+    //  = await db
+    //     .rawDelete('DELETE FROM $usersTable WHERE $columnUsersId = $index');
     // .delete(usersTable, where: '$columnUsersId = ?', whereArgs: [index]);
     return result;
   }
@@ -612,7 +616,7 @@ class DatabaseHelper {
   Future<int> insertExpenses(Expenses expenses) async {
     Database db = await this.database;
 
-    var result = await db.insert(incomesTable, expenses.toMap());
+    var result = await db.insert(expenesTable, expenses.toMap());
     return result;
   }
 

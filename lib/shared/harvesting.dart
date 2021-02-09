@@ -44,7 +44,7 @@ class _HarvestingBodyState extends State<HarvestingBody> {
       harvestListFuture.then((harvestList) {
         if (harvestingList != null) {
           setState(() {
-            this.harvestingList = harvestingList;
+            this.harvestingList = harvestList;
           });
         }
       });
@@ -88,7 +88,7 @@ class _HarvestingBodyState extends State<HarvestingBody> {
   }
 
   deleteItem(int index, BuildContext context, Size deviceSize,
-      String updateTable, Future<int> delFunc) {
+      String updateTable, AsyncCallback delFunc) {
     print("delete dialogue called on $index index item");
     print("item at $index has being updated");
     return showGeneralDialog(
@@ -138,7 +138,7 @@ class _HarvestingBodyState extends State<HarvestingBody> {
     }
 
     Future<int> deleAction(Harvesting tableRow) async {
-      int result = await databaseHelper.deleteCustomer(tableRow.getId);
+      int result = await databaseHelper.deleteHarvest(tableRow.getId);
       updateListView();
       return result;
     }
@@ -271,7 +271,8 @@ class _HarvestingBodyState extends State<HarvestingBody> {
                                         context,
                                         widget.deviceSize,
                                         "Harvesting",
-                                        deleAction(harvestingList[index]));
+                                        () =>
+                                            deleAction(harvestingList[index]));
                                   } else if (details.primaryVelocity < 0) {
                                     // User swiped Left
                                     print("Harvesting Swiped Left");
@@ -298,7 +299,8 @@ class _HarvestingBodyState extends State<HarvestingBody> {
                                           context,
                                           widget.deviceSize,
                                           "Harvesting",
-                                          deleAction(harvestingList[index]))),
+                                          () => deleAction(
+                                              harvestingList[index]))),
                                 ),
                               );
                             })),

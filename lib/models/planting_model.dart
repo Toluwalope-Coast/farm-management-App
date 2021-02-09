@@ -105,7 +105,7 @@ class Planting {
     this._unit = map['unit'];
     this._machineId = map['machine_id'];
     this._seedId = map['seeds_id'];
-    this._acreage = map['acreage'];
+    this._acreage = double.parse(map['acreage'].toString());
     this._date = map['date'];
   }
 }

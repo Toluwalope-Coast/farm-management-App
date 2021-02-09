@@ -91,7 +91,7 @@ class _UsersBodyState extends State<UsersBody> {
   }
 
   deleteItem(int index, BuildContext context, Size deviceSize,
-      String updateTable, Future<int> delFunc) {
+      String updateTable, AsyncCallback delFunc) {
     print("delete dialogue called on $index index item");
     print("item at $index has being updated");
     return showGeneralDialog(
@@ -280,7 +280,7 @@ class _UsersBodyState extends State<UsersBody> {
                                         context,
                                         widget.deviceSize,
                                         "Users",
-                                        deleAction(userList[index]));
+                                        () => deleAction(userList[index]));
                                   } else if (details.primaryVelocity < 0) {
                                     // User swiped Left
                                     print("User Swiped Left");
@@ -299,7 +299,7 @@ class _UsersBodyState extends State<UsersBody> {
                                           context,
                                           widget.deviceSize,
                                           "Users",
-                                          deleAction(userList[index]))),
+                                          () => deleAction(userList[index]))),
                                 ),
                               );
                             })),

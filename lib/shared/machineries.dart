@@ -44,7 +44,7 @@ class _MachineriesBodyState extends State<MachineriesBody> {
       machineListFuture.then((machineneryList) {
         if (machineryList != null) {
           setState(() {
-            this.machineryList = machineryList;
+            this.machineryList = machineneryList;
           });
         }
       });
@@ -92,7 +92,7 @@ class _MachineriesBodyState extends State<MachineriesBody> {
   }
 
   deleteItem(int index, BuildContext context, Size deviceSize,
-      String updateTable, Future<int> delFunc) {
+      String updateTable, AsyncCallback delFunc) {
     print("delete dialogue called on $index index item");
     print("item at $index has being updated");
     return showGeneralDialog(
@@ -142,7 +142,7 @@ class _MachineriesBodyState extends State<MachineriesBody> {
     }
 
     Future<int> deleAction(Machinery tableRow) async {
-      int result = await databaseHelper.deleteCustomer(tableRow.getId);
+      int result = await databaseHelper.deleteMachines(tableRow.getId);
       updateListView();
       return result;
     }
@@ -275,7 +275,7 @@ class _MachineriesBodyState extends State<MachineriesBody> {
                                         context,
                                         widget.deviceSize,
                                         "Machines",
-                                        deleAction(machineryList[index]));
+                                        () => deleAction(machineryList[index]));
                                   } else if (details.primaryVelocity < 0) {
                                     // User swiped Left
                                     print("Machines Swiped Left");
@@ -295,7 +295,8 @@ class _MachineriesBodyState extends State<MachineriesBody> {
                                           context,
                                           widget.deviceSize,
                                           "Machines",
-                                          deleAction(machineryList[index]))),
+                                          () => deleAction(
+                                              machineryList[index]))),
                                 ),
                               );
                             })),

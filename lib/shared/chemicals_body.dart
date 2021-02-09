@@ -11,6 +11,8 @@ import 'package:farm_manager/utils/database_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
 
+typedef AsyncCallback = Future<int> Function();
+
 class ChemicalsBody extends StatefulWidget {
   final Size deviceSize;
   final Widget profileImage;
@@ -92,9 +94,7 @@ class _ChemicalsBodyState extends State<ChemicalsBody> {
   }
 
   deleteItem(int index, BuildContext context, Size deviceSize,
-      String updateTable, Future<int> delFunc) {
-    print("delete dialogue called on $index index item");
-    print("item at $index has being updated");
+      String updateTable, AsyncCallback delFunc) {
     return showGeneralDialog(
       barrierLabel: "Label",
       barrierDismissible: true,
@@ -142,7 +142,7 @@ class _ChemicalsBodyState extends State<ChemicalsBody> {
     }
 
     Future<int> deleAction(Chemical tableRow) async {
-      int result = await databaseHelper.deleteCustomer(tableRow.getId);
+      int result = await databaseHelper.deleteChemical(tableRow.getId);
       updateListView();
       return result;
     }
@@ -275,7 +275,7 @@ class _ChemicalsBodyState extends State<ChemicalsBody> {
                                         context,
                                         widget.deviceSize,
                                         "Chemical",
-                                        deleAction(chemicalList[index]));
+                                        () => deleAction(chemicalList[index]));
                                   } else if (details.primaryVelocity < 0) {
                                     // User swiped Left
                                     print("Chemical Swiped Left");
@@ -297,7 +297,8 @@ class _ChemicalsBodyState extends State<ChemicalsBody> {
                                           context,
                                           widget.deviceSize,
                                           "Chemical",
-                                          deleAction(chemicalList[index]))),
+                                          () =>
+                                              deleAction(chemicalList[index]))),
                                 ),
                               );
                             })),

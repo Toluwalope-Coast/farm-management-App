@@ -12,8 +12,16 @@ class Harvesting {
 
   // Two constructor for the models (with the id and without id)
 
-  Harvesting(this._type, this._idCardNo, this._qty, this._unit,
-      this._totalQtyStock, this._acreage, this._machineId, this._seedId);
+  Harvesting(
+      this._type,
+      this._idCardNo,
+      this._qty,
+      this._unit,
+      this._totalQtyStock,
+      this._acreage,
+      this._machineId,
+      this._seedId,
+      this._date);
 
   Harvesting.withId(
       this._id,
@@ -121,10 +129,10 @@ class Harvesting {
     this._idCardNo = map['id_card_no'];
     this._unit = map['unit'];
     this._qty = map['qty'];
-    this._totalQtyStock = map['total_qty_stock'];
+    this._totalQtyStock = double.tryParse(map['total_qty_stock'].toString());
     this._machineId = map['machine_id'];
     this._seedId = map['seeds_id'];
-    this._acreage = map['acreage'];
+    this._acreage = double.tryParse(map['acreage'].toString());
     this._date = map['date'];
   }
 }

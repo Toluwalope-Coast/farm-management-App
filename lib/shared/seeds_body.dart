@@ -43,7 +43,7 @@ class _SeedsBodyState extends State<SeedsBody> {
       seedListFuture.then((seedList) {
         if (seedsList != null) {
           setState(() {
-            this.seedsList = seedsList;
+            this.seedsList = seedList;
           });
         }
       });
@@ -91,7 +91,7 @@ class _SeedsBodyState extends State<SeedsBody> {
   }
 
   deleteItem(int index, BuildContext context, Size deviceSize,
-      String updateTable, Future<int> delFunc) {
+      String updateTable, AsyncCallback delFunc) {
     print("delete dialogue called on $index index item");
     print("item at $index has being updated");
     return showGeneralDialog(
@@ -141,7 +141,7 @@ class _SeedsBodyState extends State<SeedsBody> {
     }
 
     Future<int> deleAction(Seed tableRow) async {
-      int result = await databaseHelper.deleteCustomer(tableRow.getId);
+      int result = await databaseHelper.deleteSeed(tableRow.getId);
       updateListView();
       return result;
     }
@@ -274,7 +274,7 @@ class _SeedsBodyState extends State<SeedsBody> {
                                         context,
                                         widget.deviceSize,
                                         "Seed",
-                                        deleAction(seedsList[index]));
+                                        () => deleAction(seedsList[index]));
                                   } else if (details.primaryVelocity < 0) {
                                     // User swiped Left
                                     print("Seed Swiped Left");
@@ -298,7 +298,7 @@ class _SeedsBodyState extends State<SeedsBody> {
                                           context,
                                           widget.deviceSize,
                                           "Seeds",
-                                          deleAction(seedsList[index]))),
+                                          () => deleAction(seedsList[index]))),
                                 ),
                               );
                             })),

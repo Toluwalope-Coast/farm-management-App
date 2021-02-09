@@ -91,7 +91,7 @@ class _TillagesBodyState extends State<TillagesBody> {
   }
 
   deleteItem(int index, BuildContext context, Size deviceSize,
-      String updateTable, Future<int> delFunc) {
+      String updateTable, AsyncCallback delFunc) {
     print("delete dialogue called on $index index item");
     print("item at $index has being updated");
     return showGeneralDialog(
@@ -141,7 +141,7 @@ class _TillagesBodyState extends State<TillagesBody> {
     }
 
     Future<int> deleAction(Tillage tableRow) async {
-      int result = await databaseHelper.deleteCustomer(tableRow.getId);
+      int result = await databaseHelper.deleteTillage(tableRow.getId);
       updateListView();
       return result;
     }
@@ -274,7 +274,7 @@ class _TillagesBodyState extends State<TillagesBody> {
                                         context,
                                         widget.deviceSize,
                                         "Tillage",
-                                        deleAction(tillageList[index]));
+                                        () => deleAction(tillageList[index]));
                                   } else if (details.primaryVelocity < 0) {
                                     // User swiped Left
                                     print("Tillage Swiped Left");
@@ -298,7 +298,8 @@ class _TillagesBodyState extends State<TillagesBody> {
                                           context,
                                           widget.deviceSize,
                                           "Tillage",
-                                          deleAction(tillageList[index]))),
+                                          () =>
+                                              deleAction(tillageList[index]))),
                                 ),
                               );
                             })),

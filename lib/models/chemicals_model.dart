@@ -74,7 +74,7 @@ class Chemical {
     this._type = map['type'];
     this._idCardNo = map['id_card_no'];
     this._machineId = map['machine_id'];
-    this._acreage = map['acreage'];
+    this._acreage = double.tryParse(map['acreage'].toString());
     this._date = map['date'];
   }
 }

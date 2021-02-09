@@ -1,3 +1,5 @@
+import 'dart:core';
+
 import 'package:farm_manager/models/users_models.dart';
 import 'package:farm_manager/shared/Constant.dart';
 import 'package:farm_manager/shared/analytics/users_analytics.dart';
@@ -44,7 +46,8 @@ class _UserReportBodyState extends State<UserReportBody> {
       print('this is the value in usersRowsDataList $usersRowsDataList');
     });
   }
-z  List<DataColumn> columnLooper(
+
+  List<DataColumn> columnLooper(
       List dataList, List<DataColumn> dataColumnList) {
     print('This is the number of columns ${dataColumnList.length}');
     for (String i in dataList) {

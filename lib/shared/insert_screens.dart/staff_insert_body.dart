@@ -98,291 +98,286 @@ class _StaffInsertBodyState extends State<StaffInsertBody> {
           drawerMenuList: drawerList(context),
         ),
         body: SafeArea(
-          child: SingleChildScrollView(
-            padding:
-                EdgeInsets.only(top: 30.0, right: 5.0, bottom: 16.0, left: 5.0),
-            child: Column(
-              children: [
-                Container(
-                  height: widget.deviceSize.height * 0.35,
-                  child: Stack(
-                    children: [
-                      Positioned.fill(
-                        child: Hero(
-                          tag: "location-img-${widget.heroTag}",
-                          child: Image.asset(
-                            "assets/images/staffs.jpg",
-                            semanticLabel: "Staff background image",
-                            fit: BoxFit.cover,
-                            colorBlendMode: BlendMode.darken,
-                          ),
+          child: Column(
+            children: [
+              Container(
+                height: widget.deviceSize.height * 0.35,
+                child: Stack(
+                  children: [
+                    Positioned.fill(
+                      child: Hero(
+                        tag: "location-img-${widget.heroTag}",
+                        child: Image.asset(
+                          "assets/images/staffs.jpg",
+                          semanticLabel: "Staff background image",
+                          fit: BoxFit.cover,
+                          colorBlendMode: BlendMode.darken,
                         ),
                       ),
-                      Positioned(
-                        top: 0.0,
-                        left: 0.0,
-                        child: Container(
-                            padding: EdgeInsets.symmetric(horizontal: 16.0),
-                            height: widget.deviceSize.height * 0.08,
-                            width: widget.deviceSize.width,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                GestureDetector(
-                                  onTap: () {
-                                    if (_scaffoldKey
-                                        .currentState.isDrawerOpen) {
-                                      _scaffoldKey.currentState.openEndDrawer();
-                                    } else {
-                                      _scaffoldKey.currentState.openDrawer();
-                                    }
-                                  },
-                                  child: Icon(
-                                    Icons.menu,
-                                    color: Theme.of(context).primaryColor,
-                                    size: 25,
-                                  ), //your button
+                    ),
+                    Positioned(
+                      top: 0.0,
+                      left: 0.0,
+                      child: Container(
+                          padding: EdgeInsets.symmetric(horizontal: 16.0),
+                          height: widget.deviceSize.height * 0.08,
+                          width: widget.deviceSize.width,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              GestureDetector(
+                                onTap: () {
+                                  if (_scaffoldKey.currentState.isDrawerOpen) {
+                                    _scaffoldKey.currentState.openEndDrawer();
+                                  } else {
+                                    _scaffoldKey.currentState.openDrawer();
+                                  }
+                                },
+                                child: Icon(
+                                  Icons.menu,
+                                  color: Theme.of(context).primaryColor,
+                                  size: 25,
+                                ), //your button
+                              ),
+                              Text(
+                                widget.title,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .headline4
+                                    .copyWith(fontSize: 22),
+                              ),
+                              widget.profileImage
+                            ],
+                          )),
+                    ),
+                  ],
+                ),
+              ),
+              Center(
+                child: Text(
+                  "Insert New Staff",
+                  style: Theme.of(context)
+                      .textTheme
+                      .headline6
+                      .copyWith(fontWeight: FontWeight.w700),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 32.0),
+                child: Divider(
+                  height: 16,
+                  thickness: 2,
+                  color: Theme.of(context).secondaryHeaderColor,
+                ),
+              ),
+              SizedBox(
+                height: 30.0,
+              ),
+              Expanded(
+                flex: 2,
+                child: Container(
+                    width: widget.deviceSize.width,
+                    color: Theme.of(context).scaffoldBackgroundColor,
+                    child: ListView(
+                      padding:
+                          EdgeInsets.only(right: 5.0, bottom: 16.0, left: 5.0),
+                      children: [
+                        CustomRoundedContainer(
+                          deviceSize: widget.deviceSize,
+                          containerColor:
+                              Theme.of(context).secondaryHeaderColor,
+                          content: CustomTextfield(
+                            textInputValue: firstnameController,
+                            deviceSize: widget.deviceSize,
+                            inputIcon: Icon(Icons.person,
+                                color: Theme.of(context).accentColor),
+                            obscureText: false,
+                            textInputHintStyle:
+                                Theme.of(context).textTheme.bodyText2,
+                            inputType: TextInputType.name,
+                            textInputHint: "Enter new Firstname",
+                          ),
+                        ),
+                        SizedBox(
+                          height: 4.0,
+                        ),
+                        CustomRoundedContainer(
+                          deviceSize: widget.deviceSize,
+                          containerColor:
+                              Theme.of(context).secondaryHeaderColor,
+                          content: CustomTextfield(
+                            textInputValue: lastnameController,
+                            deviceSize: widget.deviceSize,
+                            inputIcon: Icon(Icons.person,
+                                color: Theme.of(context).accentColor),
+                            obscureText: false,
+                            textInputHintStyle:
+                                Theme.of(context).textTheme.bodyText2,
+                            inputType: TextInputType.name,
+                            textInputHint: "Enter new Lastname",
+                          ),
+                        ),
+                        SizedBox(
+                          height: 4.0,
+                        ),
+                        CustomRoundedContainer(
+                          deviceSize: widget.deviceSize,
+                          containerColor:
+                              Theme.of(context).secondaryHeaderColor,
+                          content: CustomTextfield(
+                            textInputValue: usernameController,
+                            deviceSize: widget.deviceSize,
+                            inputIcon: Icon(Icons.person,
+                                color: Theme.of(context).accentColor),
+                            obscureText: false,
+                            textInputHintStyle:
+                                Theme.of(context).textTheme.bodyText2,
+                            inputType: TextInputType.name,
+                            textInputHint: "Enter new Username",
+                          ),
+                        ),
+                        SizedBox(
+                          height: 4.0,
+                        ),
+                        CustomRoundedContainer(
+                            deviceSize: widget.deviceSize,
+                            containerColor:
+                                Theme.of(context).secondaryHeaderColor,
+                            content: DropdownButton<dynamic>(
+                                isExpanded: true,
+                                underline: SizedBox(),
+                                hint: Text(
+                                  "Select column to Update",
+                                  style: Theme.of(context).textTheme.bodyText2,
                                 ),
-                                Text(
-                                  widget.title,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .headline4
-                                      .copyWith(fontSize: 22),
-                                ),
-                                widget.profileImage
-                              ],
-                            )),
-                      ),
-                    ],
-                  ),
-                ),
-                Center(
-                  child: Text(
-                    "Insert New Staff",
-                    style: Theme.of(context)
-                        .textTheme
-                        .headline6
-                        .copyWith(fontWeight: FontWeight.w700),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 32.0),
-                  child: Divider(
-                    height: 16,
-                    thickness: 2,
-                    color: Theme.of(context).secondaryHeaderColor,
-                  ),
-                ),
-                SizedBox(
-                  height: 30.0,
-                ),
-                Expanded(
-                  flex: 2,
-                  child: Container(
-                      width: widget.deviceSize.width,
-                      color: Theme.of(context).scaffoldBackgroundColor,
-                      child: Column(
-                        children: [
-                          CustomRoundedContainer(
+                                items: designation
+                                    .map((dynamic dropdownItem) =>
+                                        DropdownMenuItem<dynamic>(
+                                            value: dropdownItem,
+                                            child: Text(dropdownItem,
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .subtitle1)))
+                                    .toList(),
+                                value: _designationSelected,
+                                onChanged: (dynamic selectedDropdownItem) {
+                                  setState(() {
+                                    this._designationSelected =
+                                        selectedDropdownItem;
+                                    print(
+                                        'This is the selected value ${this._designationSelected}');
+                                  });
+                                  print(selectedDropdownItem);
+                                })),
+                        SizedBox(
+                          height: 30.0,
+                        ),
+                        CustomRoundedContainer(
+                          deviceSize: widget.deviceSize,
+                          containerColor:
+                              Theme.of(context).secondaryHeaderColor,
+                          content: CustomTextfield(
+                            textInputValue: idCardNoController,
                             deviceSize: widget.deviceSize,
-                            containerColor:
-                                Theme.of(context).secondaryHeaderColor,
-                            content: CustomTextfield(
-                              textInputValue: firstnameController,
-                              deviceSize: widget.deviceSize,
-                              inputIcon: Icon(Icons.person,
-                                  color: Theme.of(context).accentColor),
-                              obscureText: false,
-                              textInputHintStyle:
-                                  Theme.of(context).textTheme.bodyText2,
-                              inputType: TextInputType.name,
-                              textInputHint: "Enter new Firstname",
-                            ),
+                            inputIcon: Icon(Icons.label_important,
+                                color: Theme.of(context).accentColor),
+                            obscureText: false,
+                            textInputHintStyle:
+                                Theme.of(context).textTheme.bodyText2,
+                            inputType: TextInputType.text,
+                            textInputHint: "Enter new Id Card No",
                           ),
-                          SizedBox(
-                            height: 4.0,
-                          ),
-                          CustomRoundedContainer(
+                        ),
+                        SizedBox(
+                          height: 4.0,
+                        ),
+                        CustomRoundedContainer(
+                          deviceSize: widget.deviceSize,
+                          containerColor:
+                              Theme.of(context).secondaryHeaderColor,
+                          content: CustomTextfield(
+                            textInputValue: emailController,
                             deviceSize: widget.deviceSize,
-                            containerColor:
-                                Theme.of(context).secondaryHeaderColor,
-                            content: CustomTextfield(
-                              textInputValue: lastnameController,
-                              deviceSize: widget.deviceSize,
-                              inputIcon: Icon(Icons.person,
-                                  color: Theme.of(context).accentColor),
-                              obscureText: false,
-                              textInputHintStyle:
-                                  Theme.of(context).textTheme.bodyText2,
-                              inputType: TextInputType.name,
-                              textInputHint: "Enter new Lastname",
-                            ),
+                            inputIcon: Icon(Icons.email,
+                                color: Theme.of(context).accentColor),
+                            obscureText: false,
+                            textInputHintStyle:
+                                Theme.of(context).textTheme.bodyText2,
+                            inputType: TextInputType.emailAddress,
+                            textInputHint: "Enter new Email Address",
                           ),
-                          SizedBox(
-                            height: 4.0,
-                          ),
-                          CustomRoundedContainer(
+                        ),
+                        SizedBox(
+                          height: 4.0,
+                        ),
+                        CustomRoundedContainer(
+                          deviceSize: widget.deviceSize,
+                          containerColor:
+                              Theme.of(context).secondaryHeaderColor,
+                          content: CustomTextfield(
+                            textInputValue: addressController,
                             deviceSize: widget.deviceSize,
-                            containerColor:
-                                Theme.of(context).secondaryHeaderColor,
-                            content: CustomTextfield(
-                              textInputValue: usernameController,
-                              deviceSize: widget.deviceSize,
-                              inputIcon: Icon(Icons.person,
-                                  color: Theme.of(context).accentColor),
-                              obscureText: false,
-                              textInputHintStyle:
-                                  Theme.of(context).textTheme.bodyText2,
-                              inputType: TextInputType.name,
-                              textInputHint: "Enter new Username",
-                            ),
+                            inputIcon: Icon(Icons.home,
+                                color: Theme.of(context).accentColor),
+                            obscureText: false,
+                            textInputHintStyle:
+                                Theme.of(context).textTheme.bodyText2,
+                            inputType: TextInputType.text,
+                            textInputHint: "Enter new Staff Home address",
                           ),
-                          SizedBox(
-                            height: 4.0,
-                          ),
-                          CustomRoundedContainer(
-                              deviceSize: widget.deviceSize,
-                              containerColor:
-                                  Theme.of(context).secondaryHeaderColor,
-                              content: DropdownButton<dynamic>(
-                                  isExpanded: true,
-                                  underline: SizedBox(),
-                                  hint: Text(
-                                    "Select column to Update",
-                                    style:
-                                        Theme.of(context).textTheme.bodyText2,
-                                  ),
-                                  items: designation
-                                      .map((dynamic dropdownItem) =>
-                                          DropdownMenuItem<dynamic>(
-                                              value: dropdownItem,
-                                              child: Text(dropdownItem,
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .subtitle1)))
-                                      .toList(),
-                                  value: _designationSelected,
-                                  onChanged: (dynamic selectedDropdownItem) {
-                                    setState(() {
-                                      this._designationSelected =
-                                          selectedDropdownItem;
-                                      print(
-                                          'This is the selected value ${this._designationSelected}');
-                                    });
-                                    print(selectedDropdownItem);
-                                  })),
-                          SizedBox(
-                            height: 30.0,
-                          ),
-                          CustomRoundedContainer(
+                        ),
+                        SizedBox(
+                          height: 4.0,
+                        ),
+                        CustomRoundedContainer(
+                          deviceSize: widget.deviceSize,
+                          containerColor:
+                              Theme.of(context).secondaryHeaderColor,
+                          content: CustomTextfield(
+                            textInputValue: cityController,
                             deviceSize: widget.deviceSize,
-                            containerColor:
-                                Theme.of(context).secondaryHeaderColor,
-                            content: CustomTextfield(
-                              textInputValue: idCardNoController,
-                              deviceSize: widget.deviceSize,
-                              inputIcon: Icon(Icons.label_important,
-                                  color: Theme.of(context).accentColor),
-                              obscureText: false,
-                              textInputHintStyle:
-                                  Theme.of(context).textTheme.bodyText2,
-                              inputType: TextInputType.text,
-                              textInputHint: "Enter new Id Card No",
-                            ),
+                            inputIcon: Icon(Icons.home,
+                                color: Theme.of(context).accentColor),
+                            obscureText: false,
+                            textInputHintStyle:
+                                Theme.of(context).textTheme.bodyText2,
+                            inputType: TextInputType.text,
+                            textInputHint: "Enter new Staff Residing City",
                           ),
-                          SizedBox(
-                            height: 4.0,
-                          ),
-                          CustomRoundedContainer(
+                        ),
+                        SizedBox(
+                          height: 4.0,
+                        ),
+                        CustomRoundedContainer(
+                          deviceSize: widget.deviceSize,
+                          containerColor:
+                              Theme.of(context).secondaryHeaderColor,
+                          content: CustomTextfield(
+                            textInputValue: telNoController,
                             deviceSize: widget.deviceSize,
-                            containerColor:
-                                Theme.of(context).secondaryHeaderColor,
-                            content: CustomTextfield(
-                              textInputValue: emailController,
-                              deviceSize: widget.deviceSize,
-                              inputIcon: Icon(Icons.email,
-                                  color: Theme.of(context).accentColor),
-                              obscureText: false,
-                              textInputHintStyle:
-                                  Theme.of(context).textTheme.bodyText2,
-                              inputType: TextInputType.emailAddress,
-                              textInputHint: "Enter new Email Address",
-                            ),
+                            inputIcon: Icon(Icons.phone,
+                                color: Theme.of(context).accentColor),
+                            obscureText: false,
+                            textInputHintStyle:
+                                Theme.of(context).textTheme.bodyText2,
+                            inputType: TextInputType.phone,
+                            textInputHint: "Enter new staff phone number",
                           ),
-                          SizedBox(
-                            height: 4.0,
-                          ),
-                          CustomRoundedContainer(
-                            deviceSize: widget.deviceSize,
-                            containerColor:
-                                Theme.of(context).secondaryHeaderColor,
-                            content: CustomTextfield(
-                              textInputValue: addressController,
-                              deviceSize: widget.deviceSize,
-                              inputIcon: Icon(Icons.home,
-                                  color: Theme.of(context).accentColor),
-                              obscureText: false,
-                              textInputHintStyle:
-                                  Theme.of(context).textTheme.bodyText2,
-                              inputType: TextInputType.text,
-                              textInputHint: "Enter new Staff Home address",
-                            ),
-                          ),
-                          SizedBox(
-                            height: 4.0,
-                          ),
-                          CustomRoundedContainer(
-                            deviceSize: widget.deviceSize,
-                            containerColor:
-                                Theme.of(context).secondaryHeaderColor,
-                            content: CustomTextfield(
-                              textInputValue: cityController,
-                              deviceSize: widget.deviceSize,
-                              inputIcon: Icon(Icons.home,
-                                  color: Theme.of(context).accentColor),
-                              obscureText: false,
-                              textInputHintStyle:
-                                  Theme.of(context).textTheme.bodyText2,
-                              inputType: TextInputType.text,
-                              textInputHint: "Enter new Staff Residing City",
-                            ),
-                          ),
-                          SizedBox(
-                            height: 4.0,
-                          ),
-                          CustomRoundedContainer(
-                            deviceSize: widget.deviceSize,
-                            containerColor:
-                                Theme.of(context).secondaryHeaderColor,
-                            content: CustomTextfield(
-                              textInputValue: telNoController,
-                              deviceSize: widget.deviceSize,
-                              inputIcon: Icon(Icons.phone,
-                                  color: Theme.of(context).accentColor),
-                              obscureText: false,
-                              textInputHintStyle:
-                                  Theme.of(context).textTheme.bodyText2,
-                              inputType: TextInputType.phone,
-                              textInputHint: "Enter new staff phone number",
-                            ),
-                          ),
-                          SizedBox(
-                            height: 4.0,
-                          ),
-                          RoundedFlatButton(
-                            deviceSize: widget.deviceSize,
-                            buttonBackgroundColor:
-                                Theme.of(context).accentColor,
-                            buttonTextValue: "Insert Staff",
-                            buttonTextStyle: Theme.of(context).textTheme.button,
-                            buttonFunction: () => insertStaff(context),
-                          ),
-                        ],
-                      )),
-                ),
-              ],
-            ),
+                        ),
+                        SizedBox(
+                          height: 4.0,
+                        ),
+                        RoundedFlatButton(
+                          deviceSize: widget.deviceSize,
+                          buttonBackgroundColor: Theme.of(context).accentColor,
+                          buttonTextValue: "Insert Staff",
+                          buttonTextStyle: Theme.of(context).textTheme.button,
+                          buttonFunction: () => insertStaff(context),
+                        ),
+                      ],
+                    )),
+              ),
+            ],
           ),
         ));
   }

@@ -69,10 +69,10 @@ class _UserUpdateBodyState extends State<UserUpdateBody> {
 
   @override
   Widget build(BuildContext context) {
-    if (this.usernameController.text.length > 1) {
+    if (this.usernameController.text.isEmpty) {
       this.usernameController.text = widget.user.getUsername;
     }
-    if (this.passwordController.text.length > 1) {
+    if (this.passwordController.text.isEmpty) {
       this.passwordController.text = widget.user.getUsername;
     }
     if (_designationSelected == null) {

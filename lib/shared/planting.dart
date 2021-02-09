@@ -41,7 +41,7 @@ class _PlantingBodyState extends State<PlantingBody> {
     dbFuture.then((database) {
       Future<List<Planting>> plantingListFuture =
           databaseHelper.getPlantingList();
-      plantingListFuture.then((seedList) {
+      plantingListFuture.then((plantingList) {
         if (plantingList != null) {
           setState(() {
             this.plantingList = plantingList;
@@ -92,7 +92,7 @@ class _PlantingBodyState extends State<PlantingBody> {
   }
 
   deleteItem(int index, BuildContext context, Size deviceSize,
-      String updateTable, Future<int> delFunc) {
+      String updateTable, AsyncCallback delFunc) {
     print("delete dialogue called on $index index item");
     print("item at $index has being updated");
     return showGeneralDialog(
@@ -142,7 +142,7 @@ class _PlantingBodyState extends State<PlantingBody> {
     }
 
     Future<int> deleAction(Planting tableRow) async {
-      int result = await databaseHelper.deleteCustomer(tableRow.getId);
+      int result = await databaseHelper.deletePlanting(tableRow.getId);
       updateListView();
       return result;
     }
@@ -275,7 +275,7 @@ class _PlantingBodyState extends State<PlantingBody> {
                                         context,
                                         widget.deviceSize,
                                         "Planting",
-                                        deleAction(plantingList[index]));
+                                        () => deleAction(plantingList[index]));
                                   } else if (details.primaryVelocity < 0) {
                                     // User swiped Left
                                     print("Planting Swiped Left");
@@ -301,7 +301,8 @@ class _PlantingBodyState extends State<PlantingBody> {
                                           context,
                                           widget.deviceSize,
                                           "Planting",
-                                          deleAction(plantingList[index]))),
+                                          () =>
+                                              deleAction(plantingList[index]))),
                                 ),
                               );
                             })),

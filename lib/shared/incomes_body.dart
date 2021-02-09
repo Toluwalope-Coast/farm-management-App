@@ -43,7 +43,7 @@ class _IncomesBodyState extends State<IncomesBody> {
       incomesListFuture.then((incomesList) {
         if (incomesList != null) {
           setState(() {
-            this.incomeList = incomeList;
+            this.incomeList = incomesList;
           });
         }
       });
@@ -91,7 +91,7 @@ class _IncomesBodyState extends State<IncomesBody> {
   }
 
   deleteItem(int index, BuildContext context, Size deviceSize,
-      String updateTable, Future<int> delFunc) {
+      String updateTable, AsyncCallback delFunc) {
     print("delete dialogue called on $index index item");
     print("item at $index has being updated");
     return showGeneralDialog(
@@ -141,7 +141,7 @@ class _IncomesBodyState extends State<IncomesBody> {
     }
 
     Future<int> deleAction(Income tableRow) async {
-      int result = await databaseHelper.deleteCustomer(tableRow.id);
+      int result = await databaseHelper.deleteIncome(tableRow.id);
       updateListView();
       return result;
     }
@@ -274,7 +274,7 @@ class _IncomesBodyState extends State<IncomesBody> {
                                         context,
                                         widget.deviceSize,
                                         "Incomes",
-                                        deleAction(incomeList[index]));
+                                        () => deleAction(incomeList[index]));
                                   } else if (details.primaryVelocity < 0) {
                                     // User swiped Left
                                     print("Income Swiped Left");
@@ -304,7 +304,7 @@ class _IncomesBodyState extends State<IncomesBody> {
                                           context,
                                           widget.deviceSize,
                                           "Incomes",
-                                          deleAction(incomeList[index]))),
+                                          () => deleAction(incomeList[index]))),
                                 ),
                               );
                             })),

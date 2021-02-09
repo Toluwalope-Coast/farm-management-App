@@ -228,7 +228,7 @@ class _CustomerInsertBodyState extends State<CustomerInsertBody> {
                             obscureText: false,
                             textInputHintStyle:
                                 Theme.of(context).textTheme.bodyText2,
-                            inputType: TextInputType.text,
+                            inputType: TextInputType.phone,
                             textInputHint: "Enter new Customer Phone No",
                           ),
                         ),

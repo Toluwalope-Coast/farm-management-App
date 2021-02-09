@@ -91,7 +91,7 @@ class _FuelBodyState extends State<FuelBody> {
   }
 
   deleteItem(int index, BuildContext context, Size deviceSize,
-      String updateTable, Future<int> delFunc) {
+      String updateTable, AsyncCallback delFunc) {
     print("delete dialogue called on $index index item");
     print("item at $index has being updated");
     return showGeneralDialog(
@@ -141,7 +141,7 @@ class _FuelBodyState extends State<FuelBody> {
     }
 
     Future<int> deleAction(Fuel tableRow) async {
-      int result = await databaseHelper.deleteCustomer(tableRow.getId);
+      int result = await databaseHelper.deleteFuel(tableRow.getId);
       updateListView();
       return result;
     }
@@ -274,7 +274,7 @@ class _FuelBodyState extends State<FuelBody> {
                                         context,
                                         widget.deviceSize,
                                         "Fuel",
-                                        deleAction(fuelList[index]));
+                                        () => deleAction(fuelList[index]));
                                   } else if (details.primaryVelocity < 0) {
                                     // User swiped Left
                                     print("Fuel Swiped Left");
@@ -294,7 +294,7 @@ class _FuelBodyState extends State<FuelBody> {
                                           context,
                                           widget.deviceSize,
                                           "Fuel",
-                                          deleAction(fuelList[index]))),
+                                          () => deleAction(fuelList[index]))),
                                 ),
                               );
                             })),

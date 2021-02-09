@@ -1,12 +1,16 @@
 import 'package:farm_manager/shared/Constant.dart';
 import 'package:farm_manager/shared/rounded_flat_button.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+
+typedef AsyncCallback = Future<int> Function();
 
 class CustomDialogueBox extends StatelessWidget {
   final Size deviceSize;
   final String deleteTitle;
   final int index;
-  final Future<int> delFuncResult;
+  // final Future<int> delFuncResult;
+  final AsyncCallback delFuncResult;
   CustomDialogueBox({
     Key key,
     @required this.deviceSize,
@@ -15,8 +19,8 @@ class CustomDialogueBox extends StatelessWidget {
     this.delFuncResult,
   }) : super(key: key);
 
-  yesDelete(context, int itemIndex, Future<int> delFuncResult) {
-    delFuncResult.then((value) {
+  yesDelete(context, int itemIndex, AsyncCallback delFuncResult) {
+    delFuncResult.call().then((value) {
       print('The result value is $value');
       if (value != 0) {
         print("deleted $itemIndex sucessfully");

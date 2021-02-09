@@ -92,7 +92,7 @@ class _ExpensesBodyState extends State<ExpensesBody> {
   }
 
   deleteItem(int index, BuildContext context, Size deviceSize,
-      String updateTable, Future<int> delFunc) {
+      String updateTable, AsyncCallback delFunc) {
     print("delete dialogue called on $index index item");
     print("item at $index has being updated");
     return showGeneralDialog(
@@ -142,7 +142,7 @@ class _ExpensesBodyState extends State<ExpensesBody> {
     }
 
     Future<int> deleAction(Expenses tableRow) async {
-      int result = await databaseHelper.deleteCustomer(tableRow.id);
+      int result = await databaseHelper.deleteExpensese(tableRow.id);
       updateListView();
       return result;
     }
@@ -275,7 +275,7 @@ class _ExpensesBodyState extends State<ExpensesBody> {
                                         context,
                                         widget.deviceSize,
                                         "Expenses",
-                                        deleAction(expensesList[index]));
+                                        () => deleAction(expensesList[index]));
                                   } else if (details.primaryVelocity < 0) {
                                     // User swiped Left
                                     print("Expenses Swiped Left");
@@ -306,7 +306,8 @@ class _ExpensesBodyState extends State<ExpensesBody> {
                                           context,
                                           widget.deviceSize,
                                           "Expenses",
-                                          deleAction(expensesList[index]))),
+                                          () =>
+                                              deleAction(expensesList[index]))),
                                 ),
                               );
                             })),

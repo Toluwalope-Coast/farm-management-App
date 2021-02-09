@@ -92,7 +92,7 @@ class _CustomersBodyState extends State<CustomersBody> {
   }
 
   deleteItem(int index, BuildContext context, Size deviceSize,
-      String updateTable, Future<int> delFunc) {
+      String updateTable, AsyncCallback delFunc) {
     print("delete dialogue called on $index index item");
     print("item at $index has being updated");
     return showGeneralDialog(
@@ -275,7 +275,7 @@ class _CustomersBodyState extends State<CustomersBody> {
                                         context,
                                         widget.deviceSize,
                                         "Customer",
-                                        deleAction(customerList[index]));
+                                        () => deleAction(customerList[index]));
                                   } else if (details.primaryVelocity < 0) {
                                     // User swiped Left
                                     print("Customer Swiped Left");
@@ -300,7 +300,8 @@ class _CustomersBodyState extends State<CustomersBody> {
                                           context,
                                           widget.deviceSize,
                                           "Customer",
-                                          deleAction(customerList[index]))),
+                                          () =>
+                                              deleAction(customerList[index]))),
                                 ),
                               );
                             })),
