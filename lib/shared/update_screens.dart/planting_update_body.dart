@@ -167,7 +167,7 @@ class _PlantingUpdateBodyState extends State<PlantingUpdateBody> {
               ),
               Center(
                 child: Text(
-                  "Update Planting",
+                  "Update Planting ${widget.planting.getId}",
                   style: Theme.of(context)
                       .textTheme
                       .headline6

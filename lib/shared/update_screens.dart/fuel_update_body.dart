@@ -40,17 +40,14 @@ class _FuelUpdateBodyState extends State<FuelUpdateBody> {
 
   TextEditingController idCardNoController = new TextEditingController();
 
-  insertFuel(context) async {
-    Fuel fuel = new Fuel(
-      fuelTypeController.text,
-      idCardNoController.text,
-      int.parse(machineIDController.text),
-    );
+  updateFuel(context) async {
+    Fuel fuel = new Fuel.withId(widget.fuel.getId, fuelTypeController.text,
+        idCardNoController.text, int.parse(machineIDController.text), '');
     print("Fuel Type is ${fuelTypeController.text}");
     print("Id Card No is ${idCardNoController.text}");
     print("Machine Type is ${machineIDController.text}");
 
-    int result = await databaseHelper.insertFuel(fuel);
+    int result = await databaseHelper.updateFuel(fuel);
     if (result != 0) {
       return navigationPopRoute(context, true);
     }
@@ -58,6 +55,15 @@ class _FuelUpdateBodyState extends State<FuelUpdateBody> {
 
   @override
   Widget build(BuildContext context) {
+    if (this.fuelTypeController.text.isEmpty) {
+      this.fuelTypeController.text = widget.fuel.getType;
+    }
+    if (this.idCardNoController.text.isEmpty) {
+      this.idCardNoController.text = widget.fuel.getIdCardNo;
+    }
+    if (this.machineIDController.text.isEmpty) {
+      this.machineIDController.text = widget.fuel.getMachineId.toString();
+    }
     drawerList(context);
     return Scaffold(
         key: _scaffoldKey,
@@ -123,7 +129,7 @@ class _FuelUpdateBodyState extends State<FuelUpdateBody> {
               ),
               Center(
                 child: Text(
-                  "Insert New Fuel",
+                  "Update Fuel ${widget.fuel.getId}",
                   style: Theme.of(context)
                       .textTheme
                       .headline6
@@ -208,9 +214,9 @@ class _FuelUpdateBodyState extends State<FuelUpdateBody> {
                         RoundedFlatButton(
                           deviceSize: widget.deviceSize,
                           buttonBackgroundColor: Theme.of(context).accentColor,
-                          buttonTextValue: "Insert Machine",
+                          buttonTextValue: "Update Fuel",
                           buttonTextStyle: Theme.of(context).textTheme.button,
-                          buttonFunction: () => insertFuel(context),
+                          buttonFunction: () => updateFuel(context),
                         ),
                       ],
                     )),

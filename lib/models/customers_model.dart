@@ -7,16 +7,15 @@ class Customer {
   String _address;
   String _email;
   String _telNo;
-  String _date;
+  String _date = '';
 
   // Two constructor for the models (with the id and without id)
 
   Customer(this._name, this._address, this._email, this._telNo,
       [this._modeOfTransaction]);
 
-  Customer.withId(
-      this._id, this._name, this._address, this._email, this._telNo, this._date,
-      [this._modeOfTransaction]);
+  Customer.withId(this._id, this._name, this._address, this._email, this._telNo,
+      this._modeOfTransaction, this._date);
   //  the getters
 
   int get getId => _id;

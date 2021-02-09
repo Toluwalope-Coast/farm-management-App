@@ -59,7 +59,7 @@ class _StaffUpdateBodyState extends State<StaffUpdateBody> {
     "Field Operator"
   ];
 
-  insertStaff(context) async {
+  updateStaff(context) async {
     Staff staff = new Staff.withId(
         widget.staff.getId,
         firstnameController.text,
@@ -183,7 +183,7 @@ class _StaffUpdateBodyState extends State<StaffUpdateBody> {
               ),
               Center(
                 child: Text(
-                  "Update Staff",
+                  "Update Staff ${widget.staff.getId}",
                   style: Theme.of(context)
                       .textTheme
                       .headline6
@@ -396,9 +396,9 @@ class _StaffUpdateBodyState extends State<StaffUpdateBody> {
                         RoundedFlatButton(
                           deviceSize: widget.deviceSize,
                           buttonBackgroundColor: Theme.of(context).accentColor,
-                          buttonTextValue: "Insert Staff",
+                          buttonTextValue: "Update Staff",
                           buttonTextStyle: Theme.of(context).textTheme.button,
-                          buttonFunction: () => insertStaff(context),
+                          buttonFunction: () => updateStaff(context),
                         ),
                       ],
                     )),

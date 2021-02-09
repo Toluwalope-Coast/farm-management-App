@@ -1,8 +1,10 @@
+import 'package:intl/intl.dart';
+
 class Machinery {
   int _id;
   String _type;
   String _idCardNo;
-  String _date;
+  String _date = '';
 
   // Two constructor for the models (with the id and without id)
 
@@ -44,7 +46,11 @@ class Machinery {
     }
     map['type'] = _type;
     map['id_card_no'] = _idCardNo;
-    map['date'] = _date;
+    if (_date != null) {
+      DateTime now = new DateTime.now();
+      _date = DateFormat('yyyy-MM-dd – kk:mm').format(now);
+      map['date'] = _date;
+    }
     return map;
   }
 

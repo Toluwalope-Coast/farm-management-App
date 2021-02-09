@@ -61,8 +61,9 @@ class _ExpensesUpdateBodyState extends State<ExpensesUpdateBody> {
     "USD",
   ];
 
-  insertExpenses(context) async {
-    Expenses expenses = new Expenses(
+  updateExpenses(context) async {
+    Expenses expenses = new Expenses.withId(
+        widget.expenses.id,
         productTypeController.text,
         wayBillNoController.text,
         int.parse(customerIDController.text),
@@ -70,7 +71,8 @@ class _ExpensesUpdateBodyState extends State<ExpensesUpdateBody> {
         double.parse(quantityRecievedController.text),
         _unitSelected,
         double.parse(rateController.text),
-        double.parse(amountController.text));
+        double.parse(amountController.text),
+        '');
     print("firstname is ${productTypeController.text}");
     print("Waybill is ${wayBillNoController.text}");
     print("address is ${customerIDController.text}");
@@ -80,7 +82,7 @@ class _ExpensesUpdateBodyState extends State<ExpensesUpdateBody> {
     print("Rate is ${rateController.text}");
     print("Rate is ${amountController.text}");
 
-    int result = await databaseHelper.insertExpenses(expenses);
+    int result = await databaseHelper.updateExpenses(expenses);
     if (result != 0) {
       return navigationPopRoute(context, true);
     }
@@ -88,6 +90,31 @@ class _ExpensesUpdateBodyState extends State<ExpensesUpdateBody> {
 
   @override
   Widget build(BuildContext context) {
+    if (this.productTypeController.text.isEmpty) {
+      this.productTypeController.text = widget.expenses.getProductType;
+    }
+    if (this.wayBillNoController.text.isEmpty) {
+      this.wayBillNoController.text = widget.expenses.getWaybillNo;
+    }
+    if (this.customerIDController.text.isEmpty) {
+      this.customerIDController.text = widget.expenses.getCustomerID.toString();
+    }
+    if (_paymentModeSelected == null) {
+      _paymentModeSelected = widget.expenses.getPaymentMode;
+    }
+    if (this.quantityRecievedController.text.isEmpty) {
+      this.quantityRecievedController.text =
+          widget.expenses.getQtyRecieved.toString();
+    }
+    if (this.rateController.text.isEmpty) {
+      this.rateController.text = widget.expenses.getRate.toString();
+    }
+    if (_unitSelected == null) {
+      _unitSelected = widget.expenses.getUnit;
+    }
+    if (this.amountController.text.isEmpty) {
+      this.amountController.text = widget.expenses.getAmountRecieved.toString();
+    }
     drawerList(context);
     return Scaffold(
         key: _scaffoldKey,
@@ -153,7 +180,7 @@ class _ExpensesUpdateBodyState extends State<ExpensesUpdateBody> {
               ),
               Center(
                 child: Text(
-                  "Insert New Expenses",
+                  "Update Expenses ${widget.expenses.id}",
                   style: Theme.of(context)
                       .textTheme
                       .headline6
@@ -364,9 +391,9 @@ class _ExpensesUpdateBodyState extends State<ExpensesUpdateBody> {
                         RoundedFlatButton(
                           deviceSize: widget.deviceSize,
                           buttonBackgroundColor: Theme.of(context).accentColor,
-                          buttonTextValue: "Insert Expenses",
+                          buttonTextValue: "Update Expenses",
                           buttonTextStyle: Theme.of(context).textTheme.button,
-                          buttonFunction: () => insertExpenses(context),
+                          buttonFunction: () => updateExpenses(context),
                         ),
                       ],
                     )),

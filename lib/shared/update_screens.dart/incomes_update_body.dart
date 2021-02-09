@@ -60,8 +60,9 @@ class _IncomesUpdateBodyState extends State<IncomesUpdateBody> {
     "USD",
   ];
 
-  insertIncome(context) async {
-    Income income = new Income(
+  updateIncome(context) async {
+    Income income = new Income.withId(
+        widget.income.id,
         productTypeController.text,
         wayBillNoController.text,
         int.parse(customerIDController.text),
@@ -69,7 +70,8 @@ class _IncomesUpdateBodyState extends State<IncomesUpdateBody> {
         double.parse(quantitySoldController.text),
         _unitSelected,
         double.parse(rateController.text),
-        double.parse(amountController.text));
+        double.parse(amountController.text),
+        '');
     print("firstname is ${productTypeController.text}");
     print("Waybill is ${wayBillNoController.text}");
     print("address is ${customerIDController.text}");
@@ -79,7 +81,7 @@ class _IncomesUpdateBodyState extends State<IncomesUpdateBody> {
     print("Rate is ${rateController.text}");
     print("Rate is ${amountController.text}");
 
-    int result = await databaseHelper.insertIncomes(income);
+    int result = await databaseHelper.updateIncome(income);
     if (result != 0) {
       return navigationPopRoute(context, true);
     }
@@ -87,6 +89,30 @@ class _IncomesUpdateBodyState extends State<IncomesUpdateBody> {
 
   @override
   Widget build(BuildContext context) {
+    if (this.productTypeController.text.isEmpty) {
+      this.productTypeController.text = widget.income.getProductType;
+    }
+    if (this.wayBillNoController.text.isEmpty) {
+      this.wayBillNoController.text = widget.income.getWaybillNo;
+    }
+    if (this.customerIDController.text.isEmpty) {
+      this.customerIDController.text = widget.income.getCustomerID.toString();
+    }
+    if (_paymentModeSelected == null) {
+      _paymentModeSelected = widget.income.getPaymentMode;
+    }
+    if (this.quantitySoldController.text.isEmpty) {
+      this.quantitySoldController.text = widget.income.getQtySold.toString();
+    }
+    if (this.rateController.text.isEmpty) {
+      this.rateController.text = widget.income.getRate.toString();
+    }
+    if (_unitSelected == null) {
+      _unitSelected = widget.income.getUnit;
+    }
+    if (this.amountController.text.isEmpty) {
+      this.amountController.text = widget.income.getAmountSold.toString();
+    }
     drawerList(context);
     return Scaffold(
         key: _scaffoldKey,
@@ -152,7 +178,7 @@ class _IncomesUpdateBodyState extends State<IncomesUpdateBody> {
               ),
               Center(
                 child: Text(
-                  "Insert New Income",
+                  "Update Income ${widget.income.id}",
                   style: Theme.of(context)
                       .textTheme
                       .headline6
@@ -363,9 +389,9 @@ class _IncomesUpdateBodyState extends State<IncomesUpdateBody> {
                         RoundedFlatButton(
                           deviceSize: widget.deviceSize,
                           buttonBackgroundColor: Theme.of(context).accentColor,
-                          buttonTextValue: "Insert Income",
+                          buttonTextValue: "Update Income",
                           buttonTextStyle: Theme.of(context).textTheme.button,
-                          buttonFunction: () => insertIncome(context),
+                          buttonFunction: () => updateIncome(context),
                         ),
                       ],
                     )),

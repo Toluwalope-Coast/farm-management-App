@@ -65,6 +65,18 @@ class _TillageUpdateBodyState extends State<TillageUpdateBody> {
 
   @override
   Widget build(BuildContext context) {
+    if (this.tillageTypeController.text.isEmpty) {
+      this.tillageTypeController.text = widget.tillage.getType;
+    }
+    if (this.idCardNoController.text.isEmpty) {
+      this.idCardNoController.text = widget.tillage.getIdCardNo;
+    }
+    if (this.acreageController.text.isEmpty) {
+      this.acreageController.text = widget.tillage.getAcreage.toString();
+    }
+    if (this.machineIDController.text.isEmpty) {
+      this.machineIDController.text = widget.tillage.getMachineId.toString();
+    }
     drawerList(context);
     return Scaffold(
         key: _scaffoldKey,
@@ -130,7 +142,7 @@ class _TillageUpdateBodyState extends State<TillageUpdateBody> {
               ),
               Center(
                 child: Text(
-                  "Insert New Tillage",
+                  "Update Tillage ${widget.tillage.getId}",
                   style: Theme.of(context)
                       .textTheme
                       .headline6

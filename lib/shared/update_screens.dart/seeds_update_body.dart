@@ -51,14 +51,16 @@ class _SeedsUpdateBodyState extends State<SeedsUpdateBody> {
     "pcs",
   ];
 
-  insertSeeds(context) async {
-    Seed seed = new Seed(
+  updateSeeds(context) async {
+    Seed seed = new Seed.withId(
+        widget.seed.getId,
         seedsTypeController.text,
         idCardNoController.text,
         double.parse(qtyController.text),
+        _unitSelected,
         double.parse(qtyRemainingController.text),
         double.parse(acreageController.text),
-        _unitSelected);
+        '');
     print("Seed Type is ${seedsTypeController.text}");
     print("Id Card No is ${idCardNoController.text}");
     print("Quantity Type is ${qtyController.text}");
@@ -66,7 +68,7 @@ class _SeedsUpdateBodyState extends State<SeedsUpdateBody> {
     print("Acreage Type is ${acreageController.text}");
     print("Unit is $_unitSelected");
 
-    int result = await databaseHelper.insertSeed(seed);
+    int result = await databaseHelper.updateSeed(seed);
     if (result != 0) {
       return navigationPopRoute(context, true);
     }
@@ -74,6 +76,27 @@ class _SeedsUpdateBodyState extends State<SeedsUpdateBody> {
 
   @override
   Widget build(BuildContext context) {
+    if (this.seedsTypeController.text.isEmpty) {
+      this.seedsTypeController.text = widget.seed.getType;
+    }
+    if (this.idCardNoController.text.isEmpty) {
+      this.idCardNoController.text = widget.seed.getIdCardNo;
+    }
+    if (this.acreageController.text.isEmpty) {
+      this.acreageController.text = widget.seed.getAcreage.toString();
+    }
+    if (this.idCardNoController.text.isEmpty) {
+      this.idCardNoController.text = widget.seed.getIdCardNo;
+    }
+    if (this.qtyController.text.isEmpty) {
+      this.qtyController.text = widget.seed.getQty.toString();
+    }
+    if (_unitSelected == null) {
+      _unitSelected = widget.seed.getUnit;
+    }
+    if (this.qtyRemainingController.text.isEmpty) {
+      this.qtyRemainingController.text = widget.seed.getQtyRemaining.toString();
+    }
     drawerList(context);
     return Scaffold(
         key: _scaffoldKey,
@@ -139,7 +162,7 @@ class _SeedsUpdateBodyState extends State<SeedsUpdateBody> {
               ),
               Center(
                 child: Text(
-                  "Insert New Seed",
+                  "Update Seed ${widget.seed.getId}",
                   style: Theme.of(context)
                       .textTheme
                       .headline6
@@ -279,7 +302,7 @@ class _SeedsUpdateBodyState extends State<SeedsUpdateBody> {
                           containerColor:
                               Theme.of(context).secondaryHeaderColor,
                           content: CustomTextfield(
-                            textInputValue: seedsTypeController,
+                            textInputValue: qtyRemainingController,
                             deviceSize: widget.deviceSize,
                             inputIcon: Icon(Icons.traffic,
                                 color: Theme.of(context).accentColor),
@@ -297,9 +320,9 @@ class _SeedsUpdateBodyState extends State<SeedsUpdateBody> {
                         RoundedFlatButton(
                           deviceSize: widget.deviceSize,
                           buttonBackgroundColor: Theme.of(context).accentColor,
-                          buttonTextValue: "Insert Seed",
+                          buttonTextValue: "Update Seed",
                           buttonTextStyle: Theme.of(context).textTheme.button,
-                          buttonFunction: () => insertSeeds(context),
+                          buttonFunction: () => updateSeeds(context),
                         ),
                       ],
                     )),

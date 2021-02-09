@@ -42,19 +42,21 @@ class _ChemicalUpdateBodyState extends State<ChemicalUpdateBody> {
 
   TextEditingController idCardNoController = new TextEditingController();
 
-  insertChemical(context) async {
-    Chemical chemical = new Chemical(
+  updateChemical(context) async {
+    Chemical chemical = new Chemical.withId(
+        widget.chemical.getId,
         chemicalTypeController.text,
         idCardNoController.text,
         int.parse(machineIDController.text),
-        double.parse(acreageController.text));
+        double.parse(acreageController.text),
+        '');
     print("Chemical Type is ${chemicalTypeController.text}");
     print("Id Card No is ${idCardNoController.text}");
     print("Machine Type is ${machineIDController.text}");
     print("Acreage Type is ${acreageController.text}");
     print("Acreage Type is ${acreageController.text}");
 
-    int result = await databaseHelper.insertChemical(chemical);
+    int result = await databaseHelper.updateChemical(chemical);
     if (result != 0) {
       return navigationPopRoute(context, true);
     }
@@ -62,6 +64,18 @@ class _ChemicalUpdateBodyState extends State<ChemicalUpdateBody> {
 
   @override
   Widget build(BuildContext context) {
+    if (this.chemicalTypeController.text.isEmpty) {
+      this.chemicalTypeController.text = widget.chemical.getType;
+    }
+    if (this.idCardNoController.text.isEmpty) {
+      this.idCardNoController.text = widget.chemical.getIdCardNo;
+    }
+    if (this.acreageController.text.isEmpty) {
+      this.acreageController.text = widget.chemical.getAcreage.toString();
+    }
+    if (this.machineIDController.text.isEmpty) {
+      this.machineIDController.text = widget.chemical.getMachineId.toString();
+    }
     drawerList(context);
     return Scaffold(
         key: _scaffoldKey,
@@ -80,7 +94,7 @@ class _ChemicalUpdateBodyState extends State<ChemicalUpdateBody> {
                       child: Hero(
                         tag: "location-img-${widget.heroTag}",
                         child: Image.asset(
-                          "assets/images/chemical.jpg",
+                          "assets/images/chemicals.jpg",
                           semanticLabel: "Chemical background image",
                           fit: BoxFit.cover,
                           colorBlendMode: BlendMode.darken,
@@ -127,7 +141,7 @@ class _ChemicalUpdateBodyState extends State<ChemicalUpdateBody> {
               ),
               Center(
                 child: Text(
-                  "Insert New Chemical",
+                  "Update chemical ${widget.chemical.getId}",
                   style: Theme.of(context)
                       .textTheme
                       .headline6
@@ -232,9 +246,9 @@ class _ChemicalUpdateBodyState extends State<ChemicalUpdateBody> {
                         RoundedFlatButton(
                           deviceSize: widget.deviceSize,
                           buttonBackgroundColor: Theme.of(context).accentColor,
-                          buttonTextValue: "Insert Chemical",
+                          buttonTextValue: "Update Chemical",
                           buttonTextStyle: Theme.of(context).textTheme.button,
-                          buttonFunction: () => insertChemical(context),
+                          buttonFunction: () => updateChemical(context),
                         ),
                       ],
                     )),

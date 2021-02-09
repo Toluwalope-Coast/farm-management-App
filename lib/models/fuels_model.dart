@@ -1,9 +1,11 @@
+import 'package:intl/intl.dart';
+
 class Fuel {
   int _id;
   String _type;
   String _idCardNo;
   int _machineId;
-  String _date;
+  String _date = '';
 
   // Two constructor for the models (with the id and without id)
 
@@ -54,7 +56,11 @@ class Fuel {
     map['type'] = _type;
     map['id_card_no'] = _idCardNo;
     map['machine_id'] = _machineId;
-    map['date'] = _date;
+    if (_date != null) {
+      DateTime now = new DateTime.now();
+      _date = DateFormat('yyyy-MM-dd – kk:mm').format(now);
+      map['date'] = _date;
+    }
     return map;
   }
 
