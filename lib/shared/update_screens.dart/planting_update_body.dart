@@ -49,20 +49,21 @@ class _PlantingUpdateBodyState extends State<PlantingUpdateBody> {
   String _unitSelected;
 
   List<String> unit = [
-    "NGN",
-    "USD",
+    "bag",
+    "pcs",
   ];
 
-  insertPlanting(context) async {
-    Planting planting = new Planting(
-      plantingTypeController.text,
-      idCardNoController.text,
-      double.parse(qtyController.text),
-      double.parse(acreageController.text),
-      _unitSelected,
-      int.parse(machineIDController.text),
-      int.parse(seedIDController.text),
-    );
+  updatePlanting(context) async {
+    Planting planting = new Planting.withId(
+        widget.planting.getId,
+        plantingTypeController.text,
+        idCardNoController.text,
+        double.parse(qtyController.text),
+        double.parse(acreageController.text),
+        _unitSelected,
+        int.parse(machineIDController.text),
+        int.parse(seedIDController.text),
+        '');
     print("Planting Type is ${plantingTypeController.text}");
     print("Id Card No is ${idCardNoController.text}");
     print("Quantity is ${qtyController.text}");
@@ -71,7 +72,7 @@ class _PlantingUpdateBodyState extends State<PlantingUpdateBody> {
     print("Machine Type is ${machineIDController.text}");
     print("Acreage Type is ${acreageController.text}");
 
-    int result = await databaseHelper.insertPlanting(planting);
+    int result = await databaseHelper.updatePlanting(planting);
     if (result != 0) {
       return navigationPopRoute(context, true);
     }
@@ -79,6 +80,28 @@ class _PlantingUpdateBodyState extends State<PlantingUpdateBody> {
 
   @override
   Widget build(BuildContext context) {
+    if (this.plantingTypeController.text.isEmpty) {
+      this.plantingTypeController.text = widget.planting.getType;
+    }
+    if (this.idCardNoController.text.isEmpty) {
+      this.idCardNoController.text = widget.planting.getIdCardNo;
+    }
+    if (this.acreageController.text.isEmpty) {
+      this.acreageController.text = widget.planting.getAcreage.toString();
+    }
+    if (_unitSelected == null) {
+      _unitSelected = widget.planting.getUnit;
+    }
+    if (this.qtyController.text.isEmpty) {
+      this.qtyController.text = widget.planting.getQty.toString();
+    }
+    if (this.machineIDController.text.isEmpty) {
+      this.machineIDController.text = widget.planting.getMachineId.toString();
+    }
+    if (this.seedIDController.text.isEmpty) {
+      this.seedIDController.text = widget.planting.getSeedId.toString();
+    }
+
     drawerList(context);
     return Scaffold(
         key: _scaffoldKey,
@@ -144,7 +167,7 @@ class _PlantingUpdateBodyState extends State<PlantingUpdateBody> {
               ),
               Center(
                 child: Text(
-                  "Insert New Planting",
+                  "Update Planting",
                   style: Theme.of(context)
                       .textTheme
                       .headline6
@@ -318,9 +341,9 @@ class _PlantingUpdateBodyState extends State<PlantingUpdateBody> {
                         RoundedFlatButton(
                           deviceSize: widget.deviceSize,
                           buttonBackgroundColor: Theme.of(context).accentColor,
-                          buttonTextValue: "Insert Planting",
+                          buttonTextValue: "Update Planting",
                           buttonTextStyle: Theme.of(context).textTheme.button,
-                          buttonFunction: () => insertPlanting(context),
+                          buttonFunction: () => updatePlanting(context),
                         ),
                       ],
                     )),

@@ -60,7 +60,8 @@ class _StaffUpdateBodyState extends State<StaffUpdateBody> {
   ];
 
   insertStaff(context) async {
-    Staff staff = new Staff(
+    Staff staff = new Staff.withId(
+        widget.staff.getId,
         firstnameController.text,
         lastnameController.text,
         usernameController.text,
@@ -69,7 +70,8 @@ class _StaffUpdateBodyState extends State<StaffUpdateBody> {
         emailController.text,
         addressController.text,
         cityController.text,
-        telNoController.text);
+        telNoController.text,
+        '');
     print("firstname is ${firstnameController.text}");
     print("lastname is ${lastnameController.text}");
     print("username is ${usernameController.text}");
@@ -80,7 +82,8 @@ class _StaffUpdateBodyState extends State<StaffUpdateBody> {
     print("city is ${cityController.text}");
     print("TelNo is ${telNoController.text}");
 
-    int result = await databaseHelper.insertStaff(staff);
+    int result = await databaseHelper.updateStaff(staff);
+    print('The result: $result');
     if (result != 0) {
       return navigationPopRoute(context, true);
     }
@@ -88,6 +91,33 @@ class _StaffUpdateBodyState extends State<StaffUpdateBody> {
 
   @override
   Widget build(BuildContext context) {
+    if (this.firstnameController.text.isEmpty) {
+      this.firstnameController.text = widget.staff.getFirstname;
+    }
+    if (this.lastnameController.text.isEmpty) {
+      this.lastnameController.text = widget.staff.getLastname;
+    }
+    if (this.usernameController.text.isEmpty) {
+      this.usernameController.text = widget.staff.getUsername;
+    }
+    if (_designationSelected == null) {
+      _designationSelected = widget.staff.getDesignation;
+    }
+    if (this.idCardNoController.text.isEmpty) {
+      this.idCardNoController.text = widget.staff.getIdCardNo;
+    }
+    if (this.emailController.text.isEmpty) {
+      this.emailController.text = widget.staff.getEmail;
+    }
+    if (this.addressController.text.isEmpty) {
+      this.addressController.text = widget.staff.getHomeAddress;
+    }
+    if (this.cityController.text.isEmpty) {
+      this.cityController.text = widget.staff.getCity;
+    }
+    if (this.telNoController.text.isEmpty) {
+      this.telNoController.text = widget.staff.getTelNo;
+    }
     drawerList(context);
     return Scaffold(
         key: _scaffoldKey,
