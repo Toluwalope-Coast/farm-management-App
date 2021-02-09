@@ -55,9 +55,9 @@ class _HarvestingUpdateBodyState extends State<HarvestingUpdateBody> {
     "USD",
   ];
 
-  insertHarvesting(context) async {
-    String date = DateTime.now().toIso8601String();
-    Harvesting harvesting = new Harvesting(
+  updateHarvesting(context) async {
+    Harvesting harvesting = new Harvesting.withId(
+        widget.harvesting.getId,
         harvestingTypeController.text,
         idCardNoController.text,
         double.parse(qtyController.text),
@@ -66,7 +66,7 @@ class _HarvestingUpdateBodyState extends State<HarvestingUpdateBody> {
         double.parse(acreageController.text),
         int.parse(machineIDController.text),
         int.parse(seedIDController.text),
-        date);
+        '');
     print("Planting Type is ${harvestingTypeController.text}");
     print("Id Card No is ${idCardNoController.text}");
     print("Quantity is ${qtyController.text}");
@@ -75,7 +75,7 @@ class _HarvestingUpdateBodyState extends State<HarvestingUpdateBody> {
     print("Machine Type is ${machineIDController.text}");
     print("Quantity in Stock is ${totalQtyStockController.text}");
 
-    int result = await databaseHelper.insertHarvest(harvesting);
+    int result = await databaseHelper.updateHarvesting(harvesting);
     if (result != 0) {
       return navigationPopRoute(context, true);
     }
@@ -83,6 +83,34 @@ class _HarvestingUpdateBodyState extends State<HarvestingUpdateBody> {
 
   @override
   Widget build(BuildContext context) {
+    if (this.harvestingTypeController.text.isEmpty) {
+      this.harvestingTypeController.text = widget.harvesting.getType;
+    }
+    if (this.idCardNoController.text.isEmpty) {
+      this.idCardNoController.text = widget.harvesting.getIdCardNo;
+    }
+    if (this.harvestingTypeController.text.isEmpty) {
+      this.harvestingTypeController.text = widget.harvesting.getType;
+    }
+    if (this.acreageController.text.isEmpty) {
+      this.acreageController.text = widget.harvesting.getAcreage.toString();
+    }
+    if (_unitSelected == null) {
+      _unitSelected = widget.harvesting.getUnit;
+    }
+    if (this.qtyController.text.isEmpty) {
+      this.qtyController.text = widget.harvesting.getQty.toString();
+    }
+    if (this.totalQtyStockController.text.isEmpty) {
+      this.totalQtyStockController.text =
+          widget.harvesting.getTotalQtyStock.toString();
+    }
+    if (this.machineIDController.text.isEmpty) {
+      this.machineIDController.text = widget.harvesting.getMachineId.toString();
+    }
+    if (this.seedIDController.text.isEmpty) {
+      this.seedIDController.text = widget.harvesting.getSeedId.toString();
+    }
     drawerList(context);
     return Scaffold(
         key: _scaffoldKey,
@@ -148,7 +176,7 @@ class _HarvestingUpdateBodyState extends State<HarvestingUpdateBody> {
               ),
               Center(
                 child: Text(
-                  "Insert New Harvesting",
+                  "Update Harvesting ${widget.harvesting.getId}",
                   style: Theme.of(context)
                       .textTheme
                       .headline6
@@ -346,9 +374,9 @@ class _HarvestingUpdateBodyState extends State<HarvestingUpdateBody> {
                         RoundedFlatButton(
                           deviceSize: widget.deviceSize,
                           buttonBackgroundColor: Theme.of(context).accentColor,
-                          buttonTextValue: "Insert Harvesting",
+                          buttonTextValue: "Update Harvesting",
                           buttonTextStyle: Theme.of(context).textTheme.button,
-                          buttonFunction: () => insertHarvesting(context),
+                          buttonFunction: () => updateHarvesting(context),
                         ),
                       ],
                     )),

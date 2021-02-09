@@ -38,13 +38,13 @@ class _MachinesUpdateBodyState extends State<MachinesUpdateBody> {
 
   TextEditingController idCardNoController = new TextEditingController();
 
-  insertMachines(context) async {
-    Machinery machine =
-        new Machinery(machinesTypeController.text, idCardNoController.text);
+  updateMachines(context) async {
+    Machinery machine = new Machinery.withId(widget.machinery.getId,
+        machinesTypeController.text, idCardNoController.text, '');
     print("Machine Type is ${machinesTypeController.text}");
     print("Id Card No is ${idCardNoController.text}");
 
-    int result = await databaseHelper.insertMachines(machine);
+    int result = await databaseHelper.updateMachines(machine);
     if (result != 0) {
       return navigationPopRoute(context, true);
     }
@@ -52,6 +52,12 @@ class _MachinesUpdateBodyState extends State<MachinesUpdateBody> {
 
   @override
   Widget build(BuildContext context) {
+    if (this.machinesTypeController.text.isEmpty) {
+      this.machinesTypeController.text = widget.machinery.getType;
+    }
+    if (this.idCardNoController.text.isEmpty) {
+      this.idCardNoController.text = widget.machinery.getIdCardNo;
+    }
     drawerList(context);
     return Scaffold(
         key: _scaffoldKey,
@@ -117,7 +123,7 @@ class _MachinesUpdateBodyState extends State<MachinesUpdateBody> {
               ),
               Center(
                 child: Text(
-                  "Insert New Machines",
+                  "UpdateMachines ${widget.machinery.getId}",
                   style: Theme.of(context)
                       .textTheme
                       .headline6
@@ -183,9 +189,9 @@ class _MachinesUpdateBodyState extends State<MachinesUpdateBody> {
                         RoundedFlatButton(
                           deviceSize: widget.deviceSize,
                           buttonBackgroundColor: Theme.of(context).accentColor,
-                          buttonTextValue: "Insert Machine",
+                          buttonTextValue: "Update Machine",
                           buttonTextStyle: Theme.of(context).textTheme.button,
-                          buttonFunction: () => insertMachines(context),
+                          buttonFunction: () => updateMachines(context),
                         ),
                       ],
                     )),

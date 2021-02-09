@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 class Staff {
   int _id;
   String _firstname;
@@ -9,7 +11,7 @@ class Staff {
   String _email;
   String _city;
   String _telNo;
-  String _empDate;
+  String _empDate = '';
 
   // Two constructor for the models (with the id and without id)
 
@@ -132,10 +134,11 @@ class Staff {
     map['email'] = _email;
     map['tel_no'] = _telNo;
 
-    // if (_empDate != null) {
-    //   DateTime now = new DateTime.now();
-    //   _empDate = DateFormat('yyyy-MM-dd – kk:mm').format(now);
-    //   map['employment_date'] = _empDate;
+    if (_empDate != null) {
+      DateTime now = new DateTime.now();
+      _empDate = DateFormat('yyyy-MM-dd – kk:mm').format(now);
+      map['employment_date'] = _empDate;
+    }
     return map;
     // }
   }

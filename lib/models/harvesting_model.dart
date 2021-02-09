@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 class Harvesting {
   int _id;
   String _type;
@@ -8,7 +10,7 @@ class Harvesting {
   double _qty;
   double _totalQtyStock;
   double _acreage;
-  String _date;
+  String _date = '';
 
   // Two constructor for the models (with the id and without id)
 
@@ -117,7 +119,11 @@ class Harvesting {
     map['machine_id'] = _machineId;
     map['seeds_id'] = _seedId;
     map['acreage'] = _acreage;
-    map['date'] = _date;
+    if (_date != null) {
+      DateTime now = new DateTime.now();
+      _date = DateFormat('yyyy-MM-dd – kk:mm').format(now);
+      map['date'] = _date;
+    }
     return map;
   }
 

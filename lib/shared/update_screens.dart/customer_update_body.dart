@@ -50,20 +50,22 @@ class _CustomerUpdateBodyState extends State<CustomerUpdateBody> {
     "Cheque",
   ];
 
-  insertCustomer(context) async {
-    Customer customer = new Customer(
+  updateCustomer(context) async {
+    Customer customer = new Customer.withId(
+        widget.customer.getId,
         nameController.text,
         emailController.text,
         addressController.text,
         telNoController.text,
-        _modeOfTransactionSelected);
+        _modeOfTransactionSelected,
+        '');
     print("name is ${nameController.text}");
     print("email is ${emailController.text}");
     print("address is ${addressController.text}");
     print("TelNo is ${telNoController.text}");
     print("TelNo is $_modeOfTransactionSelected");
 
-    int result = await databaseHelper.insertCustomer(customer);
+    int result = await databaseHelper.updateCustomer(customer);
     if (result != 0) {
       return navigationPopRoute(context, true);
     }
@@ -71,6 +73,21 @@ class _CustomerUpdateBodyState extends State<CustomerUpdateBody> {
 
   @override
   Widget build(BuildContext context) {
+    if (this.nameController.text.isEmpty) {
+      this.nameController.text = widget.customer.getName;
+    }
+    if (this.emailController.text.isEmpty) {
+      this.emailController.text = widget.customer.getEmail;
+    }
+    if (this.addressController.text.isEmpty) {
+      this.addressController.text = widget.customer.getAddress;
+    }
+    if (this.telNoController.text.isEmpty) {
+      this.telNoController.text = widget.customer.getTelNo;
+    }
+    if (_modeOfTransactionSelected == null) {
+      _modeOfTransactionSelected = widget.customer.getModeOfTransaction;
+    }
     drawerList(context);
     return Scaffold(
         key: _scaffoldKey,
@@ -136,7 +153,7 @@ class _CustomerUpdateBodyState extends State<CustomerUpdateBody> {
               ),
               Center(
                 child: Text(
-                  "Insert New Customer",
+                  "Update Customer ${widget.customer.getId}",
                   style: Theme.of(context)
                       .textTheme
                       .headline6
@@ -273,9 +290,9 @@ class _CustomerUpdateBodyState extends State<CustomerUpdateBody> {
                         RoundedFlatButton(
                           deviceSize: widget.deviceSize,
                           buttonBackgroundColor: Theme.of(context).accentColor,
-                          buttonTextValue: "Insert Customer",
+                          buttonTextValue: "Update Customer",
                           buttonTextStyle: Theme.of(context).textTheme.button,
-                          buttonFunction: () => insertCustomer(context),
+                          buttonFunction: () => updateCustomer(context),
                         ),
                       ],
                     )),

@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 class Income {
   int _id;
   String _productType;
@@ -8,7 +10,7 @@ class Income {
   String _unit;
   double _rate;
   double _amountSold;
-  String _date;
+  String _date = '';
   // Two constructor for the models (with the id and without id)
 
   Income(
@@ -115,7 +117,11 @@ class Income {
     map['unit'] = _unit;
     map['rate'] = _rate;
     map['amount_sold'] = _amountSold;
-    map['date'] = _date;
+    if (_date != null) {
+      DateTime now = new DateTime.now();
+      _date = DateFormat('yyyy-MM-dd – kk:mm').format(now);
+      map['date'] = _date;
+    }
     return map;
   }
 

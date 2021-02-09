@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 class Seed {
   int _id;
   String _type;
@@ -6,7 +8,7 @@ class Seed {
   String _unit;
   double _qtyRemaining;
   double _acreage;
-  String _date;
+  String _date = '';
 
   // Two constructor for the models (with the id and without id)
 
@@ -82,7 +84,11 @@ class Seed {
     map['unit'] = _unit;
     map['qty_remaining'] = _qtyRemaining;
     map['acreage'] = _acreage;
-    map['date'] = _date;
+    if (_date != null) {
+      DateTime now = new DateTime.now();
+      _date = DateFormat('yyyy-MM-dd – kk:mm').format(now);
+      map['date'] = _date;
+    }
     return map;
   }
 
