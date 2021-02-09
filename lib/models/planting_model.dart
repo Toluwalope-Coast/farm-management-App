@@ -14,8 +14,8 @@ class Planting {
   Planting(this._type, this._idCardNo, this._qty, this._acreage, this._unit,
       this._machineId, this._seedId);
 
-  Planting.withId(this._id, this._type, this._idCardNo, this._qty, this._unit,
-      this._acreage, this._machineId, this._seedId, this._date);
+  Planting.withId(this._id, this._type, this._idCardNo, this._qty,
+      this._acreage, this._unit, this._machineId, this._seedId, this._date);
 
   //  the getters
 
