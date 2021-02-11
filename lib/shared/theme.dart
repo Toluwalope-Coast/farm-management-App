@@ -56,7 +56,7 @@ ThemeData adebolaFarmManagerTheme() {
       textTheme: basicTextTheme(base.textTheme),
       primaryColor: Color(0xFF6F35A5),
       secondaryHeaderColor: Color(0x336F35A5),
-      iconTheme: IconThemeData(color: Color(0xFFFFFFFF), size: 18.0),
+      iconTheme: IconThemeData(color: Color(0xFF6F35A5), size: 22.0),
       indicatorColor: Color(0xFFBF85F5),
       scaffoldBackgroundColor: Color(0xFFFFFFFF),
       accentColor: Color(0xFF6F35A5),

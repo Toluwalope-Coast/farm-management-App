@@ -68,9 +68,9 @@ class _CustomersBodyState extends State<CustomersBody> {
     });
   }
 
-  reportIconFunction(context) {
+  reportIconFunction(context, List<Customer> customer) {
     print("Report Icon pressed");
-    return navigatePushTo(context, CustomerReport());
+    return navigatePushTo(context, CustomerReport(customer: customer));
   }
 
   updateItem(int index, Size deviceSize, Customer customer) {
@@ -317,7 +317,7 @@ class _CustomersBodyState extends State<CustomersBody> {
                         iconInsertIconFunction: () =>
                             insertIconFunction(context),
                         iconReportIconFunction: () =>
-                            reportIconFunction(context),
+                            reportIconFunction(context, customerList),
                       )))
             ],
           ),

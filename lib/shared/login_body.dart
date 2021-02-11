@@ -1,9 +1,16 @@
+// import 'package:farm_manager/models/users_models.dart';
 import 'package:farm_manager/screens/AdminHome.dart';
+import 'package:farm_manager/screens/farm_operator_home.dart';
+import 'package:farm_manager/screens/garage_attendant_home.dart';
+import 'package:farm_manager/screens/sales_rep_home.dart';
+import 'package:farm_manager/screens/store_keeper_home.dart';
 import 'package:farm_manager/shared/Constant.dart';
 import 'package:farm_manager/shared/custom_textfield.dart';
 import 'package:farm_manager/shared/rounded_container.dart';
 import 'package:farm_manager/shared/rounded_flat_button.dart';
+import 'package:farm_manager/utils/database_helper.dart';
 import 'package:flutter/material.dart';
+// import 'package:sqflite/sqflite.dart';
 
 class LoginBody extends StatefulWidget {
   final Size deviceSize;
@@ -17,6 +24,14 @@ class _LoginBodyState extends State<LoginBody> {
   TextEditingController usernameController = new TextEditingController();
   TextEditingController passwordController = new TextEditingController();
 
+  bool _isHidden = true;
+  void _togglePasswordView() {
+    setState(() {
+      _isHidden = !_isHidden;
+    });
+  }
+
+  DatabaseHelper databaseHelper = DatabaseHelper();
   String _designationSelected;
   List<dynamic> designation = [
     "Admin",
@@ -25,6 +40,17 @@ class _LoginBodyState extends State<LoginBody> {
     "Garage Attendant",
     "Field Operator"
   ];
+
+  // updateListView() {
+  //   final Future<Database> dbFuture = databaseHelper.initializeDatabase();
+  //   dbFuture.then((database) {
+  //     Future<List<User>> userListFuture = databaseHelper.getUserList();
+  //     userListFuture.then((userList) {
+  //       if (userList != null) {}
+  //     });
+  //   });
+  // }
+
   logUserIn(context) {
     print("My Login pressed function is working");
     print("Username is: ${usernameController.text}");
@@ -34,6 +60,22 @@ class _LoginBodyState extends State<LoginBody> {
         passwordController.text == "admin123" &&
         _designationSelected == "Admin") {
       return navigationReplaceRoute(context, AdminHome());
+    } else if (usernameController.text == "sanusi" &&
+        passwordController.text == "salesrep123" &&
+        _designationSelected == "Sales Reps") {
+      return navigationReplaceRoute(context, SalesRepHome());
+    } else if (usernameController.text == "samuel" &&
+        passwordController.text == "storekeeper123" &&
+        _designationSelected == "Store Keeper") {
+      return navigationReplaceRoute(context, StoreKeeperHome());
+    } else if (usernameController.text == "paul" &&
+        passwordController.text == "garageAttendant123" &&
+        _designationSelected == "Garage Attendant") {
+      return navigationReplaceRoute(context, GarageAttendantHome());
+    } else if (usernameController.text == "james" &&
+        passwordController.text == "fieldOperator123" &&
+        _designationSelected == "Field Operator") {
+      return navigationReplaceRoute(context, FarmOperatorHome());
     } else {
       return customSnackBar(context, "Invalid User Details");
       // Scaffold.of(context).showSnackBar(
@@ -84,17 +126,28 @@ class _LoginBodyState extends State<LoginBody> {
           CustomRoundedContainer(
             deviceSize: widget.deviceSize,
             containerColor: Theme.of(context).secondaryHeaderColor,
-            content: CustomTextfield(
-              textInputValue: passwordController,
-              deviceSize: widget.deviceSize,
-              inputIcon: Icon(Icons.lock_rounded,
-                  color: Theme.of(context).accentColor),
-              inputType: TextInputType.visiblePassword,
-              obscureText: true,
-              textInputHintStyle: Theme.of(context).textTheme.bodyText2,
-              textInputHint: "Password",
-              suffixIcon: Icon(Icons.visibility),
-            ),
+            content: TextField(
+                controller: passwordController,
+                style: Theme.of(context).textTheme.bodyText2,
+                keyboardType: TextInputType.visiblePassword,
+                obscureText: _isHidden,
+                decoration: InputDecoration(
+                  border: InputBorder.none,
+                  focusedBorder: InputBorder.none,
+                  enabledBorder: InputBorder.none,
+                  errorBorder: InputBorder.none,
+                  disabledBorder: InputBorder.none,
+                  hintText: "Password",
+                  hintStyle: Theme.of(context).textTheme.bodyText2,
+                  icon: Icon(Icons.lock_rounded,
+                      color: Theme.of(context).accentColor),
+                  suffixIcon: InkWell(
+                    onTap: _togglePasswordView,
+                    child: Icon(
+                      _isHidden ? Icons.visibility : Icons.visibility_off,
+                    ),
+                  ),
+                )),
           ),
           CustomRoundedContainer(
               deviceSize: widget.deviceSize,

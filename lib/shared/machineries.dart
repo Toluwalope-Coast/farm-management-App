@@ -68,9 +68,9 @@ class _MachineriesBodyState extends State<MachineriesBody> {
     });
   }
 
-  reportIconFunction(context) {
+  reportIconFunction(context, List<Machinery> machines) {
     print("Report Icon pressed");
-    return navigatePushTo(context, MachinesReport());
+    return navigatePushTo(context, MachinesReport(machines: machines));
   }
 
   updateItem(int index, Size deviceSize, Machinery machinery) {
@@ -312,7 +312,7 @@ class _MachineriesBodyState extends State<MachineriesBody> {
                         iconInsertIconFunction: () =>
                             insertIconFunction(context),
                         iconReportIconFunction: () =>
-                            reportIconFunction(context),
+                            reportIconFunction(context, machineryList),
                       )))
             ],
           ),

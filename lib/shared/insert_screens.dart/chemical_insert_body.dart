@@ -50,7 +50,6 @@ class _ChemicalInsertBodyState extends State<ChemicalInsertBody> {
     print("Id Card No is ${idCardNoController.text}");
     print("Machine Type is ${machineIDController.text}");
     print("Acreage Type is ${acreageController.text}");
-    print("Acreage Type is ${acreageController.text}");
 
     int result = await databaseHelper.insertChemical(chemical);
     if (result != 0) {
@@ -181,7 +180,7 @@ class _ChemicalInsertBodyState extends State<ChemicalInsertBody> {
                             obscureText: false,
                             textInputHintStyle:
                                 Theme.of(context).textTheme.bodyText2,
-                            inputType: TextInputType.number,
+                            inputType: TextInputType.text,
                             textInputHint: "Enter Staff Id Card No",
                           ),
                         ),

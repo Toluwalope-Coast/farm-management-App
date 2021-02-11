@@ -70,9 +70,9 @@ class _ChemicalsBodyState extends State<ChemicalsBody> {
     });
   }
 
-  reportIconFunction(context) {
+  reportIconFunction(context, List<Chemical> chemical) {
     print("Report Icon pressed");
-    return navigatePushTo(context, ChemicalsReport());
+    return navigatePushTo(context, ChemicalsReport(chemical: chemicalList));
   }
 
   updateItem(int index, Size deviceSize, Chemical chemical) {
@@ -289,6 +289,8 @@ class _ChemicalsBodyState extends State<ChemicalsBody> {
                                           chemicalList[index].getIdCardNo,
                                       machineIDData:
                                           chemicalList[index].getMachineId,
+                                      acreageData:
+                                          chemicalList[index].getAcreage,
                                       chemicalTypeData:
                                           chemicalList[index].getType,
                                       dateData: chemicalList[index].getDate,
@@ -314,7 +316,7 @@ class _ChemicalsBodyState extends State<ChemicalsBody> {
                         iconInsertIconFunction: () =>
                             insertIconFunction(context),
                         iconReportIconFunction: () =>
-                            reportIconFunction(context),
+                            reportIconFunction(context, chemicalList),
                       )))
             ],
           ),

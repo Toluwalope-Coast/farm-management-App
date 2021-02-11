@@ -68,9 +68,9 @@ class _ExpensesBodyState extends State<ExpensesBody> {
     });
   }
 
-  reportIconFunction(context) {
+  reportIconFunction(context, List<Expenses> expenses) {
     print("Report Icon pressed");
-    return navigatePushTo(context, ExpensesReport());
+    return navigatePushTo(context, ExpensesReport(expenses: expenses));
   }
 
   updateItem(int index, Size deviceSize, Expenses expenses) {
@@ -323,7 +323,7 @@ class _ExpensesBodyState extends State<ExpensesBody> {
                         iconInsertIconFunction: () =>
                             insertIconFunction(context),
                         iconReportIconFunction: () =>
-                            reportIconFunction(context),
+                            reportIconFunction(context, expensesList),
                       )))
             ],
           ),

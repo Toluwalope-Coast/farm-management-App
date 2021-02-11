@@ -190,7 +190,7 @@ class _ExpensesInsertBodyState extends State<ExpensesInsertBody> {
                                 Theme.of(context).textTheme.bodyText2,
                             inputType: TextInputType.name,
                             textInputHint:
-                                "What type of product is the expenses For",
+                                "Type of product the expenses is For",
                           ),
                         ),
                         SizedBox(
@@ -245,7 +245,7 @@ class _ExpensesInsertBodyState extends State<ExpensesInsertBody> {
                                   "Select the Payment Mode",
                                   style: Theme.of(context).textTheme.bodyText2,
                                 ),
-                                items: unit
+                                items: paymentMode
                                     .map((dynamic dropdownItem) =>
                                         DropdownMenuItem<dynamic>(
                                             value: dropdownItem,

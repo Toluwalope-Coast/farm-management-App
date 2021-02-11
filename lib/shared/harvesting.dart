@@ -68,9 +68,9 @@ class _HarvestingBodyState extends State<HarvestingBody> {
     });
   }
 
-  reportIconFunction(context) {
+  reportIconFunction(context, List<Harvesting> harvesting) {
     print("Report Icon pressed");
-    return navigatePushTo(context, HarvestingReport());
+    return navigatePushTo(context, HarvestingReport(harvest: harvesting));
   }
 
   updateItem(int index, Size deviceSize, Harvesting harvesting) {
@@ -316,7 +316,7 @@ class _HarvestingBodyState extends State<HarvestingBody> {
                         iconInsertIconFunction: () =>
                             insertIconFunction(context),
                         iconReportIconFunction: () =>
-                            reportIconFunction(context),
+                            reportIconFunction(context, harvestingList),
                       )))
             ],
           ),

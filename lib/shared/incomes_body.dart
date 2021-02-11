@@ -67,9 +67,9 @@ class _IncomesBodyState extends State<IncomesBody> {
     });
   }
 
-  reportIconFunction(context) {
+  reportIconFunction(context, List<Income> income) {
     print("Report Icon pressed");
-    return navigatePushTo(context, IncomesReport());
+    return navigatePushTo(context, IncomesReport(incomes: income));
   }
 
   updateItem(int index, Size deviceSize, Income incomes) {
@@ -320,7 +320,7 @@ class _IncomesBodyState extends State<IncomesBody> {
                         iconInsertIconFunction: () =>
                             insertIconFunction(context),
                         iconReportIconFunction: () =>
-                            reportIconFunction(context),
+                            reportIconFunction(context, incomeList),
                       )))
             ],
           ),

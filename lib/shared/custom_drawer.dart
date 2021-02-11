@@ -42,7 +42,7 @@ class CustomDrawer extends StatelessWidget {
                         ),
                       ),
                       SizedBox(height: 16.0),
-                      Text("Admin Test",
+                      Text("Welcome",
                           style: Theme.of(context).textTheme.headline5),
                       SizedBox(height: 8.0),
                       Divider(

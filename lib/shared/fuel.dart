@@ -67,9 +67,9 @@ class _FuelBodyState extends State<FuelBody> {
     });
   }
 
-  reportIconFunction(context) {
+  reportIconFunction(context, List<Fuel> fuel) {
     print("Report Icon pressed");
-    return navigatePushTo(context, FuelReport());
+    return navigatePushTo(context, FuelReport(fuel: fuel));
   }
 
   updateItem(int index, Size deviceSize, Fuel fuel) {
@@ -310,7 +310,7 @@ class _FuelBodyState extends State<FuelBody> {
                         iconInsertIconFunction: () =>
                             insertIconFunction(context),
                         iconReportIconFunction: () =>
-                            reportIconFunction(context),
+                            reportIconFunction(context, fuelList),
                       )))
             ],
           ),

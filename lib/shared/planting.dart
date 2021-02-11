@@ -68,9 +68,9 @@ class _PlantingBodyState extends State<PlantingBody> {
     });
   }
 
-  reportIconFunction(context) {
+  reportIconFunction(context, List<Planting> planting) {
     print("Report Icon pressed");
-    return navigatePushTo(context, PlantingReport());
+    return navigatePushTo(context, PlantingReport(planting: planting));
   }
 
   updateItem(int index, Size deviceSize, Planting plant) {
@@ -318,7 +318,7 @@ class _PlantingBodyState extends State<PlantingBody> {
                         iconInsertIconFunction: () =>
                             insertIconFunction(context),
                         iconReportIconFunction: () =>
-                            reportIconFunction(context),
+                            reportIconFunction(context, plantingList),
                       )))
             ],
           ),

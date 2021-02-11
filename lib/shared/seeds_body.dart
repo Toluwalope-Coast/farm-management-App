@@ -67,9 +67,9 @@ class _SeedsBodyState extends State<SeedsBody> {
     });
   }
 
-  reportIconFunction(context) {
+  reportIconFunction(context, List<Seed> seed) {
     print("Report Icon pressed");
-    return navigatePushTo(context, SeedsReport());
+    return navigatePushTo(context, SeedsReport(seed: seed));
   }
 
   updateItem(int index, Size deviceSize, Seed seed) {
@@ -314,7 +314,7 @@ class _SeedsBodyState extends State<SeedsBody> {
                         iconInsertIconFunction: () =>
                             insertIconFunction(context),
                         iconReportIconFunction: () =>
-                            reportIconFunction(context),
+                            reportIconFunction(context, seedsList),
                       )))
             ],
           ),

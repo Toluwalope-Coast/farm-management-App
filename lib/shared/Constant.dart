@@ -3,14 +3,18 @@ import 'package:farm_manager/screens/analytics.dart';
 import 'package:farm_manager/screens/chemicals.dart';
 import 'package:farm_manager/screens/customers.dart';
 import 'package:farm_manager/screens/expenses.dart';
+import 'package:farm_manager/screens/farm_operator_home.dart';
 import 'package:farm_manager/screens/fuel.dart';
+import 'package:farm_manager/screens/garage_attendant_home.dart';
 import 'package:farm_manager/screens/harvesting.dart';
 import 'package:farm_manager/screens/incomes.dart';
 import 'package:farm_manager/screens/mahineries.dart';
 import 'package:farm_manager/screens/planting.dart';
 import 'package:farm_manager/screens/reports.dart';
+import 'package:farm_manager/screens/sales_rep_home.dart';
 import 'package:farm_manager/screens/seeds.dart';
 import 'package:farm_manager/screens/staffs.dart';
+import 'package:farm_manager/screens/store_keeper_home.dart';
 import 'package:farm_manager/screens/tillages.dart';
 import 'package:farm_manager/screens/users.dart';
 import 'package:farm_manager/shared/analytics/chemical_analytics.dart';
@@ -81,26 +85,26 @@ List drawerList(context) {
       "Menu Name": Text("Home", style: Theme.of(context).textTheme.headline5),
       "Menu Nav": () => navigatePushTo(context, AdminHome())
     },
-    {
-      "Menu Icon": Icon(
-        Icons.analytics,
-        semanticLabel: "Analytics Icon",
-        color: Theme.of(context).scaffoldBackgroundColor,
-      ),
-      "Menu Name":
-          Text("Analytics", style: Theme.of(context).textTheme.headline5),
-      "Menu Nav": () => navigatePushTo(context, Analytics())
-    },
-    {
-      "Menu Icon": Icon(
-        Icons.report,
-        semanticLabel: "Reports Icon",
-        color: Theme.of(context).scaffoldBackgroundColor,
-      ),
-      "Menu Name":
-          Text("Reports", style: Theme.of(context).textTheme.headline5),
-      "Menu Nav": () => navigatePushTo(context, Reports())
-    },
+    // {
+    //   "Menu Icon": Icon(
+    //     Icons.analytics,
+    //     semanticLabel: "Analytics Icon",
+    //     color: Theme.of(context).scaffoldBackgroundColor,
+    //   ),
+    //   "Menu Name":
+    //       Text("Analytics", style: Theme.of(context).textTheme.headline5),
+    //   "Menu Nav": () => navigatePushTo(context, Analytics())
+    // },
+    // {
+    //   "Menu Icon": Icon(
+    //     Icons.report,
+    //     semanticLabel: "Reports Icon",
+    //     color: Theme.of(context).scaffoldBackgroundColor,
+    //   ),
+    //   "Menu Name":
+    //       Text("Reports", style: Theme.of(context).textTheme.headline5),
+    //   "Menu Nav": () => navigatePushTo(context, Reports())
+    // },
     {
       "Menu Icon": Icon(
         Icons.supervised_user_circle_sharp,
@@ -206,6 +210,164 @@ List drawerList(context) {
       "Menu Name":
           Text("Harvest", style: Theme.of(context).textTheme.headline5),
       "Menu Nav": () => navigatePushTo(context, Harvesting())
+    },
+    {
+      "Menu Icon": Icon(
+        Icons.file_present,
+        semanticLabel: "Planting Icon",
+        color: Theme.of(context).scaffoldBackgroundColor,
+      ),
+      "Menu Name":
+          Text("Planting", style: Theme.of(context).textTheme.headline5),
+      "Menu Nav": () => navigatePushTo(context, Planting())
+    },
+  ];
+  return drawerMenuList;
+}
+
+List salesRepDrawerList(context) {
+  List drawerMenuList = [
+    {
+      "Menu Icon": Icon(
+        Icons.home,
+        semanticLabel: "Home Icon",
+        color: Theme.of(context).scaffoldBackgroundColor,
+      ),
+      "Menu Name": Text("Home", style: Theme.of(context).textTheme.headline5),
+      "Menu Nav": () => navigatePushTo(context, SalesRepHome())
+    },
+    {
+      "Menu Icon": Icon(
+        Icons.emoji_people_sharp,
+        semanticLabel: "Customers Icon",
+        color: Theme.of(context).scaffoldBackgroundColor,
+      ),
+      "Menu Name":
+          Text("Customers", style: Theme.of(context).textTheme.headline5),
+      "Menu Nav": () => navigatePushTo(context, Customers())
+    },
+    {
+      "Menu Icon": Icon(
+        Icons.money,
+        semanticLabel: "Incomes Icon",
+        color: Theme.of(context).scaffoldBackgroundColor,
+      ),
+      "Menu Name":
+          Text("Incomes", style: Theme.of(context).textTheme.headline5),
+      "Menu Nav": () => navigatePushTo(context, Incomes())
+    },
+    {
+      "Menu Icon": Icon(
+        Icons.money_off_sharp,
+        semanticLabel: "Expenses Icon",
+        color: Theme.of(context).scaffoldBackgroundColor,
+      ),
+      "Menu Name":
+          Text("Expenses", style: Theme.of(context).textTheme.headline5),
+      "Menu Nav": () => navigatePushTo(context, Expenses())
+    },
+  ];
+  return drawerMenuList;
+}
+
+List storeKeeperDrawerList(context) {
+  List drawerMenuList = [
+    {
+      "Menu Icon": Icon(
+        Icons.home,
+        semanticLabel: "Home Icon",
+        color: Theme.of(context).scaffoldBackgroundColor,
+      ),
+      "Menu Name": Text("Home", style: Theme.of(context).textTheme.headline5),
+      "Menu Nav": () => navigatePushTo(context, StoreKeeperHome())
+    },
+    {
+      "Menu Icon": Icon(
+        Icons.file_present,
+        semanticLabel: "Chemicals Icon",
+        color: Theme.of(context).scaffoldBackgroundColor,
+      ),
+      "Menu Name":
+          Text("Chemicals", style: Theme.of(context).textTheme.headline5),
+      "Menu Nav": () => navigatePushTo(context, Chemicals())
+    },
+    {
+      "Menu Icon": Icon(
+        Icons.file_present,
+        semanticLabel: "Seeds Icon",
+        color: Theme.of(context).scaffoldBackgroundColor,
+      ),
+      "Menu Name": Text("Seeds", style: Theme.of(context).textTheme.headline5),
+      "Menu Nav": () => navigatePushTo(context, Seeds())
+    },
+    {
+      "Menu Icon": Icon(
+        Icons.file_present,
+        semanticLabel: "Harvest Icon",
+        color: Theme.of(context).scaffoldBackgroundColor,
+      ),
+      "Menu Name":
+          Text("Harvest", style: Theme.of(context).textTheme.headline5),
+      "Menu Nav": () => navigatePushTo(context, Harvesting())
+    }
+  ];
+  return drawerMenuList;
+}
+
+List garageAttendantDrawerList(context) {
+  List drawerMenuList = [
+    {
+      "Menu Icon": Icon(
+        Icons.home,
+        semanticLabel: "Home Icon",
+        color: Theme.of(context).scaffoldBackgroundColor,
+      ),
+      "Menu Name": Text("Home", style: Theme.of(context).textTheme.headline5),
+      "Menu Nav": () => navigatePushTo(context, GarageAttendantHome())
+    },
+    {
+      "Menu Icon": Icon(
+        Icons.file_present,
+        semanticLabel: "Machineries Icon",
+        color: Theme.of(context).scaffoldBackgroundColor,
+      ),
+      "Menu Name":
+          Text("Machineries", style: Theme.of(context).textTheme.headline5),
+      "Menu Nav": () => navigatePushTo(context, Machineries())
+    },
+    {
+      "Menu Icon": Icon(
+        Icons.file_present,
+        semanticLabel: "Fuel Icon",
+        color: Theme.of(context).scaffoldBackgroundColor,
+      ),
+      "Menu Name": Text("Fuel", style: Theme.of(context).textTheme.headline5),
+      "Menu Nav": () => navigatePushTo(context, Fuel())
+    },
+  ];
+  return drawerMenuList;
+}
+
+List farmOperatorDrawerList(context) {
+  List drawerMenuList = [
+    {
+      "Menu Icon": Icon(
+        Icons.home,
+        semanticLabel: "Home Icon",
+        color: Theme.of(context).scaffoldBackgroundColor,
+      ),
+      "Menu Name": Text("Home", style: Theme.of(context).textTheme.headline5),
+      "Menu Nav": () => navigatePushTo(context, FarmOperatorHome())
+    },
+    {
+      "Menu Icon": Icon(
+        Icons.file_present,
+        semanticLabel: "Tillage Icon",
+        color: Theme.of(context).scaffoldBackgroundColor,
+      ),
+      "Menu Name":
+          Text("Tillage", style: Theme.of(context).textTheme.headline5),
+      "Menu Nav": () => navigatePushTo(context, Tillages())
     },
     {
       "Menu Icon": Icon(
@@ -336,6 +498,90 @@ List ctaLists(context) {
       "Card Title Semantic": "Tillages Menu",
       "Card Function": () => navigatePushTo(context, Tillages()),
       "Card Image": "assets/images/tillage.jpg"
+    },
+    {
+      "Card Title Text": "Machineries",
+      "Card Title Semantic": "Machineries Menu",
+      "Card Function": () => navigatePushTo(context, Machineries()),
+      "Card Image": "assets/images/machines2.jpg"
+    }
+  ];
+  return ctaList;
+}
+
+List salesRepCtaLists(context) {
+  List ctaList = [
+    {
+      "Card Title Text": "Incomes",
+      "Card Title Semantic": "Incomes Menu",
+      "Card Function": () => navigatePushTo(context, Incomes()),
+      "Card Image": "assets/images/incomes.jpg"
+    },
+    {
+      "Card Title Text": "Expenses",
+      "Card Title Semantic": "Expenses Menu",
+      "Card Function": () => navigatePushTo(context, Expenses()),
+      "Card Image": "assets/images/expenditures.jpg"
+    },
+    {
+      "Card Title Text": "Customers",
+      "Card Title Semantic": "Customers Menu",
+      "Card Function": () => navigatePushTo(context, Customers()),
+      "Card Image": "assets/images/customers.jpg"
+    }
+  ];
+  return ctaList;
+}
+
+List storeKeeperCtaLists(context) {
+  List ctaList = [
+    {
+      "Card Title Text": "Chemicals",
+      "Card Title Semantic": "Chemicals Menu",
+      "Card Function": () => navigatePushTo(context, Chemicals()),
+      "Card Image": "assets/images/chemicals.jpg"
+    },
+    {
+      "Card Title Text": "Harvesting",
+      "Card Title Semantic": "Harvesting Menu",
+      "Card Function": () => navigatePushTo(context, Harvesting()),
+      "Card Image": "assets/images/harvesting.jpg"
+    },
+    {
+      "Card Title Text": "Seeds",
+      "Card Title Semantic": "Seeds Menu",
+      "Card Function": () => navigatePushTo(context, Seeds()),
+      "Card Image": "assets/images/seeds.jpg"
+    },
+  ];
+  return ctaList;
+}
+
+List farmOperatorCtaLists(context) {
+  List ctaList = [
+    {
+      "Card Title Text": "Planting",
+      "Card Title Semantic": "Planting Menu",
+      "Card Function": () => navigatePushTo(context, Planting()),
+      "Card Image": "assets/images/Planting.jpg"
+    },
+    {
+      "Card Title Text": "Tillages",
+      "Card Title Semantic": "Tillages Menu",
+      "Card Function": () => navigatePushTo(context, Tillages()),
+      "Card Image": "assets/images/tillage.jpg"
+    },
+  ];
+  return ctaList;
+}
+
+List garageAttendantCtaLists(context) {
+  List ctaList = [
+    {
+      "Card Title Text": "Fuel",
+      "Card Title Semantic": "Fuel Menu",
+      "Card Function": () => navigatePushTo(context, Fuel()),
+      "Card Image": "assets/images/fuel.jpg"
     },
     {
       "Card Title Text": "Machineries",

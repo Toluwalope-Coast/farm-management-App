@@ -1,14 +1,12 @@
-import 'package:farm_manager/screens/analytics.dart';
-import 'package:farm_manager/screens/reports.dart';
 import 'package:farm_manager/shared/Constant.dart';
 import 'package:farm_manager/shared/custome_cta_cards.dart';
 import 'package:flutter/material.dart';
 import 'package:farm_manager/shared/custom_drawer.dart';
 
-class AdminHomeBody extends StatelessWidget {
+class SalesRepHomeBody extends StatelessWidget {
   final Size deviceSize;
   final List ctaLists;
-  AdminHomeBody({Key key, @required this.deviceSize, this.ctaLists})
+  SalesRepHomeBody({Key key, @required this.deviceSize, this.ctaLists})
       : super(key: key);
 
   @override
@@ -18,7 +16,7 @@ class AdminHomeBody extends StatelessWidget {
       appBar: customerAppBar("Home"),
       drawer: CustomDrawer(
         deviceSize: deviceSize,
-        drawerMenuList: drawerList(context),
+        drawerMenuList: salesRepDrawerList(context),
       ),
       body: ListView(
         padding:

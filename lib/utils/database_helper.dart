@@ -252,7 +252,7 @@ class DatabaseHelper {
               $columnChemicalType TEXT NOT NULL,
               $columnChemicalIDCardNo TEXT NOT NULL,
               $columnChemicalMachineID INTEGER NOT NULL,
-              $columnChemicalAcreage INTEGER NOT NULL,
+              $columnChemicalAcreage REAL NOT NULL,
               $columnChemicalDate Text NULL,
               FOREIGN KEY ($columnChemicalIDCardNo) REFERENCES $staffTable ($columnStaffIDCardNo) 
                 ON DELETE NO ACTION ON UPDATE NO ACTION,
@@ -1120,28 +1120,4 @@ class DatabaseHelper {
 
     return fuelList;
   }
-
-  //  *****************  FUEL CLOSES  ****************
-
-// functions to  Returns every field in each table
-//
-  // Future<List> queryUsersDataTableKeys() async {
-  //   Database db = await this.database;
-  //   List<Map> result = await db.rawQuery('SELECT * FROM $usersTable');
-  //   result.forEach((map) {
-  //     var keys = map.keys;
-  //     print('List of Keys: $keys');
-  //     return keys.toList();
-  //   });
-  // }
-
-  // Future<List> queryUsersDataTableValues() async {
-  //   Database db = await this.database;
-  //   List<Map> result = await db.rawQuery('SELECT * FROM $usersTable');
-  //   result.forEach((map) {
-  //     var values = map.values;
-  //     print('List of Values: $values');
-  //     return values.toList();
-  //   });
-  // }
 } // Database helper Class

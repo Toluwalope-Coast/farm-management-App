@@ -4,7 +4,6 @@ class CustomTextfield extends StatelessWidget {
   final Size deviceSize;
   final TextEditingController textInputValue;
   final Icon inputIcon;
-  final Icon suffixIcon;
   final bool obscureText;
   final TextInputType inputType;
   final FocusNode inputFocusNode;
@@ -14,7 +13,6 @@ class CustomTextfield extends StatelessWidget {
       {Key key,
       this.deviceSize,
       this.inputIcon,
-      this.suffixIcon,
       this.obscureText,
       this.inputType,
       this.textInputHint,
@@ -37,8 +35,7 @@ class CustomTextfield extends StatelessWidget {
           disabledBorder: InputBorder.none,
           hintText: textInputHint,
           hintStyle: textInputHintStyle,
-          icon: inputIcon,
-          suffixIcon: suffixIcon),
+          icon: inputIcon),
       focusNode: inputFocusNode,
     );
   }

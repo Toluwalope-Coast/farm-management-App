@@ -204,7 +204,6 @@ class _UserUpdateBodyState extends State<UserUpdateBody> {
                             textInputHintStyle:
                                 Theme.of(context).textTheme.bodyText2,
                             textInputHint: passwordController.text,
-                            suffixIcon: Icon(Icons.visibility),
                           ),
                         ),
                         SizedBox(

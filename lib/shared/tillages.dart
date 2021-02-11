@@ -67,9 +67,13 @@ class _TillagesBodyState extends State<TillagesBody> {
     });
   }
 
-  reportIconFunction(context) {
+  reportIconFunction(context, List<Tillage> tillage) {
     print("Report Icon pressed");
-    return navigatePushTo(context, TillageReport());
+    return navigatePushTo(
+        context,
+        TillageReport(
+          tillage: tillage,
+        ));
   }
 
   updateItem(int index, Size deviceSize, Tillage tillage) {
@@ -315,7 +319,7 @@ class _TillagesBodyState extends State<TillagesBody> {
                         iconInsertIconFunction: () =>
                             insertIconFunction(context),
                         iconReportIconFunction: () =>
-                            reportIconFunction(context),
+                            reportIconFunction(context, tillageList),
                       )))
             ],
           ),

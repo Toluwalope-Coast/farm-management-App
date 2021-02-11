@@ -198,7 +198,7 @@ class _PlantingInsertBodyState extends State<PlantingInsertBody> {
                             obscureText: false,
                             textInputHintStyle:
                                 Theme.of(context).textTheme.bodyText2,
-                            inputType: TextInputType.number,
+                            inputType: TextInputType.text,
                             textInputHint: "Enter Staff Id Card No",
                           ),
                         ),

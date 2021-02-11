@@ -183,7 +183,6 @@ class _UserInsertBodyState extends State<UserInsertBody> {
                             textInputHintStyle:
                                 Theme.of(context).textTheme.bodyText2,
                             textInputHint: "Enter User Password",
-                            suffixIcon: Icon(Icons.visibility),
                           ),
                         ),
                         SizedBox(
