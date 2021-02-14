@@ -1,6 +1,6 @@
 import 'package:farm_manager/models/harvesting_model.dart';
 import 'package:farm_manager/shared/Constant.dart';
-import 'package:farm_manager/shared/analytics/harvesting_analytics.dart';
+// import 'package:farm_manager/shared/analytics/harvesting_analytics.dart';
 import 'package:farm_manager/shared/custom_drawer.dart';
 import 'package:farm_manager/shared/insert_screens.dart/harvesting_insert.dart';
 import 'package:flutter/material.dart';

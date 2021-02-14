@@ -1,5 +1,5 @@
-import 'package:farm_manager/screens/analytics.dart';
-import 'package:farm_manager/screens/reports.dart';
+// import 'package:farm_manager/screens/analytics.dart';
+// import 'package:farm_manager/screens/reports.dart';
 import 'package:farm_manager/shared/Constant.dart';
 import 'package:farm_manager/shared/custome_cta_cards.dart';
 import 'package:flutter/material.dart';

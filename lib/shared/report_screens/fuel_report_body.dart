@@ -1,6 +1,6 @@
 import 'package:farm_manager/models/fuels_model.dart';
 import 'package:farm_manager/shared/Constant.dart';
-import 'package:farm_manager/shared/analytics/fuel_analytics.dart';
+// import 'package:farm_manager/shared/analytics/fuel_analytics.dart';
 import 'package:farm_manager/shared/custom_drawer.dart';
 import 'package:flutter/material.dart';
 

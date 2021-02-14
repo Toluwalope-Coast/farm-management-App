@@ -1,5 +1,5 @@
 import 'package:farm_manager/screens/AdminHome.dart';
-import 'package:farm_manager/screens/analytics.dart';
+// import 'package:farm_manager/screens/analytics.dart';
 import 'package:farm_manager/screens/chemicals.dart';
 import 'package:farm_manager/screens/customers.dart';
 import 'package:farm_manager/screens/expenses.dart';
@@ -10,7 +10,7 @@ import 'package:farm_manager/screens/harvesting.dart';
 import 'package:farm_manager/screens/incomes.dart';
 import 'package:farm_manager/screens/mahineries.dart';
 import 'package:farm_manager/screens/planting.dart';
-import 'package:farm_manager/screens/reports.dart';
+// import 'package:farm_manager/screens/reports.dart';
 import 'package:farm_manager/screens/sales_rep_home.dart';
 import 'package:farm_manager/screens/seeds.dart';
 import 'package:farm_manager/screens/staffs.dart';
