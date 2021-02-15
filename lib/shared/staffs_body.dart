@@ -1,15 +1,15 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:farm_manager/models/staffs_model.dart';
 import 'package:farm_manager/shared/Constant.dart';
 import 'package:farm_manager/shared/Custom_drawer.dart';
 import 'package:farm_manager/shared/bottom_bar.dart';
 import 'package:farm_manager/shared/dialogue_box.dart';
-import 'package:farm_manager/shared/insert_screens.dart/staff_insert.dart';
+import 'package:farm_manager/shared/insert_screens.dart/customers_insert.dart';
 import 'package:farm_manager/shared/report_screens/staff_report.dart';
 import 'package:farm_manager/shared/staff_data_card.dart';
 import 'package:farm_manager/shared/update_screens.dart/staff_update.dart';
 import 'package:farm_manager/utils/database_helper.dart';
 import 'package:flutter/material.dart';
-import 'package:sqflite/sqflite.dart';
 
 class StaffsBody extends StatefulWidget {
   final Size deviceSize;
@@ -36,19 +36,6 @@ class _StaffsBodyState extends State<StaffsBody> {
   DatabaseHelper databaseHelper = DatabaseHelper();
   List<Staff> staffList;
 
-  updateListView() {
-    final Future<Database> dbFuture = databaseHelper.initializeDatabase();
-    dbFuture.then((database) {
-      Future<List<Staff>> staffListFuture = databaseHelper.getStaffList();
-      staffListFuture.then((staffList) {
-        if (staffList != null) {
-          setState(() {
-            this.staffList = staffList;
-          });
-        }
-      });
-    });
-  }
   // Database codes closes here
 
   backIconFunction(context) {
@@ -59,12 +46,7 @@ class _StaffsBodyState extends State<StaffsBody> {
   insertIconFunction(context) {
     print("insert Icon pressed");
 
-    Future result = navigatePushTo(context, StaffInsert());
-    result.then((value) {
-      if (value) {
-        updateListView();
-      }
-    });
+    navigatePushTo(context, CustomerInsert());
   }
 
   reportIconFunction(context, List<Staff> staff) {
@@ -83,7 +65,7 @@ class _StaffsBodyState extends State<StaffsBody> {
         ));
     result.then((value) {
       if (value) {
-        return updateListView();
+        return;
       } else {
         return;
       }
@@ -141,15 +123,8 @@ class _StaffsBodyState extends State<StaffsBody> {
 
   @override
   Widget build(BuildContext context) {
-    if (staffList == null) {
-      staffList = <Staff>[];
-      updateListView();
-    }
-
-    Future<int> deleAction(Staff tableRow) async {
-      int result = await databaseHelper.deleteStaff(tableRow.getId);
-      updateListView();
-      return result;
+    Future deleAction(Staff tableRow) async {
+      return null;
     }
 
     drawerList(context);
@@ -218,102 +193,77 @@ class _StaffsBodyState extends State<StaffsBody> {
               ),
               Expanded(
                 flex: 2,
-                child: staffList.isEmpty
-                    ? Container(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 16.0, vertical: 20.0),
-                        color: Theme.of(context).backgroundColor,
-                        child: Center(
-                            child: RichText(
-                          textAlign: TextAlign.center,
-                          softWrap: true,
-                          text: TextSpan(
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .headline6
-                                  .copyWith(fontWeight: FontWeight.w700),
-                              children: [
-                                TextSpan(text: "No Entry has been made for"),
-                                TextSpan(
-                                    text: "\n ${widget.title}\n\n",
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .headline6
-                                        .copyWith(
-                                          fontWeight: FontWeight.w700,
-                                          color: Color(0xFFFFAE00),
-                                        )),
-                                TextSpan(text: "\nClick the "),
-                                TextSpan(
-                                    text: "insert button ",
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .headline6
-                                        .copyWith(
-                                          fontWeight: FontWeight.w700,
-                                          color: Color(0xFFFFAE00),
-                                        )),
-                                TextSpan(
-                                  text: "below to make an entry",
-                                )
-                              ]),
-                        )),
-                      )
-                    : Container(
-                        width: widget.deviceSize.width,
-                        color: Theme.of(context).scaffoldBackgroundColor,
-                        child: ListView.builder(
-                            itemCount: staffList.length,
-                            itemBuilder: (BuildContext context, int index) {
-                              return GestureDetector(
-                                onDoubleTap: () => updateItem(
-                                    index, widget.deviceSize, staffList[index]),
-                                onLongPress: () => updateItem(
-                                    index, widget.deviceSize, staffList[index]),
-                                onHorizontalDragEnd: (DragEndDetails details) {
-                                  if (details.primaryVelocity > 0) {
-                                    // User swiped Right
+                child: Container(
+                    width: widget.deviceSize.width,
+                    color: Theme.of(context).scaffoldBackgroundColor,
+                    child: StreamBuilder<QuerySnapshot>(
+                        stream: FirebaseFirestore.instance
+                            .collection('staff')
+                            .snapshots(),
+                        builder: (BuildContext context,
+                            AsyncSnapshot<QuerySnapshot> snapshot) {
+                          if (snapshot.hasError) {
+                            return Text('Something went wrong');
+                          }
 
-                                    print("Staff Swiped Right");
-                                    deleteItem(
-                                        index,
-                                        context,
-                                        widget.deviceSize,
-                                        "Staffs",
-                                        () => deleAction(staffList[index]));
-                                  } else if (details.primaryVelocity < 0) {
-                                    // User swiped Left
-                                    print("Staff Swiped Left");
-                                  }
-                                },
-                                child: Container(
-                                  margin: EdgeInsets.only(bottom: 16.0),
-                                  child: StaffDataCard(
-                                      designationData:
-                                          staffList[index].getDesignation,
-                                      staffIDData: staffList[index].getId,
-                                      usernameData:
-                                          staffList[index].getUsername,
-                                      firstnameData:
-                                          staffList[index].getFirstname,
-                                      lastnameData:
-                                          staffList[index].getLastname,
-                                      idCardNoData:
-                                          staffList[index].getIdCardNo,
-                                      emailData: staffList[index].getEmail,
-                                      addressData:
-                                          staffList[index].getHomeAddress,
-                                      cityData: staffList[index].getCity,
-                                      telNoData: staffList[index].getTelNo,
-                                      deleteFunction: () => deleteItem(
-                                          index,
-                                          context,
-                                          widget.deviceSize,
-                                          "Staff",
-                                          () => deleAction(staffList[index]))),
-                                ),
-                              );
-                            })),
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return Text("Loading........");
+                          }
+
+                          return ListView.builder(
+                              itemCount: snapshot.data.docs.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                return GestureDetector(
+                                  // onDoubleTap: () => updateItem(
+                                  //     index, widget.deviceSize, staffList[index]),
+                                  // onLongPress: () => updateItem(
+                                  //     index, widget.deviceSize, staffList[index]),
+                                  // onHorizontalDragEnd: (DragEndDetails details) {
+                                  //   if (details.primaryVelocity > 0) {
+                                  //     // User swiped Right
+
+                                  //     print("Staff Swiped Right");
+                                  //     deleteItem(
+                                  //         index,
+                                  //         context,
+                                  //         widget.deviceSize,
+                                  //         "Staffs",
+                                  //         () => deleAction(staffList[index]));
+                                  //   } else if (details.primaryVelocity < 0) {
+                                  //     // User swiped Left
+                                  //     print("Staff Swiped Left");
+                                  //   }
+                                  // },
+                                  child: Container(
+                                    margin: EdgeInsets.only(bottom: 16.0),
+                                    child: StaffDataCard(
+                                        staffIDData:
+                                            snapshot.data.docs[index].id,
+                                        firstnameData: snapshot.data.docs[index]
+                                            ['firstname'],
+                                        lastnameData: snapshot.data.docs[index]
+                                            ['lastname'],
+                                        usernameData: snapshot.data.docs[index]
+                                            ['username'],
+                                        designationData: snapshot
+                                            .data.docs[index]['designation'],
+                                        idCardNoData: snapshot.data.docs[index]
+                                            ['id card no'],
+                                        emailData: snapshot.data.docs[index]
+                                            ['email'],
+                                        addressData: snapshot.data.docs[index]
+                                            ['home address'],
+                                        cityData: snapshot.data.docs[index]
+                                            ['city'],
+                                        telNoData: snapshot.data.docs[index]
+                                            ['tel no'],
+                                        dateData: snapshot.data.docs[index]
+                                            ['date of employment']),
+                                  ),
+                                );
+                              });
+                        })),
               ),
               Align(
                   alignment: Alignment.bottomCenter,

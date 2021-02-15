@@ -1,11 +1,11 @@
 import 'package:intl/intl.dart';
 
 class Planting {
-  int _id;
+  String _id;
   String _type;
   String _idCardNo;
-  int _machineId;
-  int _seedId;
+  String _machineId;
+  String _seedId;
   double _qty;
   String _unit;
   double _acreage;
@@ -21,13 +21,13 @@ class Planting {
 
   //  the getters
 
-  int get getId => _id;
+  String get getId => _id;
   String get getType => _type;
   String get getIdCardNo => _idCardNo;
   double get getQty => _qty;
   String get getUnit => _unit;
-  int get getMachineId => _machineId;
-  int get getSeedId => _seedId;
+  String get getMachineId => _machineId;
+  String get getSeedId => _seedId;
   double get getAcreage => _acreage;
   String get getDate => _date;
 
@@ -57,14 +57,14 @@ class Planting {
     }
   }
 
-  set setMachineId(int newMachineId) {
-    if (newMachineId > 0) {
+  set setMachineId(String newMachineId) {
+    if (newMachineId != null) {
       this._machineId = newMachineId;
     }
   }
 
-  set setSeedId(int newSeedId) {
-    if (newSeedId > 0) {
+  set setSeedId(String newSeedId) {
+    if (newSeedId != null) {
       this._seedId = newSeedId;
     }
   }

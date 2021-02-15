@@ -1,7 +1,7 @@
 import 'package:intl/intl.dart';
 
 class Customer {
-  int _id;
+  String _id;
   String _name;
   String _modeOfTransaction;
   String _address;
@@ -18,7 +18,7 @@ class Customer {
       this._modeOfTransaction, this._date);
   //  the getters
 
-  int get getId => _id;
+  String get getId => _id;
   String get getName => _name;
   String get getModeOfTransaction => _modeOfTransaction;
   String get getAddress => _address;

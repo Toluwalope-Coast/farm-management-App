@@ -4,6 +4,7 @@ import 'package:farm_manager/shared/custom_drawer.dart';
 import 'package:farm_manager/shared/custom_textfield.dart';
 import 'package:farm_manager/shared/rounded_container.dart';
 import 'package:farm_manager/shared/rounded_flat_button.dart';
+import 'package:farm_manager/utils/database.dart';
 import 'package:farm_manager/utils/database_helper.dart';
 import 'package:flutter/material.dart';
 
@@ -57,7 +58,8 @@ class _StaffInsertBodyState extends State<StaffInsertBody> {
     "Field Operator"
   ];
 
-  insertStaff(context) async {
+  Future insertStaff(context) async {
+    DatabaseService firebaseInsertStaff = new DatabaseService();
     try {
       Staff staff = new Staff(
           firstnameController.text,
@@ -79,12 +81,11 @@ class _StaffInsertBodyState extends State<StaffInsertBody> {
       print("city is ${cityController.text}");
       print("TelNo is ${telNoController.text}");
 
-      int result = await databaseHelper.insertStaff(staff);
-      if (result != 0) {
-        return navigationPopRoute(context, true);
-      }
-    } catch (err) {
-      print(err);
+      // dynamic result =
+      firebaseInsertStaff.addStaff(staff);
+      navigationPopRoute(context);
+    } catch (e) {
+      return print(e.toString());
     }
   }
 

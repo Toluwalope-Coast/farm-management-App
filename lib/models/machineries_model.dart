@@ -1,7 +1,7 @@
 import 'package:intl/intl.dart';
 
 class Machinery {
-  int _id;
+  String _id;
   String _type;
   String _idCardNo;
   String _date = '';
@@ -14,7 +14,7 @@ class Machinery {
 
   //  the getters
 
-  int get getId => _id;
+  String get getId => _id;
   String get getType => _type;
   String get getIdCardNo => _idCardNo;
   String get getDate => _date;

@@ -29,7 +29,7 @@ class UserInsertBody extends StatefulWidget {
 class _UserInsertBodyState extends State<UserInsertBody> {
   // Database integration into the code
 
-  DatabaseHelper databaseHelper = DatabaseHelper();
+  // DatabaseHelper databaseHelper = DatabaseHelper();
 
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 

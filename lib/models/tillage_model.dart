@@ -1,10 +1,10 @@
 import 'package:intl/intl.dart';
 
 class Tillage {
-  int _id;
+  String _id;
   String _type;
   String _idCardNo;
-  int _machineId;
+  String _machineId;
   double _acreage;
   String _date = '';
 
@@ -17,10 +17,10 @@ class Tillage {
 
   //  the getters
 
-  int get getId => _id;
+  String get getId => _id;
   String get getType => _type;
   String get getIdCardNo => _idCardNo;
-  int get getMachineId => _machineId;
+  String get getMachineId => _machineId;
   double get getAcreage => _acreage;
   String get getDate => _date;
 
@@ -38,8 +38,8 @@ class Tillage {
     }
   }
 
-  set setMachineId(int newMachineId) {
-    if (newMachineId > 0) {
+  set setMachineId(String newMachineId) {
+    if (newMachineId != null) {
       this._machineId = newMachineId;
     }
   }

@@ -4,7 +4,7 @@ import 'package:farm_manager/shared/custom_drawer.dart';
 import 'package:farm_manager/shared/custom_textfield.dart';
 import 'package:farm_manager/shared/rounded_container.dart';
 import 'package:farm_manager/shared/rounded_flat_button.dart';
-import 'package:farm_manager/utils/database_helper.dart';
+import 'package:farm_manager/utils/database.dart';
 import 'package:flutter/material.dart';
 
 class PlantingInsertBody extends StatefulWidget {
@@ -28,8 +28,6 @@ class PlantingInsertBody extends StatefulWidget {
 class _PlantingInsertBodyState extends State<PlantingInsertBody> {
   // Database integration into the code
 
-  DatabaseHelper databaseHelper = DatabaseHelper();
-
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
   TextEditingController plantingTypeController = new TextEditingController();
@@ -51,27 +49,31 @@ class _PlantingInsertBodyState extends State<PlantingInsertBody> {
     "pcs",
   ];
 
-  insertPlanting(context) async {
-    Planting planting = new Planting(
-      plantingTypeController.text,
-      idCardNoController.text,
-      double.parse(qtyController.text),
-      double.parse(acreageController.text),
-      _unitSelected,
-      int.parse(machineIDController.text),
-      int.parse(seedIDController.text),
-    );
-    print("Planting Type is ${plantingTypeController.text}");
-    print("Id Card No is ${idCardNoController.text}");
-    print("Quantity is ${qtyController.text}");
-    print("Acreage Type is ${acreageController.text}");
-    print("Selected Unit is $_unitSelected");
-    print("Machine Type is ${machineIDController.text}");
-    print("Acreage Type is ${acreageController.text}");
+  Future insertPlanting(context) async {
+    DatabaseService firebaseInsertPlanting = new DatabaseService();
 
-    int result = await databaseHelper.insertPlanting(planting);
-    if (result != 0) {
-      return navigationPopRoute(context, true);
+    try {
+      Planting planting = new Planting(
+        plantingTypeController.text,
+        idCardNoController.text,
+        double.parse(qtyController.text),
+        double.parse(acreageController.text),
+        _unitSelected,
+        machineIDController.text,
+        seedIDController.text,
+      );
+      print("Planting Type is ${plantingTypeController.text}");
+      print("Id Card No is ${idCardNoController.text}");
+      print("Quantity is ${qtyController.text}");
+      print("Acreage Type is ${acreageController.text}");
+      print("Selected Unit is $_unitSelected");
+      print("Machine Type is ${machineIDController.text}");
+      print("Acreage Type is ${acreageController.text}");
+
+      firebaseInsertPlanting.addPlanting(planting);
+      navigationPopRoute(context);
+    } catch (e) {
+      return print(e.toString());
     }
   }
 
@@ -287,7 +289,7 @@ class _PlantingInsertBodyState extends State<PlantingInsertBody> {
                             obscureText: false,
                             textInputHintStyle:
                                 Theme.of(context).textTheme.bodyText2,
-                            inputType: TextInputType.number,
+                            inputType: TextInputType.text,
                             textInputHint: "Enter Machine ID",
                           ),
                         ),
@@ -306,7 +308,7 @@ class _PlantingInsertBodyState extends State<PlantingInsertBody> {
                             obscureText: false,
                             textInputHintStyle:
                                 Theme.of(context).textTheme.bodyText2,
-                            inputType: TextInputType.number,
+                            inputType: TextInputType.text,
                             textInputHint: "Enter Seed ID",
                           ),
                         ),

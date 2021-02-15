@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:farm_manager/models/customers_model.dart';
 import 'package:farm_manager/shared/Constant.dart';
 import 'package:farm_manager/shared/Custom_drawer.dart';
@@ -6,10 +7,8 @@ import 'package:farm_manager/shared/customer_data_card.dart';
 import 'package:farm_manager/shared/dialogue_box.dart';
 import 'package:farm_manager/shared/insert_screens.dart/customers_insert.dart';
 import 'package:farm_manager/shared/report_screens/customer_report.dart';
-import 'package:farm_manager/shared/update_screens.dart/customers_update.dart';
 import 'package:farm_manager/utils/database_helper.dart';
 import 'package:flutter/material.dart';
-import 'package:sqflite/sqflite.dart';
 
 class CustomersBody extends StatefulWidget {
   final Size deviceSize;
@@ -36,22 +35,6 @@ class _CustomersBodyState extends State<CustomersBody> {
   DatabaseHelper databaseHelper = DatabaseHelper();
   List<Customer> customerList;
 
-  updateListView() {
-    final Future<Database> dbFuture = databaseHelper.initializeDatabase();
-    dbFuture.then((database) {
-      Future<List<Customer>> customerListFuture =
-          databaseHelper.getCustomerList();
-      customerListFuture.then((customerList) {
-        if (customerList != null) {
-          setState(() {
-            this.customerList = customerList;
-          });
-        }
-      });
-    });
-  }
-  // Database codes closes here
-
   backIconFunction(context) {
     print("Back Icon pressed");
     return navigationPopRoute(context, null);
@@ -60,12 +43,7 @@ class _CustomersBodyState extends State<CustomersBody> {
   insertIconFunction(context) {
     print("insert Icon pressed");
 
-    Future result = navigatePushTo(context, CustomerInsert());
-    result.then((value) {
-      if (value) {
-        updateListView();
-      }
-    });
+    navigatePushTo(context, CustomerInsert());
   }
 
   reportIconFunction(context, List<Customer> customer) {
@@ -73,23 +51,23 @@ class _CustomersBodyState extends State<CustomersBody> {
     return navigatePushTo(context, CustomerReport(customer: customer));
   }
 
-  updateItem(int index, Size deviceSize, Customer customer) {
-    print("item at $index has being updated");
+  // updateItem(int index, Size deviceSize, Customer customer) {
+  //   print("item at $index has being updated");
 
-    Future<dynamic> result = navigatePushTo(
-        context,
-        CustomerUpdate(
-          deviceSize: deviceSize,
-          customer: customer,
-        ));
-    result.then((value) {
-      if (value) {
-        return updateListView();
-      } else {
-        return;
-      }
-    });
-  }
+  //   Future<dynamic> result = navigatePushTo(
+  //       context,
+  //       CustomerUpdate(
+  //         deviceSize: deviceSize,
+  //         customer: customer,
+  //       ));
+  //   result.then((value) {
+  //     if (value) {
+  //       return updateListView();
+  //     } else {
+  //       return;
+  //     }
+  //   });
+  // }
 
   deleteItem(int index, BuildContext context, Size deviceSize,
       String updateTable, AsyncCallback delFunc) {
@@ -136,15 +114,8 @@ class _CustomersBodyState extends State<CustomersBody> {
 
   @override
   Widget build(BuildContext context) {
-    if (customerList == null) {
-      customerList = <Customer>[];
-      updateListView();
-    }
-
     Future<int> deleAction(Customer tableRow) async {
-      int result = await databaseHelper.deleteCustomer(tableRow.getId);
-      updateListView();
-      return result;
+      return null;
     }
 
     drawerList(context);
@@ -213,98 +184,69 @@ class _CustomersBodyState extends State<CustomersBody> {
               ),
               Expanded(
                 flex: 2,
-                child: customerList.isEmpty
-                    ? Container(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 16.0, vertical: 20.0),
-                        color: Theme.of(context).backgroundColor,
-                        child: Center(
-                            child: RichText(
-                          textAlign: TextAlign.center,
-                          softWrap: true,
-                          text: TextSpan(
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .headline6
-                                  .copyWith(fontWeight: FontWeight.w700),
-                              children: [
-                                TextSpan(text: "No Entry has been made for"),
-                                TextSpan(
-                                    text: "\n ${widget.title}\n\n",
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .headline6
-                                        .copyWith(
-                                          fontWeight: FontWeight.w700,
-                                          color: Color(0xFFFFAE00),
-                                        )),
-                                TextSpan(text: "\nClick the "),
-                                TextSpan(
-                                    text: "insert button ",
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .headline6
-                                        .copyWith(
-                                          fontWeight: FontWeight.w700,
-                                          color: Color(0xFFFFAE00),
-                                        )),
-                                TextSpan(
-                                  text: "below to make an entry",
-                                )
-                              ]),
-                        )),
-                      )
-                    : Container(
-                        width: widget.deviceSize.width,
-                        color: Theme.of(context).scaffoldBackgroundColor,
-                        child: ListView.builder(
-                            itemCount: customerList.length,
-                            itemBuilder: (BuildContext context, int index) {
-                              return GestureDetector(
-                                onDoubleTap: () => updateItem(index,
-                                    widget.deviceSize, customerList[index]),
-                                onLongPress: () => updateItem(index,
-                                    widget.deviceSize, customerList[index]),
-                                onHorizontalDragEnd: (DragEndDetails details) {
-                                  if (details.primaryVelocity > 0) {
-                                    // User swiped Right
+                child: Container(
+                    width: widget.deviceSize.width,
+                    color: Theme.of(context).scaffoldBackgroundColor,
+                    child: StreamBuilder<QuerySnapshot>(
+                        stream: FirebaseFirestore.instance
+                            .collection('customer')
+                            .snapshots(),
+                        builder: (BuildContext context,
+                            AsyncSnapshot<QuerySnapshot> snapshot) {
+                          if (snapshot.hasError) {
+                            return Text('Something went wrong');
+                          }
 
-                                    print("Customer Swiped Right");
-                                    deleteItem(
-                                        index,
-                                        context,
-                                        widget.deviceSize,
-                                        "Customer",
-                                        () => deleAction(customerList[index]));
-                                  } else if (details.primaryVelocity < 0) {
-                                    // User swiped Left
-                                    print("Customer Swiped Left");
-                                  }
-                                },
-                                child: Container(
-                                  margin: EdgeInsets.only(bottom: 16.0),
-                                  child: CustomerDataCard(
-                                      customerIDData: customerList[index].getId,
-                                      customerNameData:
-                                          customerList[index].getName,
-                                      emailData: customerList[index].getEmail,
-                                      addressData:
-                                          customerList[index].getAddress,
-                                      customerPaymentModeData:
-                                          customerList[index]
-                                              .getModeOfTransaction,
-                                      telNoData: customerList[index].getTelNo,
-                                      dateData: customerList[index].getDate,
-                                      deleteFunction: () => deleteItem(
-                                          index,
-                                          context,
-                                          widget.deviceSize,
-                                          "Customer",
-                                          () =>
-                                              deleAction(customerList[index]))),
-                                ),
-                              );
-                            })),
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return Text("Loading........");
+                          }
+
+                          return ListView.builder(
+                              itemCount: snapshot.data.docs.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                return GestureDetector(
+                                  // onDoubleTap: () => updateItem(index,
+                                  //     widget.deviceSize, customerList[index]),
+                                  // onLongPress: () => updateItem(index,
+                                  //     widget.deviceSize, customerList[index]),
+                                  // onHorizontalDragEnd: (DragEndDetails details) {
+                                  //   if (details.primaryVelocity > 0) {
+                                  //     // User swiped Right
+
+                                  //     print("Customer Swiped Right");
+                                  //     deleteItem(
+                                  //         index,
+                                  //         context,
+                                  //         widget.deviceSize,
+                                  //         "Customer",
+                                  //         () => deleAction(customerList[index]));
+                                  //   } else if (details.primaryVelocity < 0) {
+                                  //     // User swiped Left
+                                  //     print("Customer Swiped Left");
+                                  //   }
+                                  // },
+                                  child: Container(
+                                    margin: EdgeInsets.only(bottom: 16.0),
+                                    child: CustomerDataCard(
+                                        customerIDData:
+                                            snapshot.data.docs[index].id,
+                                        customerNameData:
+                                            snapshot.data.docs[index]['name'],
+                                        emailData: snapshot.data.docs[index]
+                                            ['email'],
+                                        addressData: snapshot.data.docs[index]
+                                            ['address'],
+                                        customerPaymentModeData: snapshot.data
+                                            .docs[index]['mode of transaction'],
+                                        telNoData: snapshot.data.docs[index]
+                                            ['tel no'],
+                                        dateData: snapshot.data.docs[index]
+                                            ['date recorded']),
+                                  ),
+                                );
+                              });
+                        })),
               ),
               Align(
                   alignment: Alignment.bottomCenter,

@@ -1,18 +1,16 @@
 import 'package:flutter/material.dart';
 
 class CustomerDataCard extends StatefulWidget {
-  final int customerIDData;
+  final String customerIDData;
   final String customerNameData;
   final String emailData;
   final String addressData;
   final String telNoData;
   final String dateData;
   final String customerPaymentModeData;
-  final Function deleteFunction;
 
   const CustomerDataCard({
     Key key,
-    this.deleteFunction,
     this.customerIDData,
     this.customerNameData,
     this.emailData,
@@ -55,16 +53,6 @@ class _CustomerDataCardState extends State<CustomerDataCard> {
                     textAlign: TextAlign.right,
                   ),
                 ),
-                SizedBox(width: 24),
-                Expanded(
-                  flex: 1,
-                  child: IconButton(
-                    icon: Icon(Icons.delete_sharp),
-                    onPressed: widget.deleteFunction,
-                    color: Theme.of(context).scaffoldBackgroundColor,
-                    iconSize: 20,
-                  ),
-                )
               ],
             ),
           ),

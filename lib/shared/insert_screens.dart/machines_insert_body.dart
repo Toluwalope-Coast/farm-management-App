@@ -4,6 +4,7 @@ import 'package:farm_manager/shared/custom_drawer.dart';
 import 'package:farm_manager/shared/custom_textfield.dart';
 import 'package:farm_manager/shared/rounded_container.dart';
 import 'package:farm_manager/shared/rounded_flat_button.dart';
+import 'package:farm_manager/utils/database.dart';
 import 'package:farm_manager/utils/database_helper.dart';
 import 'package:flutter/material.dart';
 
@@ -28,7 +29,7 @@ class MachinesInsertBody extends StatefulWidget {
 class _MachinesInsertBodyState extends State<MachinesInsertBody> {
   // Database integration into the code
 
-  DatabaseHelper databaseHelper = DatabaseHelper();
+  // DatabaseHelper databaseHelper = DatabaseHelper();
 
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
@@ -36,15 +37,20 @@ class _MachinesInsertBodyState extends State<MachinesInsertBody> {
 
   TextEditingController idCardNoController = new TextEditingController();
 
-  insertMachines(context) async {
-    Machinery machine =
-        new Machinery(machinesTypeController.text, idCardNoController.text);
-    print("Machine Type is ${machinesTypeController.text}");
-    print("Id Card No is ${idCardNoController.text}");
+  Future insertMachines(context) async {
+    DatabaseService firebaseInsertMachines = new DatabaseService();
 
-    int result = await databaseHelper.insertMachines(machine);
-    if (result != 0) {
-      return navigationPopRoute(context, true);
+    try {
+      Machinery machine =
+          new Machinery(machinesTypeController.text, idCardNoController.text);
+      print("Machine Type is ${machinesTypeController.text}");
+      print("Id Card No is ${idCardNoController.text}");
+
+      // dynamic result =
+      firebaseInsertMachines.addMachine(machine);
+      navigationPopRoute(context);
+    } catch (e) {
+      return print(e.toString());
     }
   }
 

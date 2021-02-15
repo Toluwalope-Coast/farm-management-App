@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class SeedsDataCard extends StatefulWidget {
-  final int seedIDData;
+  final String seedIDData;
   final String seedTypeData;
   final String idCardNoData;
   final double acreageData;
@@ -9,12 +9,10 @@ class SeedsDataCard extends StatefulWidget {
   final String unitData;
   final double quantityRemainingData;
   final String dateData;
-  final Function deleteFunction;
 
   const SeedsDataCard(
       {Key key,
       this.seedIDData,
-      this.deleteFunction,
       this.idCardNoData,
       this.seedTypeData,
       this.acreageData,
@@ -57,16 +55,6 @@ class _SeedsDataCardState extends State<SeedsDataCard> {
                     textAlign: TextAlign.right,
                   ),
                 ),
-                SizedBox(width: 24),
-                Expanded(
-                  flex: 1,
-                  child: IconButton(
-                    icon: Icon(Icons.delete_sharp),
-                    onPressed: widget.deleteFunction,
-                    color: Theme.of(context).scaffoldBackgroundColor,
-                    iconSize: 20,
-                  ),
-                )
               ],
             ),
           ),

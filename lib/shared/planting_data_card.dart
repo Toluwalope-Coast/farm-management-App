@@ -1,21 +1,19 @@
 import 'package:flutter/material.dart';
 
 class PlantingDataCard extends StatefulWidget {
-  final int plantingIDData;
+  final String plantingIDData;
   final String plantingTypeData;
   final String idCardNoData;
   final double acreageData;
-  final int seedsIDData;
-  final int machineIDData;
+  final String seedsIDData;
+  final String machineIDData;
   final double plantingQuantityData;
   final String plantingUnitData;
   final String dateData;
-  final Function deleteFunction;
 
   const PlantingDataCard(
       {Key key,
       this.plantingIDData,
-      this.deleteFunction,
       this.idCardNoData,
       this.plantingTypeData,
       this.acreageData,
@@ -59,16 +57,6 @@ class _PlantingDataCardState extends State<PlantingDataCard> {
                     textAlign: TextAlign.right,
                   ),
                 ),
-                SizedBox(width: 24),
-                Expanded(
-                  flex: 1,
-                  child: IconButton(
-                    icon: Icon(Icons.delete_sharp),
-                    onPressed: widget.deleteFunction,
-                    color: Theme.of(context).scaffoldBackgroundColor,
-                    iconSize: 20,
-                  ),
-                )
               ],
             ),
           ),

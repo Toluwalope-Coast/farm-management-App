@@ -1,7 +1,7 @@
 import 'package:intl/intl.dart';
 
 class Seed {
-  int _id;
+  String _id;
   String _type;
   String _idCardNo;
   double _qty;
@@ -20,7 +20,7 @@ class Seed {
 
   //  the getters
 
-  int get getId => _id;
+  String get getId => _id;
   String get getType => _type;
   String get getIdCardNo => _idCardNo;
   double get getQty => _qty;

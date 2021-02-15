@@ -47,7 +47,7 @@ class _TillageUpdateBodyState extends State<TillageUpdateBody> {
         model.getId,
         tillageTypeController.text,
         idCardNoController.text,
-        int.parse(machineIDController.text),
+        machineIDController.text,
         double.parse(acreageController.text));
     print("Tillage Type is ${tillageTypeController.text}");
     print("Id Card No is ${idCardNoController.text}");
@@ -237,7 +237,7 @@ class _TillageUpdateBodyState extends State<TillageUpdateBody> {
                             obscureText: false,
                             textInputHintStyle:
                                 Theme.of(context).textTheme.bodyText2,
-                            inputType: TextInputType.number,
+                            inputType: TextInputType.text,
                             textInputHint: "Enter Machine ID",
                           ),
                         ),

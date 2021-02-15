@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:farm_manager/models/harvesting_model.dart';
 import 'package:farm_manager/shared/Constant.dart';
 import 'package:farm_manager/shared/Custom_drawer.dart';
@@ -7,9 +8,7 @@ import 'package:farm_manager/shared/harvest_data_card.dart';
 import 'package:farm_manager/shared/insert_screens.dart/harvesting_insert.dart';
 import 'package:farm_manager/shared/report_screens/harvesting_report.dart';
 import 'package:farm_manager/shared/update_screens.dart/harvesting_update.dart';
-import 'package:farm_manager/utils/database_helper.dart';
 import 'package:flutter/material.dart';
-import 'package:sqflite/sqflite.dart';
 
 class HarvestingBody extends StatefulWidget {
   final Size deviceSize;
@@ -33,24 +32,7 @@ class HarvestingBody extends StatefulWidget {
 class _HarvestingBodyState extends State<HarvestingBody> {
   // Database integration into the code
 
-  DatabaseHelper databaseHelper = DatabaseHelper();
   List<Harvesting> harvestingList;
-
-  updateListView() {
-    final Future<Database> dbFuture = databaseHelper.initializeDatabase();
-    dbFuture.then((database) {
-      Future<List<Harvesting>> harvestListFuture =
-          databaseHelper.getHarvestList();
-      harvestListFuture.then((harvestList) {
-        if (harvestingList != null) {
-          setState(() {
-            this.harvestingList = harvestList;
-          });
-        }
-      });
-    });
-  }
-  // Database codes closes here
 
   backIconFunction(context) {
     print("Back Icon pressed");
@@ -58,14 +40,8 @@ class _HarvestingBodyState extends State<HarvestingBody> {
   }
 
   insertIconFunction(context) {
-    print("insert Icon pressed");
-
-    Future result = navigatePushTo(context, HarvestingInsert());
-    result.then((value) {
-      if (value) {
-        updateListView();
-      }
-    });
+    print("Report Icon pressed");
+    return navigatePushTo(context, HarvestingInsert());
   }
 
   reportIconFunction(context, List<Harvesting> harvesting) {
@@ -80,7 +56,7 @@ class _HarvestingBodyState extends State<HarvestingBody> {
         HarvestingUpdate(deviceSize: deviceSize, harvesting: harvesting));
     result.then((value) {
       if (value) {
-        return updateListView();
+        return null;
       } else {
         return;
       }
@@ -132,15 +108,8 @@ class _HarvestingBodyState extends State<HarvestingBody> {
 
   @override
   Widget build(BuildContext context) {
-    if (harvestingList == null) {
-      harvestingList = <Harvesting>[];
-      updateListView();
-    }
-
     Future<int> deleAction(Harvesting tableRow) async {
-      int result = await databaseHelper.deleteHarvest(tableRow.getId);
-      updateListView();
-      return result;
+      return null;
     }
 
     drawerList(context);
@@ -209,101 +178,74 @@ class _HarvestingBodyState extends State<HarvestingBody> {
               ),
               Expanded(
                 flex: 2,
-                child: harvestingList.isEmpty
-                    ? Container(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 16.0, vertical: 20.0),
-                        color: Theme.of(context).backgroundColor,
-                        child: Center(
-                            child: RichText(
-                          textAlign: TextAlign.center,
-                          softWrap: true,
-                          text: TextSpan(
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .headline6
-                                  .copyWith(fontWeight: FontWeight.w700),
-                              children: [
-                                TextSpan(text: "No Entry has been made for"),
-                                TextSpan(
-                                    text: "\n ${widget.title}\n\n",
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .headline6
-                                        .copyWith(
-                                          fontWeight: FontWeight.w700,
-                                          color: Color(0xFFFFAE00),
-                                        )),
-                                TextSpan(text: "\nClick the "),
-                                TextSpan(
-                                    text: "insert button ",
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .headline6
-                                        .copyWith(
-                                          fontWeight: FontWeight.w700,
-                                          color: Color(0xFFFFAE00),
-                                        )),
-                                TextSpan(
-                                  text: "below to make an entry",
-                                )
-                              ]),
-                        )),
-                      )
-                    : Container(
-                        width: widget.deviceSize.width,
-                        color: Theme.of(context).scaffoldBackgroundColor,
-                        child: ListView.builder(
-                            itemCount: harvestingList.length,
-                            itemBuilder: (BuildContext context, int index) {
-                              return GestureDetector(
-                                onDoubleTap: () => updateItem(index,
-                                    widget.deviceSize, harvestingList[index]),
-                                onLongPress: () => updateItem(index,
-                                    widget.deviceSize, harvestingList[index]),
-                                onHorizontalDragEnd: (DragEndDetails details) {
-                                  if (details.primaryVelocity > 0) {
-                                    // User swiped Right
+                child: Container(
+                    width: widget.deviceSize.width,
+                    color: Theme.of(context).scaffoldBackgroundColor,
+                    child: StreamBuilder<QuerySnapshot>(
+                        stream: FirebaseFirestore.instance
+                            .collection('harvest')
+                            .snapshots(),
+                        builder: (BuildContext context,
+                            AsyncSnapshot<QuerySnapshot> snapshot) {
+                          if (snapshot.hasError) {
+                            return Text('Something went wrong');
+                          }
 
-                                    print("Harvesting Swiped Right");
-                                    deleteItem(
-                                        index,
-                                        context,
-                                        widget.deviceSize,
-                                        "Harvesting",
-                                        () =>
-                                            deleAction(harvestingList[index]));
-                                  } else if (details.primaryVelocity < 0) {
-                                    // User swiped Left
-                                    print("Harvesting Swiped Left");
-                                  }
-                                },
-                                child: Container(
-                                  margin: EdgeInsets.only(bottom: 16.0),
-                                  child: HarvestDataCard(
-                                      harvestIDData:
-                                          harvestingList[index].getId,
-                                      idCardNoData:
-                                          harvestingList[index].getIdCardNo,
-                                      harvestQuantityData:
-                                          harvestingList[index].getQty,
-                                      harvestTypeData:
-                                          harvestingList[index].getType,
-                                      acreageData:
-                                          harvestingList[index].getAcreage,
-                                      machineIDData:
-                                          harvestingList[index].getMachineId,
-                                      dateData: harvestingList[index].getDate,
-                                      deleteFunction: () => deleteItem(
-                                          index,
-                                          context,
-                                          widget.deviceSize,
-                                          "Harvesting",
-                                          () => deleAction(
-                                              harvestingList[index]))),
-                                ),
-                              );
-                            })),
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return Text("Loading........");
+                          }
+
+                          return ListView.builder(
+                              itemCount: snapshot.data.docs.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                return GestureDetector(
+                                  // onDoubleTap: () => updateItem(index,
+                                  //     widget.deviceSize, harvestingList[index]),
+                                  // onLongPress: () => updateItem(index,
+                                  //     widget.deviceSize, harvestingList[index]),
+                                  // onHorizontalDragEnd: (DragEndDetails details) {
+                                  //   if (details.primaryVelocity > 0) {
+                                  //     // User swiped Right
+
+                                  //     print("Harvesting Swiped Right");
+                                  //     deleteItem(
+                                  //         index,
+                                  //         context,
+                                  //         widget.deviceSize,
+                                  //         "Harvesting",
+                                  //         () =>
+                                  //             deleAction(harvestingList[index]));
+                                  //   } else if (details.primaryVelocity < 0) {
+                                  //     // User swiped Left
+                                  //     print("Harvesting Swiped Left");
+                                  //   }
+                                  // },
+                                  child: Container(
+                                    margin: EdgeInsets.only(bottom: 16.0),
+                                    child: HarvestDataCard(
+                                        harvestIDData:
+                                            snapshot.data.docs[index].id,
+                                        idCardNoData: snapshot.data.docs[index]
+                                            ['id card no'],
+                                        harvestQuantityData:
+                                            snapshot.data.docs[index]['qty'],
+                                        harvestTypeData:
+                                            snapshot.data.docs[index]['type'],
+                                        unitData: snapshot.data.docs[index]
+                                            ['unit'],
+                                        acreageData: snapshot.data.docs[index]
+                                            ['acreage done'],
+                                        machineIDData: snapshot.data.docs[index]
+                                            ['machine id'],
+                                        seedsIDData: snapshot.data.docs[index]
+                                            ['seed id'],
+                                        dateData: snapshot.data.docs[index]
+                                            ['date recorded']),
+                                  ),
+                                );
+                              });
+                        })),
               ),
               Align(
                   alignment: Alignment.bottomCenter,

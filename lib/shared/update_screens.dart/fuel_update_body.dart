@@ -42,7 +42,7 @@ class _FuelUpdateBodyState extends State<FuelUpdateBody> {
 
   updateFuel(context) async {
     Fuel fuel = new Fuel.withId(widget.fuel.getId, fuelTypeController.text,
-        idCardNoController.text, int.parse(machineIDController.text), '');
+        idCardNoController.text, machineIDController.text, '');
     print("Fuel Type is ${fuelTypeController.text}");
     print("Id Card No is ${idCardNoController.text}");
     print("Machine Type is ${machineIDController.text}");
@@ -204,7 +204,7 @@ class _FuelUpdateBodyState extends State<FuelUpdateBody> {
                             obscureText: false,
                             textInputHintStyle:
                                 Theme.of(context).textTheme.bodyText2,
-                            inputType: TextInputType.number,
+                            inputType: TextInputType.text,
                             textInputHint: "Enter Machine ID",
                           ),
                         ),

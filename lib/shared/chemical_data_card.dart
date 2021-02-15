@@ -1,18 +1,16 @@
 import 'package:flutter/material.dart';
 
 class ChemicalDataCard extends StatefulWidget {
-  final int chemicalIDData;
+  final String chemicalIDData;
   final String chemicalTypeData;
   final String idCardNoData;
-  final int machineIDData;
+  final String machineIDData;
   final double acreageData;
   final String dateData;
-  final Function deleteFunction;
 
   const ChemicalDataCard({
     Key key,
     this.chemicalIDData,
-    this.deleteFunction,
     this.idCardNoData,
     this.chemicalTypeData,
     this.acreageData,
@@ -53,16 +51,6 @@ class _ChemicalDataCardState extends State<ChemicalDataCard> {
                     textAlign: TextAlign.right,
                   ),
                 ),
-                SizedBox(width: 24),
-                Expanded(
-                  flex: 1,
-                  child: IconButton(
-                    icon: Icon(Icons.delete_sharp),
-                    onPressed: widget.deleteFunction,
-                    color: Theme.of(context).scaffoldBackgroundColor,
-                    iconSize: 20,
-                  ),
-                )
               ],
             ),
           ),

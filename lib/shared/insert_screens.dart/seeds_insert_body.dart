@@ -4,7 +4,7 @@ import 'package:farm_manager/shared/custom_drawer.dart';
 import 'package:farm_manager/shared/custom_textfield.dart';
 import 'package:farm_manager/shared/rounded_container.dart';
 import 'package:farm_manager/shared/rounded_flat_button.dart';
-import 'package:farm_manager/utils/database_helper.dart';
+import 'package:farm_manager/utils/database.dart';
 import 'package:flutter/material.dart';
 
 class SeedsInsertBody extends StatefulWidget {
@@ -28,8 +28,6 @@ class SeedsInsertBody extends StatefulWidget {
 class _SeedsInsertBodyState extends State<SeedsInsertBody> {
   // Database integration into the code
 
-  DatabaseHelper databaseHelper = DatabaseHelper();
-
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
   TextEditingController seedsTypeController = new TextEditingController();
@@ -49,24 +47,28 @@ class _SeedsInsertBodyState extends State<SeedsInsertBody> {
     "pcs",
   ];
 
-  insertSeeds(context) async {
-    Seed seed = new Seed(
-        seedsTypeController.text,
-        idCardNoController.text,
-        double.parse(qtyController.text),
-        double.parse(qtyRemainingController.text),
-        double.parse(acreageController.text),
-        _unitSelected);
-    print("Seed Type is ${seedsTypeController.text}");
-    print("Id Card No is ${idCardNoController.text}");
-    print("Quantity Type is ${qtyController.text}");
-    print("Quantity Remaining Type is ${qtyRemainingController.text}");
-    print("Acreage Type is ${acreageController.text}");
-    print("Unit is $_unitSelected");
+  Future insertSeeds(context) async {
+    DatabaseService firebaseInsertSeed = new DatabaseService();
 
-    int result = await databaseHelper.insertSeed(seed);
-    if (result != 0) {
-      return navigationPopRoute(context, true);
+    try {
+      Seed seed = new Seed(
+          seedsTypeController.text,
+          idCardNoController.text,
+          double.parse(qtyController.text),
+          double.parse(qtyRemainingController.text),
+          double.parse(acreageController.text),
+          _unitSelected);
+      print("Seed Type is ${seedsTypeController.text}");
+      print("Id Card No is ${idCardNoController.text}");
+      print("Quantity Type is ${qtyController.text}");
+      print("Quantity Remaining Type is ${qtyRemainingController.text}");
+      print("Acreage Type is ${acreageController.text}");
+      print("Unit is $_unitSelected");
+
+      firebaseInsertSeed.addSeed(seed);
+      navigationPopRoute(context);
+    } catch (e) {
+      return print(e.toString());
     }
   }
 

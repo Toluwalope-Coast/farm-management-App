@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:farm_manager/models/chemicals_model.dart';
 import 'package:farm_manager/shared/Constant.dart';
 import 'package:farm_manager/shared/Custom_drawer.dart';
@@ -7,9 +8,7 @@ import 'package:farm_manager/shared/dialogue_box.dart';
 import 'package:farm_manager/shared/insert_screens.dart/chemical_insert.dart';
 import 'package:farm_manager/shared/report_screens/chemicals_report.dart';
 import 'package:farm_manager/shared/update_screens.dart/chemical_update.dart';
-import 'package:farm_manager/utils/database_helper.dart';
 import 'package:flutter/material.dart';
-import 'package:sqflite/sqflite.dart';
 
 typedef AsyncCallback = Future<int> Function();
 
@@ -35,23 +34,7 @@ class ChemicalsBody extends StatefulWidget {
 class _ChemicalsBodyState extends State<ChemicalsBody> {
   // Database integration into the code
 
-  DatabaseHelper databaseHelper = DatabaseHelper();
   List<Chemical> chemicalList;
-
-  updateListView() {
-    final Future<Database> dbFuture = databaseHelper.initializeDatabase();
-    dbFuture.then((database) {
-      Future<List<Chemical>> chemicalListFuture =
-          databaseHelper.getChemicalList();
-      chemicalListFuture.then((chemicalList) {
-        if (chemicalList != null) {
-          setState(() {
-            this.chemicalList = chemicalList;
-          });
-        }
-      });
-    });
-  }
   // Database codes closes here
 
   backIconFunction(context) {
@@ -60,14 +43,8 @@ class _ChemicalsBodyState extends State<ChemicalsBody> {
   }
 
   insertIconFunction(context) {
-    print("insert Icon pressed");
-
-    Future result = navigatePushTo(context, ChemicalInsert());
-    result.then((value) {
-      if (value) {
-        updateListView();
-      }
-    });
+    print("Report Icon pressed");
+    return navigatePushTo(context, ChemicalInsert());
   }
 
   reportIconFunction(context, List<Chemical> chemical) {
@@ -86,7 +63,7 @@ class _ChemicalsBodyState extends State<ChemicalsBody> {
         ));
     result.then((value) {
       if (value) {
-        return updateListView();
+        return null;
       } else {
         return;
       }
@@ -136,15 +113,8 @@ class _ChemicalsBodyState extends State<ChemicalsBody> {
 
   @override
   Widget build(BuildContext context) {
-    if (chemicalList == null) {
-      chemicalList = <Chemical>[];
-      updateListView();
-    }
-
     Future<int> deleAction(Chemical tableRow) async {
-      int result = await databaseHelper.deleteChemical(tableRow.getId);
-      updateListView();
-      return result;
+      return null;
     }
 
     drawerList(context);
@@ -213,97 +183,67 @@ class _ChemicalsBodyState extends State<ChemicalsBody> {
               ),
               Expanded(
                 flex: 2,
-                child: chemicalList.isEmpty
-                    ? Container(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 16.0, vertical: 20.0),
-                        color: Theme.of(context).backgroundColor,
-                        child: Center(
-                            child: RichText(
-                          textAlign: TextAlign.center,
-                          softWrap: true,
-                          text: TextSpan(
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .headline6
-                                  .copyWith(fontWeight: FontWeight.w700),
-                              children: [
-                                TextSpan(text: "No Entry has been made for"),
-                                TextSpan(
-                                    text: "\n ${widget.title}\n\n",
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .headline6
-                                        .copyWith(
-                                          fontWeight: FontWeight.w700,
-                                          color: Color(0xFFFFAE00),
-                                        )),
-                                TextSpan(text: "\nClick the "),
-                                TextSpan(
-                                    text: "insert button ",
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .headline6
-                                        .copyWith(
-                                          fontWeight: FontWeight.w700,
-                                          color: Color(0xFFFFAE00),
-                                        )),
-                                TextSpan(
-                                  text: "below to make an entry",
-                                )
-                              ]),
-                        )),
-                      )
-                    : Container(
-                        width: widget.deviceSize.width,
-                        color: Theme.of(context).scaffoldBackgroundColor,
-                        child: ListView.builder(
-                            itemCount: chemicalList.length,
-                            itemBuilder: (BuildContext context, int index) {
-                              return GestureDetector(
-                                onDoubleTap: () => updateItem(index,
-                                    widget.deviceSize, chemicalList[index]),
-                                onLongPress: () => updateItem(index,
-                                    widget.deviceSize, chemicalList[index]),
-                                onHorizontalDragEnd: (DragEndDetails details) {
-                                  if (details.primaryVelocity > 0) {
-                                    // User swiped Right
+                child: Container(
+                    width: widget.deviceSize.width,
+                    color: Theme.of(context).scaffoldBackgroundColor,
+                    child: StreamBuilder<QuerySnapshot>(
+                        stream: FirebaseFirestore.instance
+                            .collection('chemical')
+                            .snapshots(),
+                        builder: (BuildContext context,
+                            AsyncSnapshot<QuerySnapshot> snapshot) {
+                          if (snapshot.hasError) {
+                            return Text('Something went wrong');
+                          }
 
-                                    print("Chemical Swiped Right");
-                                    deleteItem(
-                                        index,
-                                        context,
-                                        widget.deviceSize,
-                                        "Chemical",
-                                        () => deleAction(chemicalList[index]));
-                                  } else if (details.primaryVelocity < 0) {
-                                    // User swiped Left
-                                    print("Chemical Swiped Left");
-                                  }
-                                },
-                                child: Container(
-                                  margin: EdgeInsets.only(bottom: 16.0),
-                                  child: ChemicalDataCard(
-                                      chemicalIDData: chemicalList[index].getId,
-                                      idCardNoData:
-                                          chemicalList[index].getIdCardNo,
-                                      machineIDData:
-                                          chemicalList[index].getMachineId,
-                                      acreageData:
-                                          chemicalList[index].getAcreage,
-                                      chemicalTypeData:
-                                          chemicalList[index].getType,
-                                      dateData: chemicalList[index].getDate,
-                                      deleteFunction: () => deleteItem(
-                                          index,
-                                          context,
-                                          widget.deviceSize,
-                                          "Chemical",
-                                          () =>
-                                              deleAction(chemicalList[index]))),
-                                ),
-                              );
-                            })),
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return Text("Loading........");
+                          }
+
+                          return ListView.builder(
+                              itemCount: snapshot.data.docs.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                return GestureDetector(
+                                  // onDoubleTap: () => updateItem(index,
+                                  //     widget.deviceSize, chemicalList[index]),
+                                  // onLongPress: () => updateItem(index,
+                                  //     widget.deviceSize, chemicalList[index]),
+                                  // onHorizontalDragEnd: (DragEndDetails details) {
+                                  //   if (details.primaryVelocity > 0) {
+                                  //     // User swiped Right
+
+                                  //     print("Chemical Swiped Right");
+                                  //     deleteItem(
+                                  //         index,
+                                  //         context,
+                                  //         widget.deviceSize,
+                                  //         "Chemical",
+                                  //         () => deleAction(chemicalList[index]));
+                                  //   } else if (details.primaryVelocity < 0) {
+                                  //     // User swiped Left
+                                  //     print("Chemical Swiped Left");
+                                  //   }
+                                  // },
+                                  child: Container(
+                                    margin: EdgeInsets.only(bottom: 16.0),
+                                    child: ChemicalDataCard(
+                                        chemicalIDData:
+                                            snapshot.data.docs[index].id,
+                                        idCardNoData: snapshot.data.docs[index]
+                                            ['id card no'],
+                                        machineIDData: snapshot.data.docs[index]
+                                            ['machine id'],
+                                        acreageData: snapshot.data.docs[index]
+                                            ['acreage done'],
+                                        chemicalTypeData:
+                                            snapshot.data.docs[index]['type'],
+                                        dateData: snapshot.data.docs[index]
+                                            ['date recorded']),
+                                  ),
+                                );
+                              });
+                        })),
               ),
               Align(
                   alignment: Alignment.bottomCenter,

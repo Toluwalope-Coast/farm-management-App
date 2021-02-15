@@ -47,7 +47,7 @@ class _ChemicalUpdateBodyState extends State<ChemicalUpdateBody> {
         widget.chemical.getId,
         chemicalTypeController.text,
         idCardNoController.text,
-        int.parse(machineIDController.text),
+        machineIDController.text,
         double.parse(acreageController.text),
         '');
     print("Chemical Type is ${chemicalTypeController.text}");
@@ -236,7 +236,7 @@ class _ChemicalUpdateBodyState extends State<ChemicalUpdateBody> {
                             obscureText: false,
                             textInputHintStyle:
                                 Theme.of(context).textTheme.bodyText2,
-                            inputType: TextInputType.number,
+                            inputType: TextInputType.text,
                             textInputHint: "Enter Machine ID",
                           ),
                         ),

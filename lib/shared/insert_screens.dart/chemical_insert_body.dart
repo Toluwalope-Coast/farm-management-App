@@ -4,6 +4,7 @@ import 'package:farm_manager/shared/custom_drawer.dart';
 import 'package:farm_manager/shared/custom_textfield.dart';
 import 'package:farm_manager/shared/rounded_container.dart';
 import 'package:farm_manager/shared/rounded_flat_button.dart';
+import 'package:farm_manager/utils/database.dart';
 import 'package:farm_manager/utils/database_helper.dart';
 import 'package:flutter/material.dart';
 
@@ -40,20 +41,24 @@ class _ChemicalInsertBodyState extends State<ChemicalInsertBody> {
 
   TextEditingController idCardNoController = new TextEditingController();
 
-  insertChemical(context) async {
-    Chemical chemical = new Chemical(
-        chemicalTypeController.text,
-        idCardNoController.text,
-        int.parse(machineIDController.text),
-        double.parse(acreageController.text));
-    print("Chemical Type is ${chemicalTypeController.text}");
-    print("Id Card No is ${idCardNoController.text}");
-    print("Machine Type is ${machineIDController.text}");
-    print("Acreage Type is ${acreageController.text}");
+  Future insertChemical(context) async {
+    DatabaseService firebaseInsertChemical = new DatabaseService();
 
-    int result = await databaseHelper.insertChemical(chemical);
-    if (result != 0) {
-      return navigationPopRoute(context, true);
+    try {
+      Chemical chemical = new Chemical(
+          chemicalTypeController.text,
+          idCardNoController.text,
+          machineIDController.text,
+          double.parse(acreageController.text));
+      print("Chemical Type is ${chemicalTypeController.text}");
+      print("Id Card No is ${idCardNoController.text}");
+      print("Machine Type is ${machineIDController.text}");
+      print("Acreage Type is ${acreageController.text}");
+
+      firebaseInsertChemical.addChemical(chemical);
+      navigationPopRoute(context);
+    } catch (e) {
+      return print(e.toString());
     }
   }
 
@@ -219,7 +224,7 @@ class _ChemicalInsertBodyState extends State<ChemicalInsertBody> {
                             obscureText: false,
                             textInputHintStyle:
                                 Theme.of(context).textTheme.bodyText2,
-                            inputType: TextInputType.number,
+                            inputType: TextInputType.text,
                             textInputHint: "Enter Machine ID",
                           ),
                         ),

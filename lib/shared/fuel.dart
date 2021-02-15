@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:farm_manager/models/fuels_model.dart';
 import 'package:farm_manager/shared/Constant.dart';
 import 'package:farm_manager/shared/Custom_drawer.dart';
@@ -7,9 +8,7 @@ import 'package:farm_manager/shared/fuel_data_card.dart';
 import 'package:farm_manager/shared/insert_screens.dart/fuel_insert.dart';
 import 'package:farm_manager/shared/report_screens/fuel_report.dart';
 import 'package:farm_manager/shared/update_screens.dart/fuel_update.dart';
-import 'package:farm_manager/utils/database_helper.dart';
 import 'package:flutter/material.dart';
-import 'package:sqflite/sqflite.dart';
 
 class FuelBody extends StatefulWidget {
   final Size deviceSize;
@@ -33,23 +32,7 @@ class FuelBody extends StatefulWidget {
 class _FuelBodyState extends State<FuelBody> {
   // Database integration into the code
 
-  DatabaseHelper databaseHelper = DatabaseHelper();
   List<Fuel> fuelList;
-
-  updateListView() {
-    final Future<Database> dbFuture = databaseHelper.initializeDatabase();
-    dbFuture.then((database) {
-      Future<List<Fuel>> fuelListFuture = databaseHelper.getFuelList();
-      fuelListFuture.then((fuelList) {
-        if (fuelList != null) {
-          setState(() {
-            this.fuelList = fuelList;
-          });
-        }
-      });
-    });
-  }
-  // Database codes closes here
 
   backIconFunction(context) {
     print("Back Icon pressed");
@@ -57,14 +40,8 @@ class _FuelBodyState extends State<FuelBody> {
   }
 
   insertIconFunction(context) {
-    print("insert Icon pressed");
-
-    Future result = navigatePushTo(context, FuelInsert());
-    result.then((value) {
-      if (value) {
-        updateListView();
-      }
-    });
+    print("Report Icon pressed");
+    return navigatePushTo(context, FuelInsert());
   }
 
   reportIconFunction(context, List<Fuel> fuel) {
@@ -83,7 +60,7 @@ class _FuelBodyState extends State<FuelBody> {
         ));
     result.then((value) {
       if (value) {
-        return updateListView();
+        return null;
       } else {
         return;
       }
@@ -135,15 +112,8 @@ class _FuelBodyState extends State<FuelBody> {
 
   @override
   Widget build(BuildContext context) {
-    if (fuelList == null) {
-      fuelList = <Fuel>[];
-      updateListView();
-    }
-
     Future<int> deleAction(Fuel tableRow) async {
-      int result = await databaseHelper.deleteFuel(tableRow.getId);
-      updateListView();
-      return result;
+      return null;
     }
 
     drawerList(context);
@@ -212,92 +182,64 @@ class _FuelBodyState extends State<FuelBody> {
               ),
               Expanded(
                 flex: 2,
-                child: fuelList.isEmpty
-                    ? Container(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 16.0, vertical: 20.0),
-                        color: Theme.of(context).backgroundColor,
-                        child: Center(
-                            child: RichText(
-                          textAlign: TextAlign.center,
-                          softWrap: true,
-                          text: TextSpan(
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .headline6
-                                  .copyWith(fontWeight: FontWeight.w700),
-                              children: [
-                                TextSpan(text: "No Entry has been made for"),
-                                TextSpan(
-                                    text: "\n ${widget.title}\n\n",
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .headline6
-                                        .copyWith(
-                                          fontWeight: FontWeight.w700,
-                                          color: Color(0xFFFFAE00),
-                                        )),
-                                TextSpan(text: "\nClick the "),
-                                TextSpan(
-                                    text: "insert button ",
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .headline6
-                                        .copyWith(
-                                          fontWeight: FontWeight.w700,
-                                          color: Color(0xFFFFAE00),
-                                        )),
-                                TextSpan(
-                                  text: "below to make an entry",
-                                )
-                              ]),
-                        )),
-                      )
-                    : Container(
-                        width: widget.deviceSize.width,
-                        color: Theme.of(context).scaffoldBackgroundColor,
-                        child: ListView.builder(
-                            itemCount: fuelList.length,
-                            itemBuilder: (BuildContext context, int index) {
-                              return GestureDetector(
-                                onDoubleTap: () => updateItem(
-                                    index, widget.deviceSize, fuelList[index]),
-                                onLongPress: () => updateItem(
-                                    index, widget.deviceSize, fuelList[index]),
-                                onHorizontalDragEnd: (DragEndDetails details) {
-                                  if (details.primaryVelocity > 0) {
-                                    // User swiped Right
+                child: Container(
+                    width: widget.deviceSize.width,
+                    color: Theme.of(context).scaffoldBackgroundColor,
+                    child: StreamBuilder<QuerySnapshot>(
+                        stream: FirebaseFirestore.instance
+                            .collection('fuel')
+                            .snapshots(),
+                        builder: (BuildContext context,
+                            AsyncSnapshot<QuerySnapshot> snapshot) {
+                          if (snapshot.hasError) {
+                            return Text('Something went wrong');
+                          }
 
-                                    print("Fuel Swiped Right");
-                                    deleteItem(
-                                        index,
-                                        context,
-                                        widget.deviceSize,
-                                        "Fuel",
-                                        () => deleAction(fuelList[index]));
-                                  } else if (details.primaryVelocity < 0) {
-                                    // User swiped Left
-                                    print("Fuel Swiped Left");
-                                  }
-                                },
-                                child: Container(
-                                  margin: EdgeInsets.only(bottom: 16.0),
-                                  child: FuelDataCard(
-                                      fuelIDData: fuelList[index].getId,
-                                      idCardNoData: fuelList[index].getIdCardNo,
-                                      machineIDData:
-                                          fuelList[index].getMachineId,
-                                      fuelTypeData: fuelList[index].getType,
-                                      dateData: fuelList[index].getDate,
-                                      deleteFunction: () => deleteItem(
-                                          index,
-                                          context,
-                                          widget.deviceSize,
-                                          "Fuel",
-                                          () => deleAction(fuelList[index]))),
-                                ),
-                              );
-                            })),
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return Text("Loading........");
+                          }
+
+                          return ListView.builder(
+                              itemCount: snapshot.data.docs.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                return GestureDetector(
+                                  // onDoubleTap: () => updateItem(
+                                  //     index, widget.deviceSize, fuelList[index]),
+                                  // onLongPress: () => updateItem(
+                                  //     index, widget.deviceSize, fuelList[index]),
+                                  // onHorizontalDragEnd: (DragEndDetails details) {
+                                  //   if (details.primaryVelocity > 0) {
+                                  //     // User swiped Right
+
+                                  //     print("Fuel Swiped Right");
+                                  //     deleteItem(
+                                  //         index,
+                                  //         context,
+                                  //         widget.deviceSize,
+                                  //         "Fuel",
+                                  //         () => deleAction(fuelList[index]));
+                                  //   } else if (details.primaryVelocity < 0) {
+                                  //     // User swiped Left
+                                  //     print("Fuel Swiped Left");
+                                  //   }
+                                  // },
+                                  child: Container(
+                                      margin: EdgeInsets.only(bottom: 16.0),
+                                      child: FuelDataCard(
+                                          fuelIDData:
+                                              snapshot.data.docs[index].id,
+                                          idCardNoData: snapshot
+                                              .data.docs[index]['id card no'],
+                                          machineIDData: snapshot
+                                              .data.docs[index]['machine id'],
+                                          fuelTypeData:
+                                              snapshot.data.docs[index]['type'],
+                                          dateData: snapshot.data.docs[index]
+                                              ['date recorded'])),
+                                );
+                              });
+                        })),
               ),
               Align(
                   alignment: Alignment.bottomCenter,

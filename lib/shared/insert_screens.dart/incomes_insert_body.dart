@@ -4,6 +4,7 @@ import 'package:farm_manager/shared/custom_drawer.dart';
 import 'package:farm_manager/shared/custom_textfield.dart';
 import 'package:farm_manager/shared/rounded_container.dart';
 import 'package:farm_manager/shared/rounded_flat_button.dart';
+import 'package:farm_manager/utils/database.dart';
 import 'package:farm_manager/utils/database_helper.dart';
 import 'package:flutter/material.dart';
 
@@ -60,28 +61,32 @@ class _IncomesInsertBodyState extends State<IncomesInsertBody> {
     "USD",
   ];
 
-  insertIncome(context) async {
-    Income income = new Income(
-        productTypeController.text,
-        wayBillNoController.text,
-        int.parse(customerIDController.text),
-        _paymentModeSelected,
-        double.parse(quantitySoldController.text),
-        _unitSelected,
-        double.parse(rateController.text),
-        double.parse(amountController.text));
-    print("firstname is ${productTypeController.text}");
-    print("Waybill is ${wayBillNoController.text}");
-    print("address is ${customerIDController.text}");
-    print("Payment Mode is $_paymentModeSelected");
-    print("qty Sold is ${quantitySoldController.text}");
-    print("Unit is $_unitSelected");
-    print("Rate is ${rateController.text}");
-    print("Rate is ${amountController.text}");
+  Future insertIncome(context) async {
+    DatabaseService firebaseInsertIncome = new DatabaseService();
+    try {
+      Income income = new Income(
+          productTypeController.text,
+          wayBillNoController.text,
+          customerIDController.text,
+          _paymentModeSelected,
+          double.parse(quantitySoldController.text),
+          _unitSelected,
+          double.parse(rateController.text),
+          double.parse(amountController.text));
+      print("firstname is ${productTypeController.text}");
+      print("Waybill is ${wayBillNoController.text}");
+      print("address is ${customerIDController.text}");
+      print("Payment Mode is $_paymentModeSelected");
+      print("qty Sold is ${quantitySoldController.text}");
+      print("Unit is $_unitSelected");
+      print("Rate is ${rateController.text}");
+      print("Rate is ${amountController.text}");
 
-    int result = await databaseHelper.insertIncomes(income);
-    if (result != 0) {
-      return navigationPopRoute(context, true);
+      // dynamic result =
+      firebaseInsertIncome.addIncome(income);
+      navigationPopRoute(context);
+    } catch (e) {
+      return print(e.toString());
     }
   }
 
@@ -227,7 +232,7 @@ class _IncomesInsertBodyState extends State<IncomesInsertBody> {
                             obscureText: false,
                             textInputHintStyle:
                                 Theme.of(context).textTheme.bodyText2,
-                            inputType: TextInputType.number,
+                            inputType: TextInputType.text,
                             textInputHint: "Enter Customer ID that bought it",
                           ),
                         ),

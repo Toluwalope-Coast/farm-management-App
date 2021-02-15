@@ -1,17 +1,15 @@
 import 'package:flutter/material.dart';
 
 class FuelDataCard extends StatefulWidget {
-  final int fuelIDData;
+  final String fuelIDData;
   final String fuelTypeData;
   final String idCardNoData;
-  final int machineIDData;
+  final String machineIDData;
   final String dateData;
-  final Function deleteFunction;
 
   const FuelDataCard(
       {Key key,
       this.fuelIDData,
-      this.deleteFunction,
       this.idCardNoData,
       this.fuelTypeData,
       this.machineIDData,
@@ -51,16 +49,6 @@ class _FuelDataCardState extends State<FuelDataCard> {
                     textAlign: TextAlign.right,
                   ),
                 ),
-                SizedBox(width: 24),
-                Expanded(
-                  flex: 1,
-                  child: IconButton(
-                    icon: Icon(Icons.delete_sharp),
-                    onPressed: widget.deleteFunction,
-                    color: Theme.of(context).scaffoldBackgroundColor,
-                    iconSize: 20,
-                  ),
-                )
               ],
             ),
           ),

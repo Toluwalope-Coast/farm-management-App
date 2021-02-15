@@ -4,6 +4,7 @@ import 'package:farm_manager/shared/custom_drawer.dart';
 import 'package:farm_manager/shared/custom_textfield.dart';
 import 'package:farm_manager/shared/rounded_container.dart';
 import 'package:farm_manager/shared/rounded_flat_button.dart';
+import 'package:farm_manager/utils/database.dart';
 import 'package:farm_manager/utils/database_helper.dart';
 import 'package:flutter/material.dart';
 
@@ -48,22 +49,26 @@ class _CustomerInsertBodyState extends State<CustomerInsertBody> {
     "Cheque",
   ];
 
-  insertCustomer(context) async {
-    Customer customer = new Customer(
-        nameController.text,
-        emailController.text,
-        addressController.text,
-        telNoController.text,
-        _modeOfTransactionSelected);
-    print("name is ${nameController.text}");
-    print("email is ${emailController.text}");
-    print("address is ${addressController.text}");
-    print("TelNo is ${telNoController.text}");
-    print("TelNo is $_modeOfTransactionSelected");
+  Future insertCustomer(context) async {
+    DatabaseService firebaseInsertCustomer = new DatabaseService();
+    try {
+      Customer customer = new Customer(
+          nameController.text,
+          emailController.text,
+          addressController.text,
+          telNoController.text,
+          _modeOfTransactionSelected);
+      print("name is ${nameController.text}");
+      print("email is ${emailController.text}");
+      print("address is ${addressController.text}");
+      print("TelNo is ${telNoController.text}");
+      print("TelNo is $_modeOfTransactionSelected");
 
-    int result = await databaseHelper.insertCustomer(customer);
-    if (result != 0) {
-      return navigationPopRoute(context, true);
+      // dynamic result =
+      firebaseInsertCustomer.addCustomer(customer);
+      navigationPopRoute(context);
+    } catch (e) {
+      return print(e.toString());
     }
   }
 

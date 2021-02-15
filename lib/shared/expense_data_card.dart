@@ -1,22 +1,20 @@
 import 'package:flutter/material.dart';
 
 class ExpensesDataCard extends StatefulWidget {
-  final int expensesIDData;
+  final String expensesIDData;
   final String productTypeData;
   final String wayBillNoData;
-  final int customerIDData;
+  final String customerIDData;
   final double quantityReceivedData;
   final double expensesRateData;
   final String expensesUnitData;
   final double expensesAmountData;
   final String expensesDateData;
   final String paymentModeData;
-  final Function deleteFunction;
 
   const ExpensesDataCard(
       {Key key,
       this.expensesIDData,
-      this.deleteFunction,
       this.productTypeData,
       this.wayBillNoData,
       this.customerIDData,
@@ -61,16 +59,6 @@ class _ExpensesDataCardState extends State<ExpensesDataCard> {
                     textAlign: TextAlign.right,
                   ),
                 ),
-                SizedBox(width: 24),
-                Expanded(
-                  flex: 1,
-                  child: IconButton(
-                    icon: Icon(Icons.delete_sharp),
-                    onPressed: widget.deleteFunction,
-                    color: Theme.of(context).scaffoldBackgroundColor,
-                    iconSize: 20,
-                  ),
-                )
               ],
             ),
           ),

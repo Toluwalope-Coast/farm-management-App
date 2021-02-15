@@ -65,7 +65,7 @@ class _IncomesUpdateBodyState extends State<IncomesUpdateBody> {
         widget.income.id,
         productTypeController.text,
         wayBillNoController.text,
-        int.parse(customerIDController.text),
+        customerIDController.text,
         _paymentModeSelected,
         double.parse(quantitySoldController.text),
         _unitSelected,
@@ -254,7 +254,7 @@ class _IncomesUpdateBodyState extends State<IncomesUpdateBody> {
                             obscureText: false,
                             textInputHintStyle:
                                 Theme.of(context).textTheme.bodyText2,
-                            inputType: TextInputType.number,
+                            inputType: TextInputType.text,
                             textInputHint: "Enter Customer ID that bought it",
                           ),
                         ),

@@ -1,18 +1,16 @@
 import 'package:flutter/material.dart';
 
 class TillageDataCard extends StatefulWidget {
-  final int tillageIDData;
+  final String tillageIDData;
   final String tillageTypeData;
   final String idCardNoData;
   final double acreageData;
-  final int machineIDData;
+  final String machineIDData;
   final String dateData;
-  final Function deleteFunction;
 
   const TillageDataCard(
       {Key key,
       this.tillageIDData,
-      this.deleteFunction,
       this.idCardNoData,
       this.tillageTypeData,
       this.acreageData,
@@ -53,16 +51,6 @@ class _TillageDataCardState extends State<TillageDataCard> {
                     textAlign: TextAlign.right,
                   ),
                 ),
-                SizedBox(width: 24),
-                Expanded(
-                  flex: 1,
-                  child: IconButton(
-                    icon: Icon(Icons.delete_sharp),
-                    onPressed: widget.deleteFunction,
-                    color: Theme.of(context).scaffoldBackgroundColor,
-                    iconSize: 20,
-                  ),
-                )
               ],
             ),
           ),

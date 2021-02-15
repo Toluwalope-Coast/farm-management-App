@@ -61,8 +61,8 @@ class _PlantingUpdateBodyState extends State<PlantingUpdateBody> {
         double.parse(qtyController.text),
         double.parse(acreageController.text),
         _unitSelected,
-        int.parse(machineIDController.text),
-        int.parse(seedIDController.text),
+        machineIDController.text,
+        seedIDController.text,
         '');
     print("Planting Type is ${plantingTypeController.text}");
     print("Id Card No is ${idCardNoController.text}");
@@ -312,7 +312,7 @@ class _PlantingUpdateBodyState extends State<PlantingUpdateBody> {
                             obscureText: false,
                             textInputHintStyle:
                                 Theme.of(context).textTheme.bodyText2,
-                            inputType: TextInputType.number,
+                            inputType: TextInputType.text,
                             textInputHint: "Enter Machine ID",
                           ),
                         ),

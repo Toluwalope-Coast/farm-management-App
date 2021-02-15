@@ -1,27 +1,27 @@
 import 'package:flutter/material.dart';
 
 class HarvestDataCard extends StatefulWidget {
-  final int harvestIDData;
+  final String harvestIDData;
   final String harvestTypeData;
   final String idCardNoData;
   final double acreageData;
-  final int seedsIDData;
-  final int machineIDData;
+  final String seedsIDData;
+  final String machineIDData;
   final double harvestQuantityData;
+  final String unitData;
   final String dateData;
-  final Function deleteFunction;
 
   const HarvestDataCard(
       {Key key,
       this.harvestIDData,
-      this.deleteFunction,
       this.idCardNoData,
       this.harvestTypeData,
       this.acreageData,
       this.harvestQuantityData,
       this.machineIDData,
       this.seedsIDData,
-      this.dateData})
+      this.dateData,
+      this.unitData})
       : super(key: key);
 
   @override
@@ -55,16 +55,6 @@ class _HarvestDataCardState extends State<HarvestDataCard> {
                     "${widget.harvestIDData}",
                     style: Theme.of(context).textTheme.button,
                     textAlign: TextAlign.right,
-                  ),
-                ),
-                SizedBox(width: 24),
-                Expanded(
-                  flex: 1,
-                  child: IconButton(
-                    icon: Icon(Icons.delete_sharp),
-                    onPressed: widget.deleteFunction,
-                    color: Theme.of(context).scaffoldBackgroundColor,
-                    iconSize: 20,
                   ),
                 )
               ],
@@ -129,6 +119,22 @@ class _HarvestDataCardState extends State<HarvestDataCard> {
                 ),
                 Text(
                   "${widget.harvestQuantityData}",
+                  style: Theme.of(context).textTheme.subtitle1,
+                ),
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "Unit:",
+                  style: Theme.of(context).textTheme.bodyText2,
+                ),
+                Text(
+                  "${widget.unitData}",
                   style: Theme.of(context).textTheme.subtitle1,
                 ),
               ],

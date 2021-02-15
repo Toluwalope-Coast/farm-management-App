@@ -4,7 +4,7 @@ import 'package:farm_manager/shared/custom_drawer.dart';
 import 'package:farm_manager/shared/custom_textfield.dart';
 import 'package:farm_manager/shared/rounded_container.dart';
 import 'package:farm_manager/shared/rounded_flat_button.dart';
-import 'package:farm_manager/utils/database_helper.dart';
+import 'package:farm_manager/utils/database.dart';
 import 'package:flutter/material.dart';
 
 class HarvestingInsertBody extends StatefulWidget {
@@ -27,8 +27,6 @@ class HarvestingInsertBody extends StatefulWidget {
 
 class _HarvestingInsertBodyState extends State<HarvestingInsertBody> {
   // Database integration into the code
-
-  DatabaseHelper databaseHelper = DatabaseHelper();
 
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
@@ -53,29 +51,33 @@ class _HarvestingInsertBodyState extends State<HarvestingInsertBody> {
     "USD",
   ];
 
-  insertHarvesting(context) async {
-    String date = DateTime.now().toIso8601String();
-    Harvesting harvesting = new Harvesting(
-        harvestingTypeController.text,
-        idCardNoController.text,
-        double.parse(qtyController.text),
-        _unitSelected,
-        double.parse(totalQtyStockController.text),
-        double.parse(acreageController.text),
-        int.parse(machineIDController.text),
-        int.parse(seedIDController.text),
-        date);
-    print("Planting Type is ${harvestingTypeController.text}");
-    print("Id Card No is ${idCardNoController.text}");
-    print("Quantity is ${qtyController.text}");
-    print("Acreage Type is ${acreageController.text}");
-    print("Selected Unit is $_unitSelected");
-    print("Machine Type is ${machineIDController.text}");
-    print("Quantity in Stock is ${totalQtyStockController.text}");
+  Future insertHarvesting(context) async {
+    DatabaseService firebaseInsertHarvest = new DatabaseService();
 
-    int result = await databaseHelper.insertHarvest(harvesting);
-    if (result != 0) {
-      return navigationPopRoute(context, true);
+    try {
+      String date = DateTime.now().toIso8601String();
+      Harvesting harvesting = new Harvesting(
+          harvestingTypeController.text,
+          idCardNoController.text,
+          double.parse(qtyController.text),
+          _unitSelected,
+          double.parse(totalQtyStockController.text),
+          double.parse(acreageController.text),
+          machineIDController.text,
+          seedIDController.text,
+          date);
+      print("Planting Type is ${harvestingTypeController.text}");
+      print("Id Card No is ${idCardNoController.text}");
+      print("Quantity is ${qtyController.text}");
+      print("Acreage Type is ${acreageController.text}");
+      print("Selected Unit is $_unitSelected");
+      print("Machine Type is ${machineIDController.text}");
+      print("Quantity in Stock is ${totalQtyStockController.text}");
+
+      firebaseInsertHarvest.addHarvest(harvesting);
+      navigationPopRoute(context);
+    } catch (e) {
+      return print(e.toString());
     }
   }
 
@@ -315,7 +317,7 @@ class _HarvestingInsertBodyState extends State<HarvestingInsertBody> {
                             obscureText: false,
                             textInputHintStyle:
                                 Theme.of(context).textTheme.bodyText2,
-                            inputType: TextInputType.number,
+                            inputType: TextInputType.text,
                             textInputHint: "Enter Machine ID",
                           ),
                         ),
@@ -334,7 +336,7 @@ class _HarvestingInsertBodyState extends State<HarvestingInsertBody> {
                             obscureText: false,
                             textInputHintStyle:
                                 Theme.of(context).textTheme.bodyText2,
-                            inputType: TextInputType.number,
+                            inputType: TextInputType.text,
                             textInputHint: "Enter Seed ID",
                           ),
                         ),

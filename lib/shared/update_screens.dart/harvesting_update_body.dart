@@ -64,8 +64,8 @@ class _HarvestingUpdateBodyState extends State<HarvestingUpdateBody> {
         _unitSelected,
         double.parse(totalQtyStockController.text),
         double.parse(acreageController.text),
-        int.parse(machineIDController.text),
-        int.parse(seedIDController.text),
+        machineIDController.text,
+        seedIDController.text,
         '');
     print("Planting Type is ${harvestingTypeController.text}");
     print("Id Card No is ${idCardNoController.text}");
@@ -345,7 +345,7 @@ class _HarvestingUpdateBodyState extends State<HarvestingUpdateBody> {
                             obscureText: false,
                             textInputHintStyle:
                                 Theme.of(context).textTheme.bodyText2,
-                            inputType: TextInputType.number,
+                            inputType: TextInputType.text,
                             textInputHint: "Enter Machine ID",
                           ),
                         ),
@@ -364,7 +364,7 @@ class _HarvestingUpdateBodyState extends State<HarvestingUpdateBody> {
                             obscureText: false,
                             textInputHintStyle:
                                 Theme.of(context).textTheme.bodyText2,
-                            inputType: TextInputType.number,
+                            inputType: TextInputType.text,
                             textInputHint: "Enter Seed ID",
                           ),
                         ),

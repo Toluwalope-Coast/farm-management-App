@@ -4,6 +4,7 @@ import 'package:farm_manager/shared/custom_drawer.dart';
 import 'package:farm_manager/shared/custom_textfield.dart';
 import 'package:farm_manager/shared/rounded_container.dart';
 import 'package:farm_manager/shared/rounded_flat_button.dart';
+import 'package:farm_manager/utils/database.dart';
 import 'package:farm_manager/utils/database_helper.dart';
 import 'package:flutter/material.dart';
 
@@ -28,7 +29,7 @@ class TillageInsertBody extends StatefulWidget {
 class _TillageInsertBodyState extends State<TillageInsertBody> {
   // Database integration into the code
 
-  DatabaseHelper databaseHelper = DatabaseHelper();
+  // DatabaseHelper databaseHelper = DatabaseHelper();
 
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
@@ -40,21 +41,25 @@ class _TillageInsertBodyState extends State<TillageInsertBody> {
 
   TextEditingController idCardNoController = new TextEditingController();
 
-  insertTillage(context) async {
-    Tillage tillage = new Tillage(
-        tillageTypeController.text,
-        idCardNoController.text,
-        int.parse(machineIDController.text),
-        double.parse(acreageController.text));
-    print("Tillage Type is ${tillageTypeController.text}");
-    print("Id Card No is ${idCardNoController.text}");
-    print("Machine Type is ${machineIDController.text}");
-    print("Acreage Type is ${acreageController.text}");
-    print("Acreage Type is ${acreageController.text}");
+  Future insertTillage(context) async {
+    DatabaseService firebaseInsertTillage = new DatabaseService();
 
-    int result = await databaseHelper.insertTillage(tillage);
-    if (result != 0) {
-      return navigationPopRoute(context, true);
+    try {
+      Tillage tillage = new Tillage(
+          tillageTypeController.text,
+          idCardNoController.text,
+          machineIDController.text,
+          double.parse(acreageController.text));
+      print("Tillage Type is ${tillageTypeController.text}");
+      print("Id Card No is ${idCardNoController.text}");
+      print("Machine Type is ${machineIDController.text}");
+      print("Acreage Type is ${acreageController.text}");
+      print("Acreage Type is ${acreageController.text}");
+
+      firebaseInsertTillage.addTillage(tillage);
+      navigationPopRoute(context);
+    } catch (e) {
+      return print(e.toString());
     }
   }
 
@@ -220,7 +225,7 @@ class _TillageInsertBodyState extends State<TillageInsertBody> {
                             obscureText: false,
                             textInputHintStyle:
                                 Theme.of(context).textTheme.bodyText2,
-                            inputType: TextInputType.number,
+                            inputType: TextInputType.text,
                             textInputHint: "Enter Machine ID",
                           ),
                         ),

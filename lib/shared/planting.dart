@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:farm_manager/models/planting_model.dart';
 import 'package:farm_manager/shared/Constant.dart';
 import 'package:farm_manager/shared/Custom_drawer.dart';
@@ -7,9 +8,7 @@ import 'package:farm_manager/shared/insert_screens.dart/planting_insert.dart';
 import 'package:farm_manager/shared/planting_data_card.dart';
 import 'package:farm_manager/shared/report_screens/planting_report.dart';
 import 'package:farm_manager/shared/update_screens.dart/planting_update.dart';
-import 'package:farm_manager/utils/database_helper.dart';
 import 'package:flutter/material.dart';
-import 'package:sqflite/sqflite.dart';
 
 class PlantingBody extends StatefulWidget {
   final Size deviceSize;
@@ -33,23 +32,7 @@ class PlantingBody extends StatefulWidget {
 class _PlantingBodyState extends State<PlantingBody> {
   // Database integration into the code
 
-  DatabaseHelper databaseHelper = DatabaseHelper();
   List<Planting> plantingList;
-
-  updateListView() {
-    final Future<Database> dbFuture = databaseHelper.initializeDatabase();
-    dbFuture.then((database) {
-      Future<List<Planting>> plantingListFuture =
-          databaseHelper.getPlantingList();
-      plantingListFuture.then((plantingList) {
-        if (plantingList != null) {
-          setState(() {
-            this.plantingList = plantingList;
-          });
-        }
-      });
-    });
-  }
   // Database codes closes here
 
   backIconFunction(context) {
@@ -58,14 +41,8 @@ class _PlantingBodyState extends State<PlantingBody> {
   }
 
   insertIconFunction(context) {
-    print("insert Icon pressed");
-
-    Future result = navigatePushTo(context, PlantingInsert());
-    result.then((value) {
-      if (value) {
-        updateListView();
-      }
-    });
+    print("Report Icon pressed");
+    return navigatePushTo(context, PlantingInsert());
   }
 
   reportIconFunction(context, List<Planting> planting) {
@@ -84,7 +61,7 @@ class _PlantingBodyState extends State<PlantingBody> {
         ));
     result.then((value) {
       if (value) {
-        return updateListView();
+        return null;
       } else {
         return;
       }
@@ -136,15 +113,8 @@ class _PlantingBodyState extends State<PlantingBody> {
 
   @override
   Widget build(BuildContext context) {
-    if (plantingList == null) {
-      plantingList = <Planting>[];
-      updateListView();
-    }
-
     Future<int> deleAction(Planting tableRow) async {
-      int result = await databaseHelper.deletePlanting(tableRow.getId);
-      updateListView();
-      return result;
+      return null;
     }
 
     drawerList(context);
@@ -213,99 +183,73 @@ class _PlantingBodyState extends State<PlantingBody> {
               ),
               Expanded(
                 flex: 2,
-                child: plantingList.isEmpty
-                    ? Container(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 16.0, vertical: 20.0),
-                        color: Theme.of(context).backgroundColor,
-                        child: Center(
-                            child: RichText(
-                          textAlign: TextAlign.center,
-                          softWrap: true,
-                          text: TextSpan(
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .headline6
-                                  .copyWith(fontWeight: FontWeight.w700),
-                              children: [
-                                TextSpan(text: "No Entry has been made for"),
-                                TextSpan(
-                                    text: "\n ${widget.title}\n\n",
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .headline6
-                                        .copyWith(
-                                          fontWeight: FontWeight.w700,
-                                          color: Color(0xFFFFAE00),
-                                        )),
-                                TextSpan(text: "\nClick the "),
-                                TextSpan(
-                                    text: "insert button ",
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .headline6
-                                        .copyWith(
-                                          fontWeight: FontWeight.w700,
-                                          color: Color(0xFFFFAE00),
-                                        )),
-                                TextSpan(
-                                  text: "below to make an entry",
-                                )
-                              ]),
-                        )),
-                      )
-                    : Container(
-                        width: widget.deviceSize.width,
-                        color: Theme.of(context).scaffoldBackgroundColor,
-                        child: ListView.builder(
-                            itemCount: plantingList.length,
-                            itemBuilder: (BuildContext context, int index) {
-                              return GestureDetector(
-                                onDoubleTap: () => updateItem(index,
-                                    widget.deviceSize, plantingList[index]),
-                                onLongPress: () => updateItem(index,
-                                    widget.deviceSize, plantingList[index]),
-                                onHorizontalDragEnd: (DragEndDetails details) {
-                                  if (details.primaryVelocity > 0) {
-                                    // User swiped Right
+                child: Container(
+                    width: widget.deviceSize.width,
+                    color: Theme.of(context).scaffoldBackgroundColor,
+                    child: StreamBuilder<QuerySnapshot>(
+                        stream: FirebaseFirestore.instance
+                            .collection('planting')
+                            .snapshots(),
+                        builder: (BuildContext context,
+                            AsyncSnapshot<QuerySnapshot> snapshot) {
+                          if (snapshot.hasError) {
+                            return Text('Something went wrong');
+                          }
 
-                                    print("Planting Swiped Right");
-                                    deleteItem(
-                                        index,
-                                        context,
-                                        widget.deviceSize,
-                                        "Planting",
-                                        () => deleAction(plantingList[index]));
-                                  } else if (details.primaryVelocity < 0) {
-                                    // User swiped Left
-                                    print("Planting Swiped Left");
-                                  }
-                                },
-                                child: Container(
-                                  margin: EdgeInsets.only(bottom: 16.0),
-                                  child: PlantingDataCard(
-                                      plantingIDData: plantingList[index].getId,
-                                      idCardNoData:
-                                          plantingList[index].getIdCardNo,
-                                      plantingQuantityData:
-                                          plantingList[index].getQty,
-                                      plantingTypeData:
-                                          plantingList[index].getType,
-                                      acreageData:
-                                          plantingList[index].getAcreage,
-                                      plantingUnitData:
-                                          plantingList[index].getUnit,
-                                      dateData: plantingList[index].getDate,
-                                      deleteFunction: () => deleteItem(
-                                          index,
-                                          context,
-                                          widget.deviceSize,
-                                          "Planting",
-                                          () =>
-                                              deleAction(plantingList[index]))),
-                                ),
-                              );
-                            })),
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return Text("Loading........");
+                          }
+
+                          return ListView.builder(
+                              itemCount: snapshot.data.docs.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                return GestureDetector(
+                                  // onDoubleTap: () => updateItem(index,
+                                  //     widget.deviceSize, plantingList[index]),
+                                  // onLongPress: () => updateItem(index,
+                                  //     widget.deviceSize, plantingList[index]),
+                                  // onHorizontalDragEnd: (DragEndDetails details) {
+                                  //   if (details.primaryVelocity > 0) {
+                                  //     // User swiped Right
+
+                                  //     print("Planting Swiped Right");
+                                  //     deleteItem(
+                                  //         index,
+                                  //         context,
+                                  //         widget.deviceSize,
+                                  //         "Planting",
+                                  //         () => deleAction(plantingList[index]));
+                                  //   } else if (details.primaryVelocity < 0) {
+                                  //     // User swiped Left
+                                  //     print("Planting Swiped Left");
+                                  //   }
+                                  // },
+                                  child: Container(
+                                    margin: EdgeInsets.only(bottom: 16.0),
+                                    child: PlantingDataCard(
+                                        plantingIDData:
+                                            snapshot.data.docs[index].id,
+                                        idCardNoData: snapshot.data.docs[index]
+                                            ['id card no'],
+                                        machineIDData: snapshot.data.docs[index]
+                                            ['machine id'],
+                                        seedsIDData: snapshot.data.docs[index]
+                                            ['seed id'],
+                                        plantingQuantityData:
+                                            snapshot.data.docs[index]['qty'],
+                                        plantingTypeData:
+                                            snapshot.data.docs[index]['type'],
+                                        acreageData: snapshot.data.docs[index]
+                                            ['acreage done'],
+                                        plantingUnitData:
+                                            snapshot.data.docs[index]['unit'],
+                                        dateData: snapshot.data.docs[index]
+                                            ['date recorded']),
+                                  ),
+                                );
+                              });
+                        })),
               ),
               Align(
                   alignment: Alignment.bottomCenter,

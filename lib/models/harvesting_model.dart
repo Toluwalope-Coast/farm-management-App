@@ -1,11 +1,12 @@
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class Harvesting {
-  int _id;
+  String _id;
   String _type;
   String _idCardNo;
-  int _machineId;
-  int _seedId;
+  String _machineId;
+  String _seedId;
   String _unit;
   double _qty;
   double _totalQtyStock;
@@ -39,14 +40,14 @@ class Harvesting {
 
   //  the getters
 
-  int get getId => _id;
+  String get getId => _id;
   String get getType => _type;
   String get getIdCardNo => _idCardNo;
   String get getUnit => _unit;
   double get getQty => _qty;
   double get getTotalQtyStock => _totalQtyStock;
-  int get getMachineId => _machineId;
-  int get getSeedId => _seedId;
+  String get getMachineId => _machineId;
+  String get getSeedId => _seedId;
   double get getAcreage => _acreage;
   String get getDate => _date;
 
@@ -82,14 +83,14 @@ class Harvesting {
     }
   }
 
-  set setMachineId(int newMachineId) {
-    if (newMachineId > 0) {
+  set setMachineId(String newMachineId) {
+    if (newMachineId != Icons.signal_cellular_null) {
       this._machineId = newMachineId;
     }
   }
 
-  set setSeedId(int newSeedId) {
-    if (newSeedId > 0) {
+  set setSeedId(String newSeedId) {
+    if (newSeedId != null) {
       this._seedId = newSeedId;
     }
   }

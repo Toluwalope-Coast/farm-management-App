@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class StaffDataCard extends StatefulWidget {
-  final int staffIDData;
+  final String staffIDData;
   final String firstnameData;
   final String lastnameData;
   final String usernameData;
@@ -12,11 +12,9 @@ class StaffDataCard extends StatefulWidget {
   final String cityData;
   final String telNoData;
   final String dateData;
-  final Function deleteFunction;
 
   const StaffDataCard(
       {Key key,
-      this.deleteFunction,
       this.usernameData,
       this.designationData,
       this.staffIDData,
@@ -63,16 +61,6 @@ class _StaffDataCardState extends State<StaffDataCard> {
                     textAlign: TextAlign.right,
                   ),
                 ),
-                SizedBox(width: 24),
-                Expanded(
-                  flex: 1,
-                  child: IconButton(
-                    icon: Icon(Icons.delete_sharp),
-                    onPressed: widget.deleteFunction,
-                    color: Theme.of(context).scaffoldBackgroundColor,
-                    iconSize: 20,
-                  ),
-                )
               ],
             ),
           ),

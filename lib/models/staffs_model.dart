@@ -1,7 +1,7 @@
 import 'package:intl/intl.dart';
 
 class Staff {
-  int _id;
+  String _id;
   String _firstname;
   String _lastname;
   String _username;
@@ -43,7 +43,7 @@ class Staff {
 
   //  the getters
 
-  int get getId => _id;
+  String get getId => _id;
   String get getFirstname => _firstname;
   String get getLastname => _lastname;
   String get getUsername => _username;

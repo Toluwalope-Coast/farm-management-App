@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:farm_manager/models/machineries_model.dart';
 import 'package:farm_manager/shared/Constant.dart';
 import 'package:farm_manager/shared/Custom_drawer.dart';
@@ -9,7 +10,6 @@ import 'package:farm_manager/shared/report_screens/machines_report.dart';
 import 'package:farm_manager/shared/update_screens.dart/machines_update.dart';
 import 'package:farm_manager/utils/database_helper.dart';
 import 'package:flutter/material.dart';
-import 'package:sqflite/sqflite.dart';
 
 class MachineriesBody extends StatefulWidget {
   final Size deviceSize;
@@ -35,21 +35,6 @@ class _MachineriesBodyState extends State<MachineriesBody> {
 
   DatabaseHelper databaseHelper = DatabaseHelper();
   List<Machinery> machineryList;
-
-  updateListView() {
-    final Future<Database> dbFuture = databaseHelper.initializeDatabase();
-    dbFuture.then((database) {
-      Future<List<Machinery>> machineListFuture =
-          databaseHelper.getMachineList();
-      machineListFuture.then((machineneryList) {
-        if (machineryList != null) {
-          setState(() {
-            this.machineryList = machineneryList;
-          });
-        }
-      });
-    });
-  }
   // Database codes closes here
 
   backIconFunction(context) {
@@ -60,12 +45,7 @@ class _MachineriesBodyState extends State<MachineriesBody> {
   insertIconFunction(context) {
     print("insert Icon pressed");
 
-    Future result = navigatePushTo(context, MachinesInsert());
-    result.then((value) {
-      if (value) {
-        updateListView();
-      }
-    });
+    navigatePushTo(context, MachinesInsert());
   }
 
   reportIconFunction(context, List<Machinery> machines) {
@@ -84,9 +64,9 @@ class _MachineriesBodyState extends State<MachineriesBody> {
         ));
     result.then((value) {
       if (value) {
-        return updateListView();
+        return null;
       } else {
-        return;
+        return null;
       }
     });
   }
@@ -136,15 +116,8 @@ class _MachineriesBodyState extends State<MachineriesBody> {
 
   @override
   Widget build(BuildContext context) {
-    if (machineryList == null) {
-      machineryList = <Machinery>[];
-      updateListView();
-    }
-
     Future<int> deleAction(Machinery tableRow) async {
-      int result = await databaseHelper.deleteMachines(tableRow.getId);
-      updateListView();
-      return result;
+      return null;
     }
 
     drawerList(context);
@@ -213,93 +186,63 @@ class _MachineriesBodyState extends State<MachineriesBody> {
               ),
               Expanded(
                 flex: 2,
-                child: machineryList.isEmpty
-                    ? Container(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 16.0, vertical: 20.0),
-                        color: Theme.of(context).backgroundColor,
-                        child: Center(
-                            child: RichText(
-                          textAlign: TextAlign.center,
-                          softWrap: true,
-                          text: TextSpan(
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .headline6
-                                  .copyWith(fontWeight: FontWeight.w700),
-                              children: [
-                                TextSpan(text: "No Entry has been made for"),
-                                TextSpan(
-                                    text: "\n ${widget.title}\n\n",
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .headline6
-                                        .copyWith(
-                                          fontWeight: FontWeight.w700,
-                                          color: Color(0xFFFFAE00),
-                                        )),
-                                TextSpan(text: "\nClick the "),
-                                TextSpan(
-                                    text: "insert button ",
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .headline6
-                                        .copyWith(
-                                          fontWeight: FontWeight.w700,
-                                          color: Color(0xFFFFAE00),
-                                        )),
-                                TextSpan(
-                                  text: "below to make an entry",
-                                )
-                              ]),
-                        )),
-                      )
-                    : Container(
-                        width: widget.deviceSize.width,
-                        color: Theme.of(context).scaffoldBackgroundColor,
-                        child: ListView.builder(
-                            itemCount: machineryList.length,
-                            itemBuilder: (BuildContext context, int index) {
-                              return GestureDetector(
-                                onDoubleTap: () => updateItem(index,
-                                    widget.deviceSize, machineryList[index]),
-                                onLongPress: () => updateItem(index,
-                                    widget.deviceSize, machineryList[index]),
-                                onHorizontalDragEnd: (DragEndDetails details) {
-                                  if (details.primaryVelocity > 0) {
-                                    // User swiped Right
+                child: Container(
+                    width: widget.deviceSize.width,
+                    color: Theme.of(context).scaffoldBackgroundColor,
+                    child: StreamBuilder<QuerySnapshot>(
+                        stream: FirebaseFirestore.instance
+                            .collection('machine')
+                            .snapshots(),
+                        builder: (BuildContext context,
+                            AsyncSnapshot<QuerySnapshot> snapshot) {
+                          if (snapshot.hasError) {
+                            return Text('Something went wrong');
+                          }
 
-                                    print("Machines Swiped Right");
-                                    deleteItem(
-                                        index,
-                                        context,
-                                        widget.deviceSize,
-                                        "Machines",
-                                        () => deleAction(machineryList[index]));
-                                  } else if (details.primaryVelocity < 0) {
-                                    // User swiped Left
-                                    print("Machines Swiped Left");
-                                  }
-                                },
-                                child: Container(
-                                  margin: EdgeInsets.only(bottom: 16.0),
-                                  child: MachinesDataCard(
-                                      machineIDData: machineryList[index].getId,
-                                      idCardNoData:
-                                          machineryList[index].getIdCardNo,
-                                      machineTypeData:
-                                          machineryList[index].getType,
-                                      dateData: machineryList[index].getDate,
-                                      deleteFunction: () => deleteItem(
-                                          index,
-                                          context,
-                                          widget.deviceSize,
-                                          "Machines",
-                                          () => deleAction(
-                                              machineryList[index]))),
-                                ),
-                              );
-                            })),
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return Text("Loading........");
+                          }
+
+                          return ListView.builder(
+                              itemCount: snapshot.data.docs.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                return GestureDetector(
+                                  // onDoubleTap: () => updateItem(index,
+                                  //     widget.deviceSize, machineryList[index]),
+                                  // onLongPress: () => updateItem(index,
+                                  //     widget.deviceSize, machineryList[index]),
+                                  // onHorizontalDragEnd: (DragEndDetails details) {
+                                  //   if (details.primaryVelocity > 0) {
+                                  //     // User swiped Right
+
+                                  //     print("Machines Swiped Right");
+                                  //     deleteItem(
+                                  //         index,
+                                  //         context,
+                                  //         widget.deviceSize,
+                                  //         "Machines",
+                                  //         () => deleAction(machineryList[index]));
+                                  //   } else if (details.primaryVelocity < 0) {
+                                  //     // User swiped Left
+                                  //     print("Machines Swiped Left");
+                                  //   }
+                                  // },
+                                  child: Container(
+                                    margin: EdgeInsets.only(bottom: 16.0),
+                                    child: MachinesDataCard(
+                                        machineIDData:
+                                            snapshot.data.docs[index].id,
+                                        idCardNoData: snapshot.data.docs[index]
+                                            ['id card no'],
+                                        machineTypeData:
+                                            snapshot.data.docs[index]['type'],
+                                        dateData: snapshot.data.docs[index]
+                                            ['date recorded']),
+                                  ),
+                                );
+                              });
+                        })),
               ),
               Align(
                   alignment: Alignment.bottomCenter,

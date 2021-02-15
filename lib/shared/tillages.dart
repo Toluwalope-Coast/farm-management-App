@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:farm_manager/models/tillage_model.dart';
 import 'package:farm_manager/shared/Constant.dart';
 import 'package:farm_manager/shared/Custom_drawer.dart';
@@ -7,9 +8,7 @@ import 'package:farm_manager/shared/insert_screens.dart/tillage_insert.dart';
 import 'package:farm_manager/shared/report_screens/tillage_report.dart';
 import 'package:farm_manager/shared/tillage_data_card.dart';
 import 'package:farm_manager/shared/update_screens.dart/tillage_update.dart';
-import 'package:farm_manager/utils/database_helper.dart';
 import 'package:flutter/material.dart';
-import 'package:sqflite/sqflite.dart';
 
 class TillagesBody extends StatefulWidget {
   final Size deviceSize;
@@ -33,23 +32,7 @@ class TillagesBody extends StatefulWidget {
 class _TillagesBodyState extends State<TillagesBody> {
   // Database integration into the code
 
-  DatabaseHelper databaseHelper = DatabaseHelper();
   List<Tillage> tillageList;
-
-  updateListView() {
-    final Future<Database> dbFuture = databaseHelper.initializeDatabase();
-    dbFuture.then((database) {
-      Future<List<Tillage>> tillageListFuture = databaseHelper.getTillageList();
-      tillageListFuture.then((tillageList) {
-        if (tillageList != null) {
-          setState(() {
-            this.tillageList = tillageList;
-          });
-        }
-      });
-    });
-  }
-  // Database codes closes here
 
   backIconFunction(context) {
     print("Back Icon pressed");
@@ -57,14 +40,8 @@ class _TillagesBodyState extends State<TillagesBody> {
   }
 
   insertIconFunction(context) {
-    print("insert Icon pressed");
-
-    Future result = navigatePushTo(context, TillageInsert());
-    result.then((value) {
-      if (value) {
-        updateListView();
-      }
-    });
+    print("Report Icon pressed");
+    return navigatePushTo(context, TillageInsert());
   }
 
   reportIconFunction(context, List<Tillage> tillage) {
@@ -87,7 +64,7 @@ class _TillagesBodyState extends State<TillagesBody> {
         ));
     result.then((value) {
       if (value) {
-        return updateListView();
+        return null;
       } else {
         return;
       }
@@ -139,15 +116,8 @@ class _TillagesBodyState extends State<TillagesBody> {
 
   @override
   Widget build(BuildContext context) {
-    if (tillageList == null) {
-      tillageList = <Tillage>[];
-      updateListView();
-    }
-
     Future<int> deleAction(Tillage tableRow) async {
-      int result = await databaseHelper.deleteTillage(tableRow.getId);
-      updateListView();
-      return result;
+      return null;
     }
 
     drawerList(context);
@@ -216,97 +186,67 @@ class _TillagesBodyState extends State<TillagesBody> {
               ),
               Expanded(
                 flex: 2,
-                child: tillageList.isEmpty
-                    ? Container(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 16.0, vertical: 20.0),
-                        color: Theme.of(context).backgroundColor,
-                        child: Center(
-                            child: RichText(
-                          textAlign: TextAlign.center,
-                          softWrap: true,
-                          text: TextSpan(
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .headline6
-                                  .copyWith(fontWeight: FontWeight.w700),
-                              children: [
-                                TextSpan(text: "No Entry has been made for"),
-                                TextSpan(
-                                    text: "\n ${widget.title}\n\n",
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .headline6
-                                        .copyWith(
-                                          fontWeight: FontWeight.w700,
-                                          color: Color(0xFFFFAE00),
-                                        )),
-                                TextSpan(text: "\nClick the "),
-                                TextSpan(
-                                    text: "insert button ",
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .headline6
-                                        .copyWith(
-                                          fontWeight: FontWeight.w700,
-                                          color: Color(0xFFFFAE00),
-                                        )),
-                                TextSpan(
-                                  text: "below to make an entry",
-                                )
-                              ]),
-                        )),
-                      )
-                    : Container(
-                        width: widget.deviceSize.width,
-                        color: Theme.of(context).scaffoldBackgroundColor,
-                        child: ListView.builder(
-                            itemCount: tillageList.length,
-                            itemBuilder: (BuildContext context, int index) {
-                              return GestureDetector(
-                                onDoubleTap: () => updateItem(index,
-                                    widget.deviceSize, tillageList[index]),
-                                onLongPress: () => updateItem(index,
-                                    widget.deviceSize, tillageList[index]),
-                                onHorizontalDragEnd: (DragEndDetails details) {
-                                  if (details.primaryVelocity > 0) {
-                                    // User swiped Right
+                child: Container(
+                    width: widget.deviceSize.width,
+                    color: Theme.of(context).scaffoldBackgroundColor,
+                    child: StreamBuilder<QuerySnapshot>(
+                        stream: FirebaseFirestore.instance
+                            .collection('tillage')
+                            .snapshots(),
+                        builder: (BuildContext context,
+                            AsyncSnapshot<QuerySnapshot> snapshot) {
+                          if (snapshot.hasError) {
+                            return Text('Something went wrong');
+                          }
 
-                                    print("Tillage Swiped Right");
-                                    deleteItem(
-                                        index,
-                                        context,
-                                        widget.deviceSize,
-                                        "Tillage",
-                                        () => deleAction(tillageList[index]));
-                                  } else if (details.primaryVelocity < 0) {
-                                    // User swiped Left
-                                    print("Tillage Swiped Left");
-                                  }
-                                },
-                                child: Container(
-                                  margin: EdgeInsets.only(bottom: 16.0),
-                                  child: TillageDataCard(
-                                      tillageIDData: tillageList[index].getId,
-                                      idCardNoData:
-                                          tillageList[index].getIdCardNo,
-                                      machineIDData:
-                                          tillageList[index].getMachineId,
-                                      tillageTypeData:
-                                          tillageList[index].getType,
-                                      acreageData:
-                                          tillageList[index].getAcreage,
-                                      dateData: tillageList[index].getDate,
-                                      deleteFunction: () => deleteItem(
-                                          index,
-                                          context,
-                                          widget.deviceSize,
-                                          "Tillage",
-                                          () =>
-                                              deleAction(tillageList[index]))),
-                                ),
-                              );
-                            })),
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return Text("Loading........");
+                          }
+
+                          return ListView.builder(
+                              itemCount: snapshot.data.docs.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                return GestureDetector(
+                                  // onDoubleTap: () => updateItem(index,
+                                  //     widget.deviceSize, tillageList[index]),
+                                  // onLongPress: () => updateItem(index,
+                                  //     widget.deviceSize, tillageList[index]),
+                                  // onHorizontalDragEnd: (DragEndDetails details) {
+                                  //   if (details.primaryVelocity > 0) {
+                                  //     // User swiped Right
+
+                                  //     print("Tillage Swiped Right");
+                                  //     deleteItem(
+                                  //         index,
+                                  //         context,
+                                  //         widget.deviceSize,
+                                  //         "Tillage",
+                                  //         () => deleAction(tillageList[index]));
+                                  //   } else if (details.primaryVelocity < 0) {
+                                  //     // User swiped Left
+                                  //     print("Tillage Swiped Left");
+                                  //   }
+                                  // },
+                                  child: Container(
+                                    margin: EdgeInsets.only(bottom: 16.0),
+                                    child: TillageDataCard(
+                                        tillageIDData:
+                                            snapshot.data.docs[index].id,
+                                        idCardNoData: snapshot.data.docs[index]
+                                            ['id card no'],
+                                        machineIDData: snapshot.data.docs[index]
+                                            ['machine id'],
+                                        tillageTypeData:
+                                            snapshot.data.docs[index]['type'],
+                                        acreageData: snapshot.data.docs[index]
+                                            ['acreage done'],
+                                        dateData: snapshot.data.docs[index]
+                                            ['date recorded']),
+                                  ),
+                                );
+                              });
+                        })),
               ),
               Align(
                   alignment: Alignment.bottomCenter,

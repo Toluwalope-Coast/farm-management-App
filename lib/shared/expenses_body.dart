@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:farm_manager/models/expenses_models.dart';
 import 'package:farm_manager/shared/Constant.dart';
 import 'package:farm_manager/shared/Custom_drawer.dart';
@@ -7,9 +8,7 @@ import 'package:farm_manager/shared/expense_data_card.dart';
 import 'package:farm_manager/shared/insert_screens.dart/expenses_insert.dart';
 import 'package:farm_manager/shared/report_screens/expenses_report.dart';
 import 'package:farm_manager/shared/update_screens.dart/expenses_update.dart';
-import 'package:farm_manager/utils/database_helper.dart';
 import 'package:flutter/material.dart';
-import 'package:sqflite/sqflite.dart';
 
 class ExpensesBody extends StatefulWidget {
   final Size deviceSize;
@@ -33,23 +32,7 @@ class ExpensesBody extends StatefulWidget {
 class _ExpensesBodyState extends State<ExpensesBody> {
   // Database integration into the code
 
-  DatabaseHelper databaseHelper = DatabaseHelper();
   List<Expenses> expensesList;
-
-  updateListView() {
-    final Future<Database> dbFuture = databaseHelper.initializeDatabase();
-    dbFuture.then((database) {
-      Future<List<Expenses>> expensesListFuture =
-          databaseHelper.getExpensesList();
-      expensesListFuture.then((expensesList) {
-        if (expensesList != null) {
-          setState(() {
-            this.expensesList = expensesList;
-          });
-        }
-      });
-    });
-  }
   // Database codes closes here
 
   backIconFunction(context) {
@@ -58,14 +41,8 @@ class _ExpensesBodyState extends State<ExpensesBody> {
   }
 
   insertIconFunction(context) {
-    print("insert Icon pressed");
-
-    Future result = navigatePushTo(context, ExpensesInsert());
-    result.then((value) {
-      if (value) {
-        updateListView();
-      }
-    });
+    print("Report Icon pressed");
+    return navigatePushTo(context, ExpensesInsert());
   }
 
   reportIconFunction(context, List<Expenses> expenses) {
@@ -84,7 +61,7 @@ class _ExpensesBodyState extends State<ExpensesBody> {
         ));
     result.then((value) {
       if (value) {
-        return updateListView();
+        return null;
       } else {
         return;
       }
@@ -136,15 +113,8 @@ class _ExpensesBodyState extends State<ExpensesBody> {
 
   @override
   Widget build(BuildContext context) {
-    if (expensesList == null) {
-      expensesList = <Expenses>[];
-      updateListView();
-    }
-
     Future<int> deleAction(Expenses tableRow) async {
-      int result = await databaseHelper.deleteExpensese(tableRow.id);
-      updateListView();
-      return result;
+      return null;
     }
 
     drawerList(context);
@@ -213,104 +183,75 @@ class _ExpensesBodyState extends State<ExpensesBody> {
               ),
               Expanded(
                 flex: 2,
-                child: expensesList.isEmpty
-                    ? Container(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 16.0, vertical: 20.0),
-                        color: Theme.of(context).backgroundColor,
-                        child: Center(
-                            child: RichText(
-                          textAlign: TextAlign.center,
-                          softWrap: true,
-                          text: TextSpan(
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .headline6
-                                  .copyWith(fontWeight: FontWeight.w700),
-                              children: [
-                                TextSpan(text: "No Entry has been made for"),
-                                TextSpan(
-                                    text: "\n ${widget.title}\n\n",
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .headline6
-                                        .copyWith(
-                                          fontWeight: FontWeight.w700,
-                                          color: Color(0xFFFFAE00),
-                                        )),
-                                TextSpan(text: "\nClick the "),
-                                TextSpan(
-                                    text: "insert button ",
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .headline6
-                                        .copyWith(
-                                          fontWeight: FontWeight.w700,
-                                          color: Color(0xFFFFAE00),
-                                        )),
-                                TextSpan(
-                                  text: "below to make an entry",
-                                )
-                              ]),
-                        )),
-                      )
-                    : Container(
-                        width: widget.deviceSize.width,
-                        color: Theme.of(context).scaffoldBackgroundColor,
-                        child: ListView.builder(
-                            itemCount: expensesList.length,
-                            itemBuilder: (BuildContext context, int index) {
-                              return GestureDetector(
-                                onDoubleTap: () => updateItem(index,
-                                    widget.deviceSize, expensesList[index]),
-                                onLongPress: () => updateItem(index,
-                                    widget.deviceSize, expensesList[index]),
-                                onHorizontalDragEnd: (DragEndDetails details) {
-                                  if (details.primaryVelocity > 0) {
-                                    // User swiped Right
+                child: Container(
+                    width: widget.deviceSize.width,
+                    color: Theme.of(context).scaffoldBackgroundColor,
+                    child: StreamBuilder<QuerySnapshot>(
+                        stream: FirebaseFirestore.instance
+                            .collection('expense')
+                            .snapshots(),
+                        builder: (BuildContext context,
+                            AsyncSnapshot<QuerySnapshot> snapshot) {
+                          if (snapshot.hasError) {
+                            return Text('Something went wrong');
+                          }
 
-                                    print("Expenses Swiped Right");
-                                    deleteItem(
-                                        index,
-                                        context,
-                                        widget.deviceSize,
-                                        "Expenses",
-                                        () => deleAction(expensesList[index]));
-                                  } else if (details.primaryVelocity < 0) {
-                                    // User swiped Left
-                                    print("Expenses Swiped Left");
-                                  }
-                                },
-                                child: Container(
-                                  margin: EdgeInsets.only(bottom: 16.0),
-                                  child: ExpensesDataCard(
-                                      expensesIDData: expensesList[index].id,
-                                      productTypeData:
-                                          expensesList[index].getProductType,
-                                      wayBillNoData:
-                                          expensesList[index].getWaybillNo,
-                                      customerIDData:
-                                          expensesList[index].getCustomerID,
-                                      paymentModeData:
-                                          expensesList[index].getPaymentMode,
-                                      expensesUnitData:
-                                          expensesList[index].getUnit,
-                                      expensesRateData:
-                                          expensesList[index].getRate,
-                                      expensesAmountData:
-                                          expensesList[index].getAmountRecieved,
-                                      expensesDateData:
-                                          expensesList[index].getDate,
-                                      deleteFunction: () => deleteItem(
-                                          index,
-                                          context,
-                                          widget.deviceSize,
-                                          "Expenses",
-                                          () =>
-                                              deleAction(expensesList[index]))),
-                                ),
-                              );
-                            })),
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return Text("Loading........");
+                          }
+
+                          return ListView.builder(
+                              itemCount: snapshot.data.docs.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                return GestureDetector(
+                                  // onDoubleTap: () => updateItem(index,
+                                  //     widget.deviceSize, expensesList[index]),
+                                  // onLongPress: () => updateItem(index,
+                                  //     widget.deviceSize, expensesList[index]),
+                                  // onHorizontalDragEnd: (DragEndDetails details) {
+                                  //   if (details.primaryVelocity > 0) {
+                                  //     // User swiped Right
+
+                                  //     print("Expenses Swiped Right");
+                                  //     deleteItem(
+                                  //         index,
+                                  //         context,
+                                  //         widget.deviceSize,
+                                  //         "Expenses",
+                                  //         () => deleAction(expensesList[index]));
+                                  //   } else if (details.primaryVelocity < 0) {
+                                  //     // User swiped Left
+                                  //     print("Expenses Swiped Left");
+                                  //   }
+                                  // },
+                                  child: Container(
+                                      margin: EdgeInsets.only(bottom: 16.0),
+                                      child: ExpensesDataCard(
+                                          expensesIDData:
+                                              snapshot.data.docs[index].id,
+                                          productTypeData: snapshot.data.docs[index]
+                                              ['product type'],
+                                          wayBillNoData: snapshot.data.docs[index]
+                                              ['waybill no'],
+                                          customerIDData: snapshot.data.docs[index]
+                                              ['customer id'],
+                                          paymentModeData: snapshot.data.docs[index]
+                                              ['payment mode'],
+                                          quantityReceivedData: snapshot.data.docs[index]
+                                              ['qty recieved'],
+                                          expensesUnitData:
+                                              snapshot.data.docs[index]['unit'],
+                                          expensesRateData:
+                                              snapshot.data.docs[index]['rate'],
+                                          expensesAmountData: snapshot
+                                              .data
+                                              .docs[index]['amount sold']
+                                              .getAmountRecieved,
+                                          expensesDateData: snapshot.data.docs[index]['date recorded'])),
+                                );
+                              });
+                        })),
               ),
               Align(
                   alignment: Alignment.bottomCenter,

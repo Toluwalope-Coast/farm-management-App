@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
 
 class MachinesDataCard extends StatefulWidget {
-  final int machineIDData;
+  final String machineIDData;
   final String machineTypeData;
   final String idCardNoData;
   final String dateData;
-  final Function deleteFunction;
-
   const MachinesDataCard(
       {Key key,
       this.machineIDData,
-      this.deleteFunction,
       this.idCardNoData,
       this.machineTypeData,
       this.dateData})
@@ -49,16 +46,6 @@ class _MachinesDataCardState extends State<MachinesDataCard> {
                     textAlign: TextAlign.right,
                   ),
                 ),
-                SizedBox(width: 24),
-                Expanded(
-                  flex: 1,
-                  child: IconButton(
-                    icon: Icon(Icons.delete_sharp),
-                    onPressed: widget.deleteFunction,
-                    color: Theme.of(context).scaffoldBackgroundColor,
-                    iconSize: 20,
-                  ),
-                )
               ],
             ),
           ),

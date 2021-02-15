@@ -1,10 +1,10 @@
 import 'package:intl/intl.dart';
 
 class Expenses {
-  int _id;
+  String _id;
   String _productType;
   String _waybillNo;
-  int _customerId;
+  String _customerId;
   String _paymentMode;
   double _qtyRecieved;
   String _unit;
@@ -39,10 +39,10 @@ class Expenses {
 
   //  the getters
 
-  int get id => _id;
+  String get id => _id;
   String get getProductType => _productType;
   String get getWaybillNo => _waybillNo;
-  int get getCustomerID => _customerId;
+  String get getCustomerID => _customerId;
   String get getPaymentMode => _paymentMode;
   double get getQtyRecieved => _qtyRecieved;
   String get getUnit => _unit;
@@ -64,8 +64,8 @@ class Expenses {
     }
   }
 
-  set setCustomerID(int newCustomerID) {
-    if (newCustomerID <= 255 && newCustomerID > 0) {
+  set setCustomerID(String newCustomerID) {
+    if (newCustomerID != null) {
       this._customerId = newCustomerID;
     }
   }

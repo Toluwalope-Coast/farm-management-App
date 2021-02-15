@@ -1,10 +1,10 @@
 import 'package:intl/intl.dart';
 
 class Fuel {
-  int _id;
+  String _id;
   String _type;
   String _idCardNo;
-  int _machineId;
+  String _machineId;
   String _date = '';
 
   // Two constructor for the models (with the id and without id)
@@ -16,10 +16,10 @@ class Fuel {
 
   //  the getters
 
-  int get getId => _id;
+  String get getId => _id;
   String get getType => _type;
   String get getIdCardNo => _idCardNo;
-  int get getMachineId => _machineId;
+  String get getMachineId => _machineId;
   String get getDate => _date;
 
   // the setters
@@ -36,8 +36,8 @@ class Fuel {
     }
   }
 
-  set setMachineId(int newMachineId) {
-    if (newMachineId > 0) {
+  set setMachineId(String newMachineId) {
+    if (newMachineId != null) {
       this._machineId = newMachineId;
     }
   }
