@@ -48,8 +48,11 @@ class _UserUpdateBodyState extends State<UserUpdateBody> {
   ];
 
   updateUser(context, User model) async {
-    User userModel = new User.withId(model.id, usernameController.text,
-        passwordController.text, _designationSelected);
+    User userModel = new User.withId(
+        id: model.getId,
+        username: usernameController.text,
+        password: passwordController.text,
+        designation: _designationSelected);
     print("username is ${usernameController.text}");
     print("password is ${passwordController.text}");
     print("Designation Selected is $_designationSelected");

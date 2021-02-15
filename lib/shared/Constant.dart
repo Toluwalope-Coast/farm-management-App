@@ -48,7 +48,7 @@ navigationReplaceRoute(context, location) {
       context, MaterialPageRoute(builder: (context) => location));
 }
 
-navigationPopRoute(context, value) {
+navigationPopRoute(context, [value]) {
   return Navigator.of(context).pop(value);
 }
 

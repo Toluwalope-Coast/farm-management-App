@@ -1,38 +1,47 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class User {
-  int _id;
-  String _username;
-  String _password;
-  String _designation;
+  String id;
+  String username;
+  String password;
+  String designation;
+  Timestamp date;
 
   // Two constructor for the models (with the id and without id)
 
-  User(this._username, this._password, this._designation);
-  User.withId(this._id, this._username, this._password, this._designation);
+  User({this.username, this.password, this.designation, this.date});
+  User.withId({this.id, this.username, this.password, this.designation});
 
   //  the getters
 
-  int get id => _id;
-  String get getUsername => _username;
-  String get getPassword => _password;
-  String get getDesignation => _designation;
+  String get getId => id;
+  String get getUsername => username;
+  String get getPassword => password;
+  String get getDesignation => designation;
 
   // the setters
 
   set setUsername(String newUsername) {
     if (newUsername.length <= 255 && newUsername.isNotEmpty) {
-      this._username = newUsername;
+      this.username = newUsername;
     }
   }
 
   set setPassword(String newPassword) {
     if (newPassword.length <= 255 && newPassword.isNotEmpty) {
-      this._password = newPassword;
+      this.password = newPassword;
     }
   }
 
   set setDesignation(String newDesignation) {
     if (newDesignation.length <= 255 && newDesignation.isNotEmpty) {
-      this._designation = newDesignation;
+      this.designation = newDesignation;
+    }
+  }
+
+  set setDate(Timestamp newDate) {
+    if (date != null) {
+      this.date = newDate;
     }
   }
 
@@ -41,20 +50,35 @@ class User {
   Map<String, dynamic> toMap() {
     var map = Map<String, dynamic>();
     if (id != null) {
-      map['id'] = _id;
+      map['id'] = id;
     }
-    map['username'] = _username;
-    map['password'] = _password;
-    map['designation'] = _designation;
+    map['username'] = username;
+    map['password'] = password;
+    map['designation'] = designation;
     return map;
   }
+
+//   // Firestore data converter
+// var cityConverter = {
+//     toFirestore: function(city) {
+//         return {
+//             name: city.name,
+//             state: city.state,
+//             country: city.country
+//             };
+//     },
+//     fromFirestore: function(snapshot, options){
+//         const data = snapshot.data(options);
+//         return new City(data.name, data.state, data.country);
+//     }
+// }
 
   // Extract a User Object from a map Object
 
   User.fromMapObject(Map<String, dynamic> map) {
-    this._id = map['id'];
-    this._username = map['username'];
-    this._password = map['password'];
-    this._designation = map['designation'];
+    this.id = map['id'];
+    this.username = map['username'];
+    this.password = map['password'];
+    this.designation = map['designation'];
   }
 }

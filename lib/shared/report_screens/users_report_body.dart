@@ -1,5 +1,6 @@
 import 'dart:core';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:farm_manager/models/users_models.dart';
 import 'package:farm_manager/shared/Constant.dart';
 // import 'package:farm_manager/shared/analytics/users_analytics.dart';
@@ -25,6 +26,9 @@ class _UserReportBodyState extends State<UserReportBody> {
     sort = false;
     super.initState();
   }
+
+  final CollectionReference userCollection =
+      FirebaseFirestore.instance.collection('user');
 
   onSortColumn(int columnIndex, bool ascending, List<User> usersList) {
     if (columnIndex == 0) {

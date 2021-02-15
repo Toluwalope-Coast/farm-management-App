@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 
 class UserDataCard extends StatefulWidget {
-  final int userIDData;
+  final String userIDData;
   final String usernameData;
   final String passwordData;
   final String designationData;
-  final Function deleteFunction;
+  final String dateData;
 
   const UserDataCard(
       {Key key,
       this.userIDData,
-      this.deleteFunction,
       this.usernameData,
       this.passwordData,
-      this.designationData})
+      this.designationData,
+      this.dateData})
       : super(key: key);
 
   @override
@@ -49,16 +49,6 @@ class _UserDataCardState extends State<UserDataCard> {
                     textAlign: TextAlign.right,
                   ),
                 ),
-                SizedBox(width: 24),
-                Expanded(
-                  flex: 1,
-                  child: IconButton(
-                    icon: Icon(Icons.delete_sharp),
-                    onPressed: widget.deleteFunction,
-                    color: Theme.of(context).scaffoldBackgroundColor,
-                    iconSize: 20,
-                  ),
-                )
               ],
             ),
           ),
@@ -105,6 +95,22 @@ class _UserDataCardState extends State<UserDataCard> {
                 ),
                 Text(
                   widget.designationData,
+                  style: Theme.of(context).textTheme.subtitle1,
+                ),
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "Date:",
+                  style: Theme.of(context).textTheme.bodyText2,
+                ),
+                Text(
+                  widget.dateData,
                   style: Theme.of(context).textTheme.subtitle1,
                 ),
               ],

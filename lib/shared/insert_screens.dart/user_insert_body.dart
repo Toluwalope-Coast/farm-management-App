@@ -4,6 +4,7 @@ import 'package:farm_manager/shared/custom_drawer.dart';
 import 'package:farm_manager/shared/custom_textfield.dart';
 import 'package:farm_manager/shared/rounded_container.dart';
 import 'package:farm_manager/shared/rounded_flat_button.dart';
+import 'package:farm_manager/utils/database.dart';
 import 'package:farm_manager/utils/database_helper.dart';
 import 'package:flutter/material.dart';
 
@@ -45,16 +46,22 @@ class _UserInsertBodyState extends State<UserInsertBody> {
     "Field Operator"
   ];
 
-  insertUser(context) async {
-    User user = new User(
-        usernameController.text, passwordController.text, _designationSelected);
-    print("username is ${usernameController.text}");
-    print("password is ${passwordController.text}");
-    print("Designation Selected is $_designationSelected");
+  Future insertUser(context) async {
+    DatabaseService firebaseInsertUser = new DatabaseService();
+    try {
+      User user = new User(
+          username: usernameController.text,
+          password: passwordController.text,
+          designation: _designationSelected);
+      print("username is ${usernameController.text}");
+      print("password is ${passwordController.text}");
+      print("Designation Selected is $_designationSelected");
 
-    int result = await databaseHelper.insertUser(user);
-    if (result != 0) {
-      return navigationPopRoute(context, true);
+      // dynamic result =
+      firebaseInsertUser.addUser(user);
+      navigationPopRoute(context);
+    } catch (e) {
+      return print(e.toString());
     }
   }
 
