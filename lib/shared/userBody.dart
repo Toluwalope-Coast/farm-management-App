@@ -10,7 +10,6 @@ import 'package:farm_manager/shared/update_screens.dart/user_update.dart';
 import 'package:farm_manager/shared/users_data_card.dart';
 import 'package:farm_manager/utils/database_helper.dart';
 import 'package:flutter/material.dart';
-import 'package:sqflite/sqflite.dart';
 
 class UsersBody extends StatefulWidget {
   final Size deviceSize;

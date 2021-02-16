@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class Harvesting {
@@ -84,7 +83,7 @@ class Harvesting {
   }
 
   set setMachineId(String newMachineId) {
-    if (newMachineId != Icons.signal_cellular_null) {
+    if (newMachineId != null) {
       this._machineId = newMachineId;
     }
   }

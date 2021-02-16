@@ -213,7 +213,7 @@ class _ExpensesInsertBodyState extends State<ExpensesInsertBody> {
                             obscureText: false,
                             textInputHintStyle:
                                 Theme.of(context).textTheme.bodyText2,
-                            inputType: TextInputType.number,
+                            inputType: TextInputType.text,
                             textInputHint: "Enter WayBill Number",
                           ),
                         ),

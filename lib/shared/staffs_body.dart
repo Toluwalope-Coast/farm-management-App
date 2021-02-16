@@ -4,7 +4,7 @@ import 'package:farm_manager/shared/Constant.dart';
 import 'package:farm_manager/shared/Custom_drawer.dart';
 import 'package:farm_manager/shared/bottom_bar.dart';
 import 'package:farm_manager/shared/dialogue_box.dart';
-import 'package:farm_manager/shared/insert_screens.dart/customers_insert.dart';
+import 'package:farm_manager/shared/insert_screens.dart/staff_insert.dart';
 import 'package:farm_manager/shared/report_screens/staff_report.dart';
 import 'package:farm_manager/shared/staff_data_card.dart';
 import 'package:farm_manager/shared/update_screens.dart/staff_update.dart';
@@ -46,7 +46,7 @@ class _StaffsBodyState extends State<StaffsBody> {
   insertIconFunction(context) {
     print("insert Icon pressed");
 
-    navigatePushTo(context, CustomerInsert());
+    navigatePushTo(context, StaffInsert());
   }
 
   reportIconFunction(context, List<Staff> staff) {

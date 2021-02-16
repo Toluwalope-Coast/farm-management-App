@@ -238,16 +238,14 @@ class _ExpensesBodyState extends State<ExpensesBody> {
                                               ['customer id'],
                                           paymentModeData: snapshot.data.docs[index]
                                               ['payment mode'],
-                                          quantityReceivedData: snapshot.data.docs[index]
-                                              ['qty recieved'],
+                                          quantityReceivedData: snapshot
+                                              .data.docs[index]['qty recieved'],
                                           expensesUnitData:
                                               snapshot.data.docs[index]['unit'],
                                           expensesRateData:
                                               snapshot.data.docs[index]['rate'],
-                                          expensesAmountData: snapshot
-                                              .data
-                                              .docs[index]['amount sold']
-                                              .getAmountRecieved,
+                                          expensesAmountData: snapshot.data.docs[index]
+                                              ['amount sold'],
                                           expensesDateData: snapshot.data.docs[index]['date recorded'])),
                                 );
                               });

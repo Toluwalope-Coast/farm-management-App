@@ -62,7 +62,7 @@ class _CustomerInsertBodyState extends State<CustomerInsertBody> {
       print("email is ${emailController.text}");
       print("address is ${addressController.text}");
       print("TelNo is ${telNoController.text}");
-      print("TelNo is $_modeOfTransactionSelected");
+      print("Mode of Transaction is $_modeOfTransactionSelected");
 
       // dynamic result =
       firebaseInsertCustomer.addCustomer(customer);
