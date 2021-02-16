@@ -84,7 +84,7 @@ class _ExpensesUpdateBodyState extends State<ExpensesUpdateBody> {
 
     int result = await databaseHelper.updateExpenses(expenses);
     if (result != 0) {
-      return navigationPopRoute(context, true);
+      return navigationPopRoute(context);
     }
   }
 

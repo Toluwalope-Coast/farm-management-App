@@ -74,7 +74,7 @@ class _PlantingUpdateBodyState extends State<PlantingUpdateBody> {
 
     int result = await databaseHelper.updatePlanting(planting);
     if (result != 0) {
-      return navigationPopRoute(context, true);
+      return navigationPopRoute(context);
     }
   }
 

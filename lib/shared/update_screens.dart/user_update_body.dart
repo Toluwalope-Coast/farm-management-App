@@ -64,7 +64,7 @@ class _UserUpdateBodyState extends State<UserUpdateBody> {
 
     int result = await databaseHelper.updateUser(userModel);
     if (result != 0) {
-      return navigationPopRoute(context, true);
+      return navigationPopRoute(context);
     } else {
       print("Whoopsiiii");
     }

@@ -46,7 +46,7 @@ class _MachinesUpdateBodyState extends State<MachinesUpdateBody> {
 
     int result = await databaseHelper.updateMachines(machine);
     if (result != 0) {
-      return navigationPopRoute(context, true);
+      return navigationPopRoute(context);
     }
   }
 

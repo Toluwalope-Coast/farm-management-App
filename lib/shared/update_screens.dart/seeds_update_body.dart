@@ -70,7 +70,7 @@ class _SeedsUpdateBodyState extends State<SeedsUpdateBody> {
 
     int result = await databaseHelper.updateSeed(seed);
     if (result != 0) {
-      return navigationPopRoute(context, true);
+      return navigationPopRoute(context);
     }
   }
 

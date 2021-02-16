@@ -67,7 +67,7 @@ class _CustomerUpdateBodyState extends State<CustomerUpdateBody> {
 
     int result = await databaseHelper.updateCustomer(customer);
     if (result != 0) {
-      return navigationPopRoute(context, true);
+      return navigationPopRoute(context);
     }
   }
 

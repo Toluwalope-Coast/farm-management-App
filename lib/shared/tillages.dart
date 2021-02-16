@@ -36,7 +36,7 @@ class _TillagesBodyState extends State<TillagesBody> {
 
   backIconFunction(context) {
     print("Back Icon pressed");
-    return navigationPopRoute(context, null);
+    return navigationPopRoute(context);
   }
 
   insertIconFunction(context) {
@@ -117,12 +117,18 @@ class _TillagesBodyState extends State<TillagesBody> {
   @override
   Widget build(BuildContext context) {
     Future deleAction(String collectionName, String collectionDoc) async {
-      FirebaseFirestore.instance
-          .collection(collectionName)
-          .doc(collectionDoc)
-          .delete()
-          .then((value) =>
-              print("$collectionName $collectionDoc successfully deleted!"));
+      try {
+        FirebaseFirestore.instance
+            .collection(collectionName)
+            .doc(collectionDoc)
+            .delete()
+            .then((value) {
+          print("$collectionName $collectionDoc successfully deleted!");
+          navigationPopRoute(context);
+        });
+      } catch (e) {
+        print('The error found is ${e.toString()}');
+      }
     }
 
     drawerList(context);
@@ -197,6 +203,7 @@ class _TillagesBodyState extends State<TillagesBody> {
                     child: StreamBuilder<QuerySnapshot>(
                         stream: FirebaseFirestore.instance
                             .collection('tillage')
+                            .orderBy('date recorded', descending: true)
                             .snapshots(),
                         builder: (BuildContext context,
                             AsyncSnapshot<QuerySnapshot> snapshot) {

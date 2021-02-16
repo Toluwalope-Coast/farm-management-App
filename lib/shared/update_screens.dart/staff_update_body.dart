@@ -85,7 +85,7 @@ class _StaffUpdateBodyState extends State<StaffUpdateBody> {
     int result = await databaseHelper.updateStaff(staff);
     print('The result: $result');
     if (result != 0) {
-      return navigationPopRoute(context, true);
+      return navigationPopRoute(context);
     }
   }
 

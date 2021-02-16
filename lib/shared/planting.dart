@@ -37,7 +37,7 @@ class _PlantingBodyState extends State<PlantingBody> {
 
   backIconFunction(context) {
     print("Back Icon pressed");
-    return navigationPopRoute(context, null);
+    return navigationPopRoute(context);
   }
 
   insertIconFunction(context) {
@@ -114,12 +114,18 @@ class _PlantingBodyState extends State<PlantingBody> {
   @override
   Widget build(BuildContext context) {
     Future deleAction(String collectionName, String collectionDoc) async {
-      FirebaseFirestore.instance
-          .collection(collectionName)
-          .doc(collectionDoc)
-          .delete()
-          .then((value) =>
-              print("$collectionName $collectionDoc successfully deleted!"));
+      try {
+        FirebaseFirestore.instance
+            .collection(collectionName)
+            .doc(collectionDoc)
+            .delete()
+            .then((value) {
+          print("$collectionName $collectionDoc successfully deleted!");
+          navigationPopRoute(context);
+        });
+      } catch (e) {
+        print('The error found is ${e.toString()}');
+      }
     }
 
     drawerList(context);
@@ -194,6 +200,7 @@ class _PlantingBodyState extends State<PlantingBody> {
                     child: StreamBuilder<QuerySnapshot>(
                         stream: FirebaseFirestore.instance
                             .collection('planting')
+                            .orderBy('date recorded', descending: true)
                             .snapshots(),
                         builder: (BuildContext context,
                             AsyncSnapshot<QuerySnapshot> snapshot) {

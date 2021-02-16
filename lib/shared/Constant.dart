@@ -48,8 +48,8 @@ navigationReplaceRoute(context, location) {
       context, MaterialPageRoute(builder: (context) => location));
 }
 
-navigationPopRoute(context, [value]) {
-  return Navigator.of(context).pop(value);
+navigationPopRoute(context) {
+  return Navigator.of(context).pop();
 }
 
 navigatePushTo(BuildContext context, Widget location) {

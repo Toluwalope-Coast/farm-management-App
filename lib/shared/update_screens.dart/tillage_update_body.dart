@@ -57,7 +57,7 @@ class _TillageUpdateBodyState extends State<TillageUpdateBody> {
 
     int result = await databaseHelper.updateTillage(tillageModel);
     if (result != 0) {
-      return navigationPopRoute(context, true);
+      return navigationPopRoute(context);
     } else {
       print("Whoopsiiii");
     }

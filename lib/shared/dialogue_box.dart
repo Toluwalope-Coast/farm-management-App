@@ -9,7 +9,6 @@ class CustomDialogueBox extends StatelessWidget {
   final Size deviceSize;
   final String deleteTitle;
   final String index;
-  // final Future<int> delFuncResult;
   final AsyncCallback delFuncResult;
   CustomDialogueBox({
     Key key,
@@ -65,7 +64,7 @@ class CustomDialogueBox extends StatelessWidget {
                       buttonBackgroundColor: Theme.of(context).primaryColor,
                       buttonTextValue: "Yes",
                       buttonTextStyle: Theme.of(context).textTheme.button,
-                      buttonFunction: () => navigationPopRoute(context),
+                      buttonFunction: delFuncResult,
                     ),
                   ),
                   Container(

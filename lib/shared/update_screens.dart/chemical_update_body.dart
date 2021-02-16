@@ -58,7 +58,7 @@ class _ChemicalUpdateBodyState extends State<ChemicalUpdateBody> {
 
     int result = await databaseHelper.updateChemical(chemical);
     if (result != 0) {
-      return navigationPopRoute(context, true);
+      return navigationPopRoute(context);
     }
   }
 

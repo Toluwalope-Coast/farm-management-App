@@ -77,7 +77,7 @@ class _HarvestingUpdateBodyState extends State<HarvestingUpdateBody> {
 
     int result = await databaseHelper.updateHarvesting(harvesting);
     if (result != 0) {
-      return navigationPopRoute(context, true);
+      return navigationPopRoute(context);
     }
   }
 

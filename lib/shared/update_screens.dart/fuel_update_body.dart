@@ -49,7 +49,7 @@ class _FuelUpdateBodyState extends State<FuelUpdateBody> {
 
     int result = await databaseHelper.updateFuel(fuel);
     if (result != 0) {
-      return navigationPopRoute(context, true);
+      return navigationPopRoute(context);
     }
   }
 

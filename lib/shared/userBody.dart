@@ -40,7 +40,7 @@ class _UsersBodyState extends State<UsersBody> {
 
   backIconFunction(context) {
     print("Back Icon pressed");
-    return navigationPopRoute(context, null);
+    return navigationPopRoute(context);
   }
 
   insertIconFunction(context) {
@@ -75,7 +75,7 @@ class _UsersBodyState extends State<UsersBody> {
   deleteItem(String index, BuildContext context, Size deviceSize,
       String updateTable, AsyncCallback delFunc) {
     print("delete dialogue called on $index index item");
-    print("item at $index has being updated");
+    print("item at $index has being deleted");
     return showGeneralDialog(
       barrierLabel: "Label",
       barrierDismissible: true,
@@ -124,12 +124,18 @@ class _UsersBodyState extends State<UsersBody> {
   @override
   Widget build(BuildContext context) {
     Future deleAction(String collectionName, String collectionDoc) async {
-      FirebaseFirestore.instance
-          .collection(collectionName)
-          .doc(collectionDoc)
-          .delete()
-          .then((value) =>
-              print("$collectionName $collectionDoc successfully deleted!"));
+      try {
+        FirebaseFirestore.instance
+            .collection(collectionName)
+            .doc(collectionDoc)
+            .delete()
+            .then((value) {
+          print("$collectionName $collectionDoc successfully deleted!");
+          navigationPopRoute(context);
+        });
+      } catch (e) {
+        print('The error found is ${e.toString()}');
+      }
     }
 
     drawerList(context);
@@ -204,6 +210,7 @@ class _UsersBodyState extends State<UsersBody> {
                     child: StreamBuilder<QuerySnapshot>(
                         stream: FirebaseFirestore.instance
                             .collection('user')
+                            .orderBy("date", descending: true)
                             .snapshots(),
                         builder: (BuildContext context,
                             AsyncSnapshot<QuerySnapshot> snapshot) {

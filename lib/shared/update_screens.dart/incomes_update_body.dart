@@ -83,7 +83,7 @@ class _IncomesUpdateBodyState extends State<IncomesUpdateBody> {
 
     int result = await databaseHelper.updateIncome(income);
     if (result != 0) {
-      return navigationPopRoute(context, true);
+      return navigationPopRoute(context);
     }
   }
 
