@@ -67,7 +67,7 @@ class _FuelBodyState extends State<FuelBody> {
     });
   }
 
-  deleteItem(int index, BuildContext context, Size deviceSize,
+  deleteItem(String index, BuildContext context, Size deviceSize,
       String updateTable, AsyncCallback delFunc) {
     print("delete dialogue called on $index index item");
     print("item at $index has being updated");
@@ -86,7 +86,7 @@ class _FuelBodyState extends State<FuelBody> {
                 child: CustomDialogueBox(
               deviceSize: deviceSize,
               deleteTitle:
-                  "Are u sure you want to delete $updateTable ${index + 1} ?",
+                  "Are u sure you want to delete $updateTable $index ?",
               index: index,
               delFuncResult: delFunc,
             )),
@@ -112,8 +112,13 @@ class _FuelBodyState extends State<FuelBody> {
 
   @override
   Widget build(BuildContext context) {
-    Future<int> deleAction(Fuel tableRow) async {
-      return null;
+    Future deleAction(String collectionName, String collectionDoc) async {
+      FirebaseFirestore.instance
+          .collection(collectionName)
+          .doc(collectionDoc)
+          .delete()
+          .then((value) =>
+              print("$collectionName $collectionDoc successfully deleted!"));
     }
 
     drawerList(context);
@@ -208,22 +213,24 @@ class _FuelBodyState extends State<FuelBody> {
                                   //     index, widget.deviceSize, fuelList[index]),
                                   // onLongPress: () => updateItem(
                                   //     index, widget.deviceSize, fuelList[index]),
-                                  // onHorizontalDragEnd: (DragEndDetails details) {
-                                  //   if (details.primaryVelocity > 0) {
-                                  //     // User swiped Right
+                                  onHorizontalDragEnd:
+                                      (DragEndDetails details) {
+                                    if (details.primaryVelocity > 0) {
+                                      // User swiped Right
 
-                                  //     print("Fuel Swiped Right");
-                                  //     deleteItem(
-                                  //         index,
-                                  //         context,
-                                  //         widget.deviceSize,
-                                  //         "Fuel",
-                                  //         () => deleAction(fuelList[index]));
-                                  //   } else if (details.primaryVelocity < 0) {
-                                  //     // User swiped Left
-                                  //     print("Fuel Swiped Left");
-                                  //   }
-                                  // },
+                                      print("Fuel Swiped Right");
+                                      deleteItem(
+                                          snapshot.data.docs[index].id,
+                                          context,
+                                          widget.deviceSize,
+                                          "Fuel",
+                                          () => deleAction('fuel',
+                                              snapshot.data.docs[index].id));
+                                    } else if (details.primaryVelocity < 0) {
+                                      // User swiped Left
+                                      print("Fuel Swiped Left");
+                                    }
+                                  },
                                   child: Container(
                                       margin: EdgeInsets.only(bottom: 16.0),
                                       child: FuelDataCard(

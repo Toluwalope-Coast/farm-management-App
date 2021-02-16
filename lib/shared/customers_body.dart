@@ -69,7 +69,7 @@ class _CustomersBodyState extends State<CustomersBody> {
   //   });
   // }
 
-  deleteItem(int index, BuildContext context, Size deviceSize,
+  deleteItem(String index, BuildContext context, Size deviceSize,
       String updateTable, AsyncCallback delFunc) {
     print("delete dialogue called on $index index item");
     print("item at $index has being updated");
@@ -88,7 +88,7 @@ class _CustomersBodyState extends State<CustomersBody> {
                 child: CustomDialogueBox(
               deviceSize: deviceSize,
               deleteTitle:
-                  "Are u sure you want to delete $updateTable ${index + 1} ?",
+                  "Are u sure you want to delete $updateTable $index ?",
               index: index,
               delFuncResult: delFunc,
             )),
@@ -114,8 +114,13 @@ class _CustomersBodyState extends State<CustomersBody> {
 
   @override
   Widget build(BuildContext context) {
-    Future<int> deleAction(Customer tableRow) async {
-      return null;
+    Future deleAction(String collectionName, String collectionDoc) async {
+      FirebaseFirestore.instance
+          .collection(collectionName)
+          .doc(collectionDoc)
+          .delete()
+          .then((value) =>
+              print("$collectionName $collectionDoc successfully deleted!"));
     }
 
     drawerList(context);
@@ -210,22 +215,24 @@ class _CustomersBodyState extends State<CustomersBody> {
                                   //     widget.deviceSize, customerList[index]),
                                   // onLongPress: () => updateItem(index,
                                   //     widget.deviceSize, customerList[index]),
-                                  // onHorizontalDragEnd: (DragEndDetails details) {
-                                  //   if (details.primaryVelocity > 0) {
-                                  //     // User swiped Right
+                                  onHorizontalDragEnd:
+                                      (DragEndDetails details) {
+                                    if (details.primaryVelocity > 0) {
+                                      // User swiped Right
 
-                                  //     print("Customer Swiped Right");
-                                  //     deleteItem(
-                                  //         index,
-                                  //         context,
-                                  //         widget.deviceSize,
-                                  //         "Customer",
-                                  //         () => deleAction(customerList[index]));
-                                  //   } else if (details.primaryVelocity < 0) {
-                                  //     // User swiped Left
-                                  //     print("Customer Swiped Left");
-                                  //   }
-                                  // },
+                                      print("Customer Swiped Right");
+                                      deleteItem(
+                                          snapshot.data.docs[index].id,
+                                          context,
+                                          widget.deviceSize,
+                                          "Customer",
+                                          () => deleAction('customer',
+                                              snapshot.data.docs[index].id));
+                                    } else if (details.primaryVelocity < 0) {
+                                      // User swiped Left
+                                      print("Customer Swiped Left");
+                                    }
+                                  },
                                   child: Container(
                                     margin: EdgeInsets.only(bottom: 16.0),
                                     child: CustomerDataCard(

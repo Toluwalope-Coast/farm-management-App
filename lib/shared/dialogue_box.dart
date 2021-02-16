@@ -8,7 +8,7 @@ typedef AsyncCallback = Future<int> Function();
 class CustomDialogueBox extends StatelessWidget {
   final Size deviceSize;
   final String deleteTitle;
-  final int index;
+  final String index;
   // final Future<int> delFuncResult;
   final AsyncCallback delFuncResult;
   CustomDialogueBox({
@@ -19,20 +19,9 @@ class CustomDialogueBox extends StatelessWidget {
     this.delFuncResult,
   }) : super(key: key);
 
-  yesDelete(context, int itemIndex, AsyncCallback delFuncResult) {
-    delFuncResult.call().then((value) {
-      print('The result value is $value');
-      if (value != 0) {
-        print("deleted $itemIndex sucessfully");
-        return navigationPopRoute(context, true);
-      }
-      print("Whoopsi!!!! unable deleted $itemIndex");
-    });
-  }
-
   noDelete(context) {
     print("mistake");
-    return navigationPopRoute(context, false);
+    return navigationPopRoute(context);
   }
 
   @override
@@ -76,8 +65,7 @@ class CustomDialogueBox extends StatelessWidget {
                       buttonBackgroundColor: Theme.of(context).primaryColor,
                       buttonTextValue: "Yes",
                       buttonTextStyle: Theme.of(context).textTheme.button,
-                      buttonFunction: () =>
-                          yesDelete(context, index, delFuncResult),
+                      buttonFunction: () => navigationPopRoute(context),
                     ),
                   ),
                   Container(

@@ -63,7 +63,7 @@ class _HarvestingBodyState extends State<HarvestingBody> {
     });
   }
 
-  deleteItem(int index, BuildContext context, Size deviceSize,
+  deleteItem(String index, BuildContext context, Size deviceSize,
       String updateTable, AsyncCallback delFunc) {
     print("delete dialogue called on $index index item");
     print("item at $index has being updated");
@@ -82,7 +82,7 @@ class _HarvestingBodyState extends State<HarvestingBody> {
                 child: CustomDialogueBox(
               deviceSize: deviceSize,
               deleteTitle:
-                  "Are u sure you want to delete $updateTable ${index + 1} ?",
+                  "Are u sure you want to delete $updateTable $index ?",
               index: index,
               delFuncResult: delFunc,
             )),
@@ -108,8 +108,13 @@ class _HarvestingBodyState extends State<HarvestingBody> {
 
   @override
   Widget build(BuildContext context) {
-    Future<int> deleAction(Harvesting tableRow) async {
-      return null;
+    Future deleAction(String collectionName, String collectionDoc) async {
+      FirebaseFirestore.instance
+          .collection(collectionName)
+          .doc(collectionDoc)
+          .delete()
+          .then((value) =>
+              print("$collectionName $collectionDoc successfully deleted!"));
     }
 
     drawerList(context);
@@ -204,23 +209,24 @@ class _HarvestingBodyState extends State<HarvestingBody> {
                                   //     widget.deviceSize, harvestingList[index]),
                                   // onLongPress: () => updateItem(index,
                                   //     widget.deviceSize, harvestingList[index]),
-                                  // onHorizontalDragEnd: (DragEndDetails details) {
-                                  //   if (details.primaryVelocity > 0) {
-                                  //     // User swiped Right
+                                  onHorizontalDragEnd:
+                                      (DragEndDetails details) {
+                                    if (details.primaryVelocity > 0) {
+                                      // User swiped Right
 
-                                  //     print("Harvesting Swiped Right");
-                                  //     deleteItem(
-                                  //         index,
-                                  //         context,
-                                  //         widget.deviceSize,
-                                  //         "Harvesting",
-                                  //         () =>
-                                  //             deleAction(harvestingList[index]));
-                                  //   } else if (details.primaryVelocity < 0) {
-                                  //     // User swiped Left
-                                  //     print("Harvesting Swiped Left");
-                                  //   }
-                                  // },
+                                      print("Harvesting Swiped Right");
+                                      deleteItem(
+                                          snapshot.data.docs[index].id,
+                                          context,
+                                          widget.deviceSize,
+                                          "Harvesting",
+                                          () => deleAction('harvest',
+                                              snapshot.data.docs[index].id));
+                                    } else if (details.primaryVelocity < 0) {
+                                      // User swiped Left
+                                      print("Harvesting Swiped Left");
+                                    }
+                                  },
                                   child: Container(
                                     margin: EdgeInsets.only(bottom: 16.0),
                                     child: HarvestDataCard(

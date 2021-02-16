@@ -72,7 +72,7 @@ class _UsersBodyState extends State<UsersBody> {
     });
   }
 
-  deleteItem(int index, BuildContext context, Size deviceSize,
+  deleteItem(String index, BuildContext context, Size deviceSize,
       String updateTable, AsyncCallback delFunc) {
     print("delete dialogue called on $index index item");
     print("item at $index has being updated");
@@ -91,7 +91,7 @@ class _UsersBodyState extends State<UsersBody> {
                 child: CustomDialogueBox(
               deviceSize: deviceSize,
               deleteTitle:
-                  "Are u sure you want to delete $updateTable ${index + 1} ?",
+                  "Are u sure you want to delete $updateTable $index ?",
               index: index,
               delFuncResult: delFunc,
             )),
@@ -123,10 +123,13 @@ class _UsersBodyState extends State<UsersBody> {
 
   @override
   Widget build(BuildContext context) {
-    Future<int> deleAction(User tableRow) async {
-      // int result = await databaseHelper.deleteUser(tableRow.id);
-      // updateListView();
-      return null;
+    Future deleAction(String collectionName, String collectionDoc) async {
+      FirebaseFirestore.instance
+          .collection(collectionName)
+          .doc(collectionDoc)
+          .delete()
+          .then((value) =>
+              print("$collectionName $collectionDoc successfully deleted!"));
     }
 
     drawerList(context);
@@ -195,112 +198,67 @@ class _UsersBodyState extends State<UsersBody> {
               ),
               Expanded(
                 flex: 2,
-                child:
-                    //  userList.isEmpty
-                    //     ? Container(
-                    //         padding: EdgeInsets.symmetric(
-                    //             horizontal: 16.0, vertical: 20.0),
-                    //         color: Theme.of(context).backgroundColor,
-                    //         child: Center(
-                    //             child: RichText(
-                    //           textAlign: TextAlign.center,
-                    //           softWrap: true,
-                    //           text: TextSpan(
-                    //               style: Theme.of(context)
-                    //                   .textTheme
-                    //                   .headline6
-                    //                   .copyWith(fontWeight: FontWeight.w700),
-                    //               children: [
-                    //                 TextSpan(text: "No Entry has been made for"),
-                    //                 TextSpan(
-                    //                     text: "\n ${widget.title}\n\n",
-                    //                     style: Theme.of(context)
-                    //                         .textTheme
-                    //                         .headline6
-                    //                         .copyWith(
-                    //                           fontWeight: FontWeight.w700,
-                    //                           color: Color(0xFFFFAE00),
-                    //                         )),
-                    //                 TextSpan(text: "\nClick the "),
-                    //                 TextSpan(
-                    //                     text: "insert button ",
-                    //                     style: Theme.of(context)
-                    //                         .textTheme
-                    //                         .headline6
-                    //                         .copyWith(
-                    //                           fontWeight: FontWeight.w700,
-                    //                           color: Color(0xFFFFAE00),
-                    //                         )),
-                    //                 TextSpan(
-                    //                   text: "below to make an entry",
-                    //                 )
-                    //               ]),
-                    //         )),
-                    //       )
-                    // :
-                    Container(
-                        width: widget.deviceSize.width,
-                        color: Theme.of(context).scaffoldBackgroundColor,
-                        child: StreamBuilder<QuerySnapshot>(
-                            stream: FirebaseFirestore.instance
-                                .collection('user')
-                                .snapshots(),
-                            builder: (BuildContext context,
-                                AsyncSnapshot<QuerySnapshot> snapshot) {
-                              if (snapshot.hasError) {
-                                return Text('Something went wrong');
-                              }
+                child: Container(
+                    width: widget.deviceSize.width,
+                    color: Theme.of(context).scaffoldBackgroundColor,
+                    child: StreamBuilder<QuerySnapshot>(
+                        stream: FirebaseFirestore.instance
+                            .collection('user')
+                            .snapshots(),
+                        builder: (BuildContext context,
+                            AsyncSnapshot<QuerySnapshot> snapshot) {
+                          if (snapshot.hasError) {
+                            return Text('Something went wrong');
+                          }
 
-                              if (snapshot.connectionState ==
-                                  ConnectionState.waiting) {
-                                return Text("Loading........");
-                              }
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return Text("Loading........");
+                          }
 
-                              return ListView.builder(
-                                  itemCount: snapshot.data.docs.length,
-                                  itemBuilder:
-                                      (BuildContext context, int index) {
-                                    return GestureDetector(
-                                      // onDoubleTap: () => updateItem(index,
-                                      //     widget.deviceSize, snapshot.data.docs[index]),
-                                      // onLongPress: () => updateItem(index,
-                                      //     widget.deviceSize, snapshot.data.docs[index]),
-                                      // onHorizontalDragEnd:
-                                      //     (DragEndDetails details) {
-                                      //   if (details.primaryVelocity > 0) {
-                                      //     // User swiped Right
+                          return ListView.builder(
+                              itemCount: snapshot.data.docs.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                return GestureDetector(
+                                  // onDoubleTap: () => updateItem(index,
+                                  //     widget.deviceSize, snapshot.data.docs[index]),
+                                  // onLongPress: () => updateItem(index,
+                                  //     widget.deviceSize, snapshot.data.docs[index]),
+                                  onHorizontalDragEnd:
+                                      (DragEndDetails details) {
+                                    if (details.primaryVelocity > 0) {
+                                      // User swiped Right
 
-                                      //     print("User Swiped Right");
-                                      //     deleteItem(
-                                      //         index,
-                                      //         context,
-                                      //         widget.deviceSize,
-                                      //         "Users",
-                                      //         () =>
-                                      //             deleAction(userList[index]));
-                                      //   } else if (details.primaryVelocity <
-                                      //       0) {
-                                      //     // User swiped Left
-                                      //     print("User Swiped Left");
-                                      //   }
-                                      // },
-                                      child: Container(
-                                        margin: EdgeInsets.only(bottom: 16.0),
-                                        child: UserDataCard(
-                                            designationData: snapshot.data
-                                                .docs[index]['designation'],
-                                            userIDData:
-                                                snapshot.data.docs[index].id,
-                                            usernameData: snapshot
-                                                .data.docs[index]['username'],
-                                            passwordData: snapshot
-                                                .data.docs[index]['password'],
-                                            dateData: snapshot.data.docs[index]
-                                                ['date']),
-                                      ),
-                                    );
-                                  });
-                            })),
+                                      print("User Swiped Right");
+                                      deleteItem(
+                                          snapshot.data.docs[index].id,
+                                          context,
+                                          widget.deviceSize,
+                                          "User",
+                                          () => deleAction('user',
+                                              snapshot.data.docs[index].id));
+                                    } else if (details.primaryVelocity < 0) {
+                                      // User swiped Left
+                                      print("User Swiped Left");
+                                    }
+                                  },
+                                  child: Container(
+                                    margin: EdgeInsets.only(bottom: 16.0),
+                                    child: UserDataCard(
+                                        designationData: snapshot
+                                            .data.docs[index]['designation'],
+                                        userIDData:
+                                            snapshot.data.docs[index].id,
+                                        usernameData: snapshot.data.docs[index]
+                                            ['username'],
+                                        passwordData: snapshot.data.docs[index]
+                                            ['password'],
+                                        dateData: snapshot.data.docs[index]
+                                            ['date']),
+                                  ),
+                                );
+                              });
+                        })),
               ),
               Align(
                   alignment: Alignment.bottomCenter,

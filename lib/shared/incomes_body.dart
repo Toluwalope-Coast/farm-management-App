@@ -67,7 +67,7 @@ class _IncomesBodyState extends State<IncomesBody> {
     });
   }
 
-  deleteItem(int index, BuildContext context, Size deviceSize,
+  deleteItem(String index, BuildContext context, Size deviceSize,
       String updateTable, AsyncCallback delFunc) {
     print("delete dialogue called on $index index item");
     print("item at $index has being updated");
@@ -86,7 +86,7 @@ class _IncomesBodyState extends State<IncomesBody> {
                 child: CustomDialogueBox(
               deviceSize: deviceSize,
               deleteTitle:
-                  "Are u sure you want to delete $updateTable ${index + 1} ?",
+                  "Are u sure you want to delete $updateTable $index ?",
               index: index,
               delFuncResult: delFunc,
             )),
@@ -112,8 +112,13 @@ class _IncomesBodyState extends State<IncomesBody> {
 
   @override
   Widget build(BuildContext context) {
-    Future<int> deleAction(Income tableRow) async {
-      return null;
+    Future deleAction(String collectionName, String collectionDoc) async {
+      FirebaseFirestore.instance
+          .collection(collectionName)
+          .doc(collectionDoc)
+          .delete()
+          .then((value) =>
+              print("$collectionName $collectionDoc successfully deleted!"));
     }
 
     drawerList(context);
@@ -208,22 +213,24 @@ class _IncomesBodyState extends State<IncomesBody> {
                                   //     widget.deviceSize, incomeList[index]),
                                   // onLongPress: () => updateItem(index,
                                   //     widget.deviceSize, incomeList[index]),
-                                  // onHorizontalDragEnd: (DragEndDetails details) {
-                                  //   if (details.primaryVelocity > 0) {
-                                  //     // User swiped Right
+                                  onHorizontalDragEnd:
+                                      (DragEndDetails details) {
+                                    if (details.primaryVelocity > 0) {
+                                      // User swiped Right
 
-                                  //     print("Incomes Swiped Right");
-                                  //     deleteItem(
-                                  //         index,
-                                  //         context,
-                                  //         widget.deviceSize,
-                                  //         "Incomes",
-                                  //         () => deleAction(incomeList[index]));
-                                  //   } else if (details.primaryVelocity < 0) {
-                                  //     // User swiped Left
-                                  //     print("Income Swiped Left");
-                                  //   }
-                                  // },
+                                      print("Incomes Swiped Right");
+                                      deleteItem(
+                                          snapshot.data.docs[index].id,
+                                          context,
+                                          widget.deviceSize,
+                                          "Incomes",
+                                          () => deleAction('income',
+                                              snapshot.data.docs[index].id));
+                                    } else if (details.primaryVelocity < 0) {
+                                      // User swiped Left
+                                      print("Income Swiped Left");
+                                    }
+                                  },
                                   child: Container(
                                       margin: EdgeInsets.only(bottom: 16.0),
                                       child: IncomesDataCard(
