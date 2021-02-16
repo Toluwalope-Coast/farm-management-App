@@ -5,7 +5,6 @@ import 'package:farm_manager/shared/custom_textfield.dart';
 import 'package:farm_manager/shared/rounded_container.dart';
 import 'package:farm_manager/shared/rounded_flat_button.dart';
 import 'package:farm_manager/utils/database.dart';
-import 'package:farm_manager/utils/database_helper.dart';
 import 'package:flutter/material.dart';
 
 class FuelInsertBody extends StatefulWidget {

@@ -1,4 +1,5 @@
 // import 'package:farm_manager/models/users_models.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:farm_manager/screens/AdminHome.dart';
 import 'package:farm_manager/screens/farm_operator_home.dart';
 import 'package:farm_manager/screens/garage_attendant_home.dart';
@@ -10,7 +11,6 @@ import 'package:farm_manager/shared/rounded_container.dart';
 import 'package:farm_manager/shared/rounded_flat_button.dart';
 import 'package:farm_manager/utils/database_helper.dart';
 import 'package:flutter/material.dart';
-// import 'package:sqflite/sqflite.dart';
 
 class LoginBody extends StatefulWidget {
   final Size deviceSize;
@@ -41,21 +41,21 @@ class _LoginBodyState extends State<LoginBody> {
     "Field Operator"
   ];
 
-  // updateListView() {
-  //   final Future<Database> dbFuture = databaseHelper.initializeDatabase();
-  //   dbFuture.then((database) {
-  //     Future<List<User>> userListFuture = databaseHelper.getUserList();
-  //     userListFuture.then((userList) {
-  //       if (userList != null) {}
-  //     });
-  //   });
-  // }
+  // u
 
-  logUserIn(context) {
+  Future logUserIn(context) async {
     print("My Login pressed function is working");
     print("Username is: ${usernameController.text}");
     print("Password is: ${passwordController.text}");
     print("designation is: $_designationSelected");
+    dynamic user = await FirebaseFirestore.instance
+        .collection('user')
+        .where('username', isEqualTo: '${usernameController.text}')
+        .where('password', isEqualTo: '${passwordController.text}')
+        .where('designation', isEqualTo: '$_designationSelected')
+        .get()
+        .then((value) => value.docs.length);
+
     if (usernameController.text == "test" &&
         passwordController.text == "admin123" &&
         _designationSelected == "Admin") {
@@ -76,6 +76,16 @@ class _LoginBodyState extends State<LoginBody> {
         passwordController.text == "fieldOperator123" &&
         _designationSelected == "Field Operator") {
       return navigationReplaceRoute(context, FarmOperatorHome());
+    } else if (user > 0) {
+      if (_designationSelected == "Field Operator") {
+        return navigationReplaceRoute(context, FarmOperatorHome());
+      } else if (_designationSelected == "Garage Attendant") {
+        return navigationReplaceRoute(context, GarageAttendantHome());
+      } else if (_designationSelected == "Store Keeper") {
+        return navigationReplaceRoute(context, StoreKeeperHome());
+      } else if (_designationSelected == "Sales Reps") {
+        return navigationReplaceRoute(context, StoreKeeperHome());
+      }
     } else {
       return customSnackBar(context, "Invalid User Details");
       // Scaffold.of(context).showSnackBar(
