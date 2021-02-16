@@ -1,18 +1,20 @@
-import 'package:farm_manager/models/users_models.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:farm_manager/shared/Constant.dart';
 import 'package:farm_manager/shared/custom_drawer.dart';
 import 'package:farm_manager/shared/custom_textfield.dart';
 import 'package:farm_manager/shared/rounded_container.dart';
 import 'package:farm_manager/shared/rounded_flat_button.dart';
-import 'package:farm_manager/utils/database_helper.dart';
 import 'package:flutter/material.dart';
+
+import '../Constant.dart';
 
 class UserUpdateBody extends StatefulWidget {
   final Size deviceSize;
   final Widget profileImage;
   final String heroTag;
   final String title;
-  final User user;
+  final String index;
+  final Map<dynamic, dynamic> dbQuery;
 
   UserUpdateBody({
     Key key,
@@ -20,7 +22,8 @@ class UserUpdateBody extends StatefulWidget {
     this.profileImage,
     this.title,
     this.heroTag,
-    this.user,
+    this.dbQuery,
+    this.index,
   }) : super(key: key);
 
   @override
@@ -29,8 +32,6 @@ class UserUpdateBody extends StatefulWidget {
 
 class _UserUpdateBodyState extends State<UserUpdateBody> {
   // Database integration into the code
-
-  DatabaseHelper databaseHelper = DatabaseHelper();
 
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
@@ -47,39 +48,35 @@ class _UserUpdateBodyState extends State<UserUpdateBody> {
     "Field Operator"
   ];
 
-  updateUser(context, User model) async {
-    User userModel = new User.withId(
-        id: model.getId,
-        username: usernameController.text,
-        password: passwordController.text,
-        designation: _designationSelected);
+  updateUser(context, String index, Map<dynamic, dynamic> dbQuery) async {
     print("username is ${usernameController.text}");
     print("password is ${passwordController.text}");
     print("Designation Selected is $_designationSelected");
-    print("Model is $userModel");
-    print(userModel.getDesignation);
-    print(userModel.getPassword);
-    print(userModel.getUsername);
-    print(userModel.id);
+    print("id is $index");
 
-    int result = await databaseHelper.updateUser(userModel);
-    if (result != 0) {
-      return navigationPopRoute(context);
-    } else {
-      print("Whoopsiiii");
+    try {
+      FirebaseFirestore.instance.collection("user").doc(index).update({
+        "username": usernameController.text,
+        "password": passwordController.text,
+        "designation": _designationSelected,
+      });
+      print("Update Successful");
+      navigationPopRoute(context);
+    } catch (e) {
+      print("Update UnSuccessful\n error is $e");
     }
   }
 
   @override
   Widget build(BuildContext context) {
     if (this.usernameController.text.isEmpty) {
-      this.usernameController.text = widget.user.getUsername;
+      this.usernameController.text = widget.dbQuery["username"];
     }
     if (this.passwordController.text.isEmpty) {
-      this.passwordController.text = widget.user.getUsername;
+      this.passwordController.text = widget.dbQuery["password"];
     }
     if (_designationSelected == null) {
-      _designationSelected = widget.user.getDesignation;
+      _designationSelected = widget.dbQuery["designation"];
     }
 
     drawerList(context);
@@ -147,7 +144,8 @@ class _UserUpdateBodyState extends State<UserUpdateBody> {
               ),
               Center(
                 child: Text(
-                  "Update User ${widget.user.id}",
+                  "Update User \n ${widget.index}",
+                  textAlign: TextAlign.center,
                   style: Theme.of(context)
                       .textTheme
                       .headline6
@@ -186,12 +184,9 @@ class _UserUpdateBodyState extends State<UserUpdateBody> {
                                 Theme.of(context).textTheme.bodyText2,
                             inputType: TextInputType.name,
                             textInputHint: this.usernameController.text == null
-                                ? widget.user.getUsername
+                                ? widget.dbQuery['username']
                                 : usernameController.text,
                           ),
-                        ),
-                        SizedBox(
-                          height: 4.0,
                         ),
                         CustomRoundedContainer(
                           deviceSize: widget.deviceSize,
@@ -200,13 +195,15 @@ class _UserUpdateBodyState extends State<UserUpdateBody> {
                           content: CustomTextfield(
                             textInputValue: passwordController,
                             deviceSize: widget.deviceSize,
-                            inputIcon: Icon(Icons.lock_rounded,
+                            inputIcon: Icon(Icons.lock,
                                 color: Theme.of(context).accentColor),
-                            inputType: TextInputType.visiblePassword,
                             obscureText: false,
                             textInputHintStyle:
                                 Theme.of(context).textTheme.bodyText2,
-                            textInputHint: passwordController.text,
+                            inputType: TextInputType.text,
+                            textInputHint: this.usernameController.text == null
+                                ? widget.dbQuery['password']
+                                : usernameController.text,
                           ),
                         ),
                         SizedBox(
@@ -233,7 +230,7 @@ class _UserUpdateBodyState extends State<UserUpdateBody> {
                                                     .subtitle1)))
                                     .toList(),
                                 value: _designationSelected == null
-                                    ? widget.user.getDesignation
+                                    ? widget.dbQuery['designation']
                                     : _designationSelected,
                                 onChanged: (dynamic selectedDropdownItem) {
                                   setState(() {
@@ -252,7 +249,7 @@ class _UserUpdateBodyState extends State<UserUpdateBody> {
                           buttonTextValue: "Update User",
                           buttonTextStyle: Theme.of(context).textTheme.button,
                           buttonFunction: () =>
-                              updateUser(context, widget.user),
+                              updateUser(context, widget.index, widget.dbQuery),
                         ),
                       ],
                     )),

@@ -54,22 +54,21 @@ class _UsersBodyState extends State<UsersBody> {
     return navigatePushTo(context, UsersReport(users: users));
   }
 
-  updateItem(int index, Size deviceSize, User user) {
+  modelValueSetter(User user, String setDate, String setUsername,
+      String setPassword, String setDesignation) {
+    user.setUsername = setUsername;
+    user.setPassword = setPassword;
+    user.setDesignation = setDesignation;
+  }
+
+  Future updateItem(
+      String index, Size deviceSize, Map<dynamic, dynamic> dbQuery) async {
     print("item at $index has being updated");
 
-    Future<dynamic> result = navigatePushTo(
-        context,
-        UserUpdate(
-          deviceSize: deviceSize,
-          user: user,
-        ));
-    result.then((value) {
-      if (value) {
-        return;
-      } else {
-        return;
-      }
-    });
+    print("user List at ${dbQuery["username"]} has being updated");
+
+    navigatePushTo(context,
+        UserUpdate(deviceSize: deviceSize, index: index, dbQuery: dbQuery));
   }
 
   deleteItem(String index, BuildContext context, Size deviceSize,
@@ -227,10 +226,14 @@ class _UsersBodyState extends State<UsersBody> {
                               itemCount: snapshot.data.docs.length,
                               itemBuilder: (BuildContext context, int index) {
                                 return GestureDetector(
-                                  // onDoubleTap: () => updateItem(index,
-                                  //     widget.deviceSize, snapshot.data.docs[index]),
-                                  // onLongPress: () => updateItem(index,
-                                  //     widget.deviceSize, snapshot.data.docs[index]),
+                                  onDoubleTap: () => updateItem(
+                                      snapshot.data.docs[index].id,
+                                      widget.deviceSize,
+                                      snapshot.data.docs[index].data()),
+                                  onLongPress: () => updateItem(
+                                      snapshot.data.docs[index].id,
+                                      widget.deviceSize,
+                                      snapshot.data.docs[index].data()),
                                   onHorizontalDragEnd:
                                       (DragEndDetails details) {
                                     if (details.primaryVelocity > 0) {
