@@ -34,7 +34,7 @@ class _MachineriesBodyState extends State<MachineriesBody> {
   // Database integration into the code
 
   DatabaseHelper databaseHelper = DatabaseHelper();
-  List<Machinery> machineryList;
+  List<Machinery> machineryList = [];
   // Database codes closes here
 
   backIconFunction(context) {
@@ -51,6 +51,25 @@ class _MachineriesBodyState extends State<MachineriesBody> {
   reportIconFunction(context, List<Machinery> machines) {
     print("Report Icon pressed");
     return navigatePushTo(context, MachinesReport(machines: machines));
+  }
+
+  Future modelValueSetter() async {
+    try {
+      await FirebaseFirestore.instance
+          .collection("machine")
+          .get()
+          .then((QuerySnapshot snapshot) {
+        snapshot.docs.forEach((f) {
+          Machinery machines = new Machinery.withId(f.id, f.data()['type'],
+              f.data()['id card no'], f.data()['date recorded']);
+          print('Compacted user $machines');
+          machineryList.add(machines);
+        });
+      });
+      return machineryList;
+    } catch (e) {
+      print('error from the model grabber is $e');
+    }
   }
 
   Future updateItem(
@@ -123,6 +142,7 @@ class _MachineriesBodyState extends State<MachineriesBody> {
       }
     }
 
+    modelValueSetter();
     drawerList(context);
     return Scaffold(
         key: _scaffoldKey,

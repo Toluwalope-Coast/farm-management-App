@@ -54,7 +54,7 @@ class _ChemicalUpdateBodyState extends State<ChemicalUpdateBody> {
         "type": chemicalTypeController.text,
         "id card no": idCardNoController.text,
         "machine id": machineIDController.text,
-        "acreage done": acreageController.text,
+        "acreage done": double.parse(acreageController.text),
       });
       print("Update Successful");
       navigationPopRoute(context);
@@ -72,7 +72,7 @@ class _ChemicalUpdateBodyState extends State<ChemicalUpdateBody> {
       this.idCardNoController.text = widget.dbQuery['id card no'];
     }
     if (this.acreageController.text.isEmpty) {
-      this.acreageController.text = widget.dbQuery['acreage done'];
+      this.acreageController.text = widget.dbQuery['acreage done'].toString();
     }
     if (this.machineIDController.text.isEmpty) {
       this.machineIDController.text = widget.dbQuery['machine id'];
@@ -202,7 +202,7 @@ class _ChemicalUpdateBodyState extends State<ChemicalUpdateBody> {
                             obscureText: false,
                             textInputHintStyle:
                                 Theme.of(context).textTheme.bodyText2,
-                            inputType: TextInputType.number,
+                            inputType: TextInputType.text,
                             textInputHint: this.idCardNoController.text == null
                                 ? widget.dbQuery['id card no']
                                 : idCardNoController.text,

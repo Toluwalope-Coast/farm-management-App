@@ -146,6 +146,38 @@ class _PlantingDataCardState extends State<PlantingDataCard> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
+                  "Machine ID:",
+                  style: Theme.of(context).textTheme.bodyText2,
+                ),
+                Text(
+                  "${widget.machineIDData}",
+                  style: Theme.of(context).textTheme.subtitle1,
+                ),
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "Seed ID:",
+                  style: Theme.of(context).textTheme.bodyText2,
+                ),
+                Text(
+                  "${widget.seedsIDData}",
+                  style: Theme.of(context).textTheme.subtitle1,
+                ),
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
                   "Date:",
                   style: Theme.of(context).textTheme.bodyText2,
                 ),

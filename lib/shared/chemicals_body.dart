@@ -34,7 +34,7 @@ class ChemicalsBody extends StatefulWidget {
 class _ChemicalsBodyState extends State<ChemicalsBody> {
   // Database integration into the code
 
-  List<Chemical> chemicalList;
+  List<Chemical> chemicalList = [];
   // Database codes closes here
 
   backIconFunction(context) {
@@ -60,6 +60,30 @@ class _ChemicalsBodyState extends State<ChemicalsBody> {
 
     navigatePushTo(context,
         ChemicalUpdate(deviceSize: deviceSize, index: index, dbQuery: dbQuery));
+  }
+
+  Future modelValueSetter() async {
+    try {
+      await FirebaseFirestore.instance
+          .collection("chemical")
+          .get()
+          .then((QuerySnapshot snapshot) {
+        snapshot.docs.forEach((f) {
+          Chemical chemical = new Chemical.withId(
+              f.id,
+              f.data()['type'],
+              f.data()['id card no'],
+              f.data()['machine id'],
+              f.data()['acreage done'],
+              f.data()['date recorded']);
+          print('Compacted user $chemical');
+          chemicalList.add(chemical);
+        });
+      });
+      return chemicalList;
+    } catch (e) {
+      print('error from the model grabber is $e');
+    }
   }
 
   deleteItem(String index, BuildContext context, Size deviceSize,
@@ -120,6 +144,7 @@ class _ChemicalsBodyState extends State<ChemicalsBody> {
       }
     }
 
+    modelValueSetter();
     drawerList(context);
     return Scaffold(
         key: _scaffoldKey,

@@ -1,16 +1,15 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-
 class User {
   String id;
   String username;
   String password;
   String designation;
-  Timestamp date;
+  String date;
 
   // Two constructor for the models (with the id and without id)
 
   User({this.username, this.password, this.designation, this.date});
-  User.withId({this.id, this.username, this.password, this.designation});
+  User.withId(
+      {this.id, this.username, this.password, this.designation, this.date});
 
   //  the getters
 
@@ -18,6 +17,7 @@ class User {
   String get getUsername => username;
   String get getPassword => password;
   String get getDesignation => designation;
+  String get getDate => date;
 
   // the setters
 
@@ -39,7 +39,7 @@ class User {
     }
   }
 
-  set setDate(Timestamp newDate) {
+  set setDate(String newDate) {
     if (date != null) {
       this.date = newDate;
     }

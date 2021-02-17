@@ -84,16 +84,17 @@ class _SeedsUpdateBodyState extends State<SeedsUpdateBody> {
       this.idCardNoController.text = widget.dbQuery['id card no'];
     }
     if (this.acreageController.text.isEmpty) {
-      this.acreageController.text = widget.dbQuery['acreage done'];
+      this.acreageController.text = widget.dbQuery['acreage done'].toString();
     }
     if (this.qtyController.text.isEmpty) {
-      this.qtyController.text = widget.dbQuery['qty done'];
+      this.qtyController.text = widget.dbQuery['qty done'].toString();
     }
     if (_unitSelected == null) {
       _unitSelected = widget.dbQuery['unit'];
     }
     if (this.qtyRemainingController.text.isEmpty) {
-      this.qtyRemainingController.text = widget.dbQuery['qty remaining'];
+      this.qtyRemainingController.text =
+          widget.dbQuery['qty remaining'].toString();
     }
     drawerList(context);
     return Scaffold(

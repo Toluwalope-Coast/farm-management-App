@@ -76,10 +76,10 @@ class _IncomesUpdateBodyState extends State<IncomesUpdateBody> {
         "waybill no": wayBillNoController.text,
         "customer id": customerIDController.text,
         "payment mode": _paymentModeSelected,
-        "qty sold": quantitySoldController.text,
+        "qty sold": double.parse(quantitySoldController.text),
         "unit": _unitSelected,
-        "rate": rateController.text,
-        "amount sold": amountController.text,
+        "rate": double.parse(rateController.text),
+        "amount sold": double.parse(amountController.text),
       });
       print("Update Successful");
       navigationPopRoute(context);
@@ -103,16 +103,16 @@ class _IncomesUpdateBodyState extends State<IncomesUpdateBody> {
       _paymentModeSelected = widget.dbQuery['payment mode'];
     }
     if (this.quantitySoldController.text.isEmpty) {
-      this.quantitySoldController.text = widget.dbQuery['qty sold'];
+      this.quantitySoldController.text = widget.dbQuery['qty sold'].toString();
     }
     if (this.rateController.text.isEmpty) {
-      this.rateController.text = widget.dbQuery['rate'];
+      this.rateController.text = widget.dbQuery['rate'].toString();
     }
     if (_unitSelected == null) {
       _unitSelected = widget.dbQuery['unit'];
     }
     if (this.amountController.text.isEmpty) {
-      this.amountController.text = widget.dbQuery['amount sold'];
+      this.amountController.text = widget.dbQuery['amount sold'].toString();
     }
     drawerList(context);
     return Scaffold(

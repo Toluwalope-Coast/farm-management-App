@@ -8,7 +8,6 @@ import 'package:farm_manager/shared/insert_screens.dart/users_insert.dart';
 import 'package:farm_manager/shared/report_screens/users_report.dart';
 import 'package:farm_manager/shared/update_screens.dart/user_update.dart';
 import 'package:farm_manager/shared/users_data_card.dart';
-import 'package:farm_manager/utils/database_helper.dart';
 import 'package:flutter/material.dart';
 
 class UsersBody extends StatefulWidget {
@@ -32,9 +31,7 @@ class UsersBody extends StatefulWidget {
 
 class _UsersBodyState extends State<UsersBody> {
   // Database integration into the code
-
-  DatabaseHelper databaseHelper = DatabaseHelper();
-  List<User> userList;
+  List<User> userList = [];
 
   // Database codes closes here
 
@@ -54,11 +51,27 @@ class _UsersBodyState extends State<UsersBody> {
     return navigatePushTo(context, UsersReport(users: users));
   }
 
-  modelValueSetter(User user, String setDate, String setUsername,
-      String setPassword, String setDesignation) {
-    user.setUsername = setUsername;
-    user.setPassword = setPassword;
-    user.setDesignation = setDesignation;
+  Future modelValueSetter() async {
+    try {
+      await FirebaseFirestore.instance
+          .collection("user")
+          .get()
+          .then((QuerySnapshot snapshot) {
+        snapshot.docs.forEach((f) {
+          User users = new User.withId(
+              id: f.id,
+              username: f.data()['username'],
+              password: f.data()['password'],
+              designation: f.data()['designation'],
+              date: f.data()['date']);
+          print('Compacted user $users');
+          userList.add(users);
+        });
+      });
+      return userList;
+    } catch (e) {
+      print('error from the model grabber is $e');
+    }
   }
 
   Future updateItem(
@@ -66,7 +79,6 @@ class _UsersBodyState extends State<UsersBody> {
     print("item at $index has being updated");
 
     print("user List at ${dbQuery["username"]} has being updated");
-
     navigatePushTo(context,
         UserUpdate(deviceSize: deviceSize, index: index, dbQuery: dbQuery));
   }
@@ -136,6 +148,8 @@ class _UsersBodyState extends State<UsersBody> {
         print('The error found is ${e.toString()}');
       }
     }
+
+    modelValueSetter();
 
     drawerList(context);
     return Scaffold(

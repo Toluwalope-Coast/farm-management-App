@@ -32,7 +32,7 @@ class FuelBody extends StatefulWidget {
 class _FuelBodyState extends State<FuelBody> {
   // Database integration into the code
 
-  List<Fuel> fuelList;
+  List<Fuel> fuelList = [];
 
   backIconFunction(context) {
     print("Back Icon pressed");
@@ -47,6 +47,29 @@ class _FuelBodyState extends State<FuelBody> {
   reportIconFunction(context, List<Fuel> fuel) {
     print("Report Icon pressed");
     return navigatePushTo(context, FuelReport(fuel: fuel));
+  }
+
+  Future modelValueSetter() async {
+    try {
+      await FirebaseFirestore.instance
+          .collection("fuel")
+          .get()
+          .then((QuerySnapshot snapshot) {
+        snapshot.docs.forEach((f) {
+          Fuel fuel = new Fuel.withId(
+              f.id,
+              f.data()['type'],
+              f.data()['id card no'],
+              f.data()['machine id'],
+              f.data()['date recorded']);
+          print('Compacted fuel $fuel');
+          fuelList.add(fuel);
+        });
+      });
+      return fuelList;
+    } catch (e) {
+      print('error from the model grabber is $e');
+    }
   }
 
   Future updateItem(
@@ -119,6 +142,7 @@ class _FuelBodyState extends State<FuelBody> {
       }
     }
 
+    modelValueSetter();
     drawerList(context);
     return Scaffold(
         key: _scaffoldKey,

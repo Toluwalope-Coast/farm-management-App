@@ -32,7 +32,7 @@ class HarvestingBody extends StatefulWidget {
 class _HarvestingBodyState extends State<HarvestingBody> {
   // Database integration into the code
 
-  List<Harvesting> harvestingList;
+  List<Harvesting> harvestingList = [];
 
   backIconFunction(context) {
     print("Back Icon pressed");
@@ -47,6 +47,34 @@ class _HarvestingBodyState extends State<HarvestingBody> {
   reportIconFunction(context, List<Harvesting> harvesting) {
     print("Report Icon pressed");
     return navigatePushTo(context, HarvestingReport(harvest: harvesting));
+  }
+
+  Future modelValueSetter() async {
+    try {
+      await FirebaseFirestore.instance
+          .collection("harvest")
+          .get()
+          .then((QuerySnapshot snapshot) {
+        snapshot.docs.forEach((f) {
+          Harvesting harvest = new Harvesting.withId(
+              f.id,
+              f.data()['type'],
+              f.data()['id card no'],
+              f.data()['qty'],
+              f.data()['unit'],
+              f.data()['qty in stock'],
+              f.data()['acreage done'],
+              f.data()['machine id'],
+              f.data()['seed id'],
+              f.data()['date recorded']);
+          print('Compacted harvesting $harvest');
+          harvestingList.add(harvest);
+        });
+      });
+      return harvestingList;
+    } catch (e) {
+      print('error from the model grabber is $e');
+    }
   }
 
   Future updateItem(
@@ -120,6 +148,8 @@ class _HarvestingBodyState extends State<HarvestingBody> {
         print('The error found is ${e.toString()}');
       }
     }
+
+    modelValueSetter();
 
     drawerList(context);
     return Scaffold(

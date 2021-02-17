@@ -67,9 +67,9 @@ class _PlantingUpdateBodyState extends State<PlantingUpdateBody> {
         "id card no": idCardNoController.text,
         "machine id ": machineIDController.text,
         "seed id": seedIDController.text,
-        "qty": qtyController.text,
+        "qty": double.parse(qtyController.text),
         "unit": _unitSelected,
-        "acreage done": acreageController.text,
+        "acreage done": double.parse(acreageController.text),
       });
       print("Update Successful");
       navigationPopRoute(context);
@@ -87,13 +87,13 @@ class _PlantingUpdateBodyState extends State<PlantingUpdateBody> {
       this.idCardNoController.text = widget.dbQuery['id card no'];
     }
     if (this.acreageController.text.isEmpty) {
-      this.acreageController.text = widget.dbQuery['acreage done'];
+      this.acreageController.text = widget.dbQuery['acreage done'].toString();
     }
     if (_unitSelected == null) {
       _unitSelected = widget.dbQuery['unit'];
     }
     if (this.qtyController.text.isEmpty) {
-      this.qtyController.text = widget.dbQuery['qty'];
+      this.qtyController.text = widget.dbQuery['qty'].toString();
     }
     if (this.machineIDController.text.isEmpty) {
       this.machineIDController.text = widget.dbQuery['machine id'];

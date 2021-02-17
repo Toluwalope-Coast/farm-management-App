@@ -32,7 +32,7 @@ class ExpensesBody extends StatefulWidget {
 class _ExpensesBodyState extends State<ExpensesBody> {
   // Database integration into the code
 
-  List<Expenses> expensesList;
+  List<Expenses> expensesList = [];
   // Database codes closes here
 
   backIconFunction(context) {
@@ -48,6 +48,34 @@ class _ExpensesBodyState extends State<ExpensesBody> {
   reportIconFunction(context, List<Expenses> expenses) {
     print("Report Icon pressed");
     return navigatePushTo(context, ExpensesReport(expenses: expenses));
+  }
+
+  Future modelValueSetter() async {
+    try {
+      await FirebaseFirestore.instance
+          .collection("expense")
+          .get()
+          .then((QuerySnapshot snapshot) {
+        snapshot.docs.forEach((f) {
+          Expenses expenses = new Expenses.withId(
+              f.id,
+              f.data()['product type'],
+              f.data()['waybill no'],
+              f.data()['customer id'],
+              f.data()['payment mode'],
+              f.data()['qty recieved'],
+              f.data()['unit'],
+              f.data()['rate'],
+              f.data()['amount sold'],
+              f.data()['date recorded']);
+          print('Compacted expense $expenses');
+          expensesList.add(expenses);
+        });
+      });
+      return expensesList;
+    } catch (e) {
+      print('error from the model grabber is $e');
+    }
   }
 
   Future updateItem(
@@ -120,6 +148,7 @@ class _ExpensesBodyState extends State<ExpensesBody> {
       }
     }
 
+    modelValueSetter();
     drawerList(context);
     return Scaffold(
         key: _scaffoldKey,

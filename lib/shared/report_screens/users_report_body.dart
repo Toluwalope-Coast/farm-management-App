@@ -107,7 +107,14 @@ class _UserReportBodyState extends State<UserReportBody> {
                     style: sortIconstyles,
                   ),
                   numeric: false,
-                  tooltip: 'This is the Designation')
+                  tooltip: 'This is the Designation'),
+              DataColumn(
+                  label: Text(
+                    'Date',
+                    style: sortIconstyles,
+                  ),
+                  numeric: false,
+                  tooltip: 'This is the Date')
             ],
             rows: widget.users
                 .map((user) => DataRow(
@@ -117,7 +124,8 @@ class _UserReportBodyState extends State<UserReportBody> {
                           }),
                           DataCell(Text('${user.getUsername}')),
                           DataCell(Text('${user.getPassword}')),
-                          DataCell(Text('${user.getDesignation}'))
+                          DataCell(Text('${user.getDesignation}')),
+                          DataCell(Text('${user.getDate}'))
                         ],
                         selected: selectedUsers.contains(user),
                         onSelectChanged: (b) {

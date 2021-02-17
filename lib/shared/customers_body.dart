@@ -32,7 +32,7 @@ class CustomersBody extends StatefulWidget {
 class _CustomersBodyState extends State<CustomersBody> {
   // Database integration into the code
 
-  List<Customer> customerList;
+  List<Customer> customerList = [];
 
   backIconFunction(context) {
     print("Back Icon pressed");
@@ -48,6 +48,31 @@ class _CustomersBodyState extends State<CustomersBody> {
   reportIconFunction(context, List<Customer> customer) {
     print("Report Icon pressed");
     return navigatePushTo(context, CustomerReport(customer: customer));
+  }
+
+  Future modelValueSetter() async {
+    try {
+      await FirebaseFirestore.instance
+          .collection("customer")
+          .get()
+          .then((QuerySnapshot snapshot) {
+        snapshot.docs.forEach((f) {
+          Customer customer = new Customer.withId(
+              f.id,
+              f.data()['name'],
+              f.data()['address'],
+              f.data()['email'],
+              f.data()['tel no'],
+              f.data()['mode of transaction'],
+              f.data()['date recorded']);
+          print('Compacted user $customer');
+          customerList.add(customer);
+        });
+      });
+      return customerList;
+    } catch (e) {
+      print('error from the model grabber is $e');
+    }
   }
 
   Future updateItem(
@@ -120,6 +145,7 @@ class _CustomersBodyState extends State<CustomersBody> {
       }
     }
 
+    modelValueSetter();
     drawerList(context);
     return Scaffold(
         key: _scaffoldKey,

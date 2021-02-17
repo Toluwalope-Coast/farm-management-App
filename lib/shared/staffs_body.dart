@@ -32,7 +32,7 @@ class StaffsBody extends StatefulWidget {
 class _StaffsBodyState extends State<StaffsBody> {
   // Database integration into the code
 
-  List<Staff> staffList;
+  List<Staff> staffList = [];
 
   // Database codes closes here
 
@@ -50,6 +50,35 @@ class _StaffsBodyState extends State<StaffsBody> {
   reportIconFunction(context, List<Staff> staff) {
     print("Report Icon pressed");
     return navigatePushTo(context, StaffReport(staff: staff));
+  }
+
+  Future modelValueSetter() async {
+    try {
+      await FirebaseFirestore.instance
+          .collection("staff")
+          .get()
+          .then((QuerySnapshot snapshot) {
+        snapshot.docs.forEach((f) {
+          Staff staff = new Staff.withId(
+              f.id,
+              f.data()['firstname'],
+              f.data()['lastname'],
+              f.data()['username'],
+              f.data()['designation'],
+              f.data()['id card no'],
+              f.data()['home address'],
+              f.data()['email'],
+              f.data()['city'],
+              f.data()['tel no'],
+              f.data()['date of employment']);
+          print('Compacted user $staff');
+          staffList.add(staff);
+        });
+      });
+      return staffList;
+    } catch (e) {
+      print('error from the model grabber is $e');
+    }
   }
 
   Future updateItem(
@@ -128,6 +157,7 @@ class _StaffsBodyState extends State<StaffsBody> {
       }
     }
 
+    modelValueSetter();
     drawerList(context);
     return Scaffold(
         key: _scaffoldKey,

@@ -32,7 +32,7 @@ class TillagesBody extends StatefulWidget {
 class _TillagesBodyState extends State<TillagesBody> {
   // Database integration into the code
 
-  List<Tillage> tillageList;
+  List<Tillage> tillageList = [];
 
   backIconFunction(context) {
     print("Back Icon pressed");
@@ -61,6 +61,30 @@ class _TillagesBodyState extends State<TillagesBody> {
 
     navigatePushTo(context,
         TillageUpdate(deviceSize: deviceSize, index: index, dbQuery: dbQuery));
+  }
+
+  Future modelValueSetter() async {
+    try {
+      await FirebaseFirestore.instance
+          .collection("tillage")
+          .get()
+          .then((QuerySnapshot snapshot) {
+        snapshot.docs.forEach((f) {
+          Tillage tillages = new Tillage.withId(
+              f.id,
+              f.data()['type'],
+              f.data()['id card no'],
+              f.data()['machine id'],
+              f.data()['acreage done'],
+              f.data()['date recorded']);
+          print('Compacted user $tillages');
+          tillageList.add(tillages);
+        });
+      });
+      return tillageList;
+    } catch (e) {
+      print('error from the model grabber is $e');
+    }
   }
 
   deleteItem(String index, BuildContext context, Size deviceSize,
@@ -122,6 +146,8 @@ class _TillagesBodyState extends State<TillagesBody> {
         print('The error found is ${e.toString()}');
       }
     }
+
+    modelValueSetter();
 
     drawerList(context);
     return Scaffold(

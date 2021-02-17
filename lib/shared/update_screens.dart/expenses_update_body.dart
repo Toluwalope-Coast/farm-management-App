@@ -77,10 +77,10 @@ class _ExpensesUpdateBodyState extends State<ExpensesUpdateBody> {
         "waybill no": wayBillNoController.text,
         "customer id": customerIDController.text,
         "payment mode": _paymentModeSelected,
-        "qty recieved": quantityRecievedController.text,
+        "qty recieved": double.parse(quantityRecievedController.text),
         "unit": _unitSelected,
-        "rate": rateController.text,
-        "amount sold": amountController.text,
+        "rate": double.parse(rateController.text),
+        "amount sold": double.parse(amountController.text),
       });
       print("Update Successful");
       navigationPopRoute(context);
@@ -104,16 +104,17 @@ class _ExpensesUpdateBodyState extends State<ExpensesUpdateBody> {
       _paymentModeSelected = widget.dbQuery['payment mode'];
     }
     if (this.quantityRecievedController.text.isEmpty) {
-      this.quantityRecievedController.text = widget.dbQuery['qty recieved'];
+      this.quantityRecievedController.text =
+          widget.dbQuery['qty recieved'].toString();
     }
     if (this.rateController.text.isEmpty) {
-      this.rateController.text = widget.dbQuery['rate'];
+      this.rateController.text = widget.dbQuery['rate'].toString();
     }
     if (_unitSelected == null) {
       _unitSelected = widget.dbQuery['unit'];
     }
     if (this.amountController.text.isEmpty) {
-      this.amountController.text = widget.dbQuery['amount sold'];
+      this.amountController.text = widget.dbQuery['amount sold'].toString();
     }
 
     drawerList(context);

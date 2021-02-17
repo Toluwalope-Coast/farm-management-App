@@ -279,6 +279,7 @@ class DatabaseService {
       "seed id": harvest.getSeedId,
       "qty": harvest.getQty,
       "unit": harvest.getUnit,
+      "qty in stock": harvest.getTotalQtyStock,
       "acreage done": harvest.getAcreage,
       "date recorded": _date
     }).then((value) {

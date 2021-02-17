@@ -32,7 +32,7 @@ class PlantingBody extends StatefulWidget {
 class _PlantingBodyState extends State<PlantingBody> {
   // Database integration into the code
 
-  List<Planting> plantingList;
+  List<Planting> plantingList = [];
   // Database codes closes here
 
   backIconFunction(context) {
@@ -48,6 +48,33 @@ class _PlantingBodyState extends State<PlantingBody> {
   reportIconFunction(context, List<Planting> planting) {
     print("Report Icon pressed");
     return navigatePushTo(context, PlantingReport(planting: planting));
+  }
+
+  Future modelValueSetter() async {
+    try {
+      await FirebaseFirestore.instance
+          .collection("planting")
+          .get()
+          .then((QuerySnapshot snapshot) {
+        snapshot.docs.forEach((f) {
+          Planting planting = new Planting.withId(
+              f.id,
+              f.data()['type'],
+              f.data()['id card no'],
+              f.data()['qty'],
+              f.data()['acreage done'],
+              f.data()['unit'],
+              f.data()['machine id'],
+              f.data()['seed id'],
+              f.data()['date recorded']);
+          print('Compacted user $planting');
+          plantingList.add(planting);
+        });
+      });
+      return plantingList;
+    } catch (e) {
+      print('error from the model grabber is $e');
+    }
   }
 
   Future updateItem(
@@ -120,6 +147,7 @@ class _PlantingBodyState extends State<PlantingBody> {
       }
     }
 
+    modelValueSetter();
     drawerList(context);
     return Scaffold(
         key: _scaffoldKey,

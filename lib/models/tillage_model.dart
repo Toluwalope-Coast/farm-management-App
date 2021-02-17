@@ -12,8 +12,8 @@ class Tillage {
 
   Tillage(this._type, this._idCardNo, this._machineId, this._acreage);
 
-  Tillage.withId(
-      this._id, this._type, this._idCardNo, this._machineId, this._acreage);
+  Tillage.withId(this._id, this._type, this._idCardNo, this._machineId,
+      this._acreage, this._date);
 
   //  the getters
 

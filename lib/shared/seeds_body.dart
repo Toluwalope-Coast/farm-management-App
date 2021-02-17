@@ -32,7 +32,7 @@ class SeedsBody extends StatefulWidget {
 class _SeedsBodyState extends State<SeedsBody> {
   // Database integration into the code
 
-  List<Seed> seedsList;
+  List<Seed> seedsList = [];
   // Database codes closes here
 
   backIconFunction(context) {
@@ -48,6 +48,32 @@ class _SeedsBodyState extends State<SeedsBody> {
   reportIconFunction(context, List<Seed> seed) {
     print("Report Icon pressed");
     return navigatePushTo(context, SeedsReport(seed: seed));
+  }
+
+  Future modelValueSetter() async {
+    try {
+      await FirebaseFirestore.instance
+          .collection("seed")
+          .get()
+          .then((QuerySnapshot snapshot) {
+        snapshot.docs.forEach((f) {
+          Seed seed = new Seed.withId(
+              f.id,
+              f.data()['type'],
+              f.data()['id card no'],
+              f.data()['qty done'],
+              f.data()['unit'],
+              f.data()['qty remaining'],
+              f.data()['acreage done'],
+              f.data()['date recorded']);
+          print('Compacted user $seed');
+          seedsList.add(seed);
+        });
+      });
+      return seedsList;
+    } catch (e) {
+      print('error from the model grabber is $e');
+    }
   }
 
   Future updateItem(
@@ -119,6 +145,8 @@ class _SeedsBodyState extends State<SeedsBody> {
         print('The error found is ${e.toString()}');
       }
     }
+
+    modelValueSetter();
 
     drawerList(context);
     return Scaffold(
