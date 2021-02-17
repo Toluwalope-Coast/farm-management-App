@@ -50,22 +50,14 @@ class _PlantingBodyState extends State<PlantingBody> {
     return navigatePushTo(context, PlantingReport(planting: planting));
   }
 
-  updateItem(int index, Size deviceSize, Planting plant) {
+  Future updateItem(
+      String index, Size deviceSize, Map<dynamic, dynamic> dbQuery) async {
     print("item at $index has being updated");
 
-    Future<dynamic> result = navigatePushTo(
-        context,
-        PlantingUpdate(
-          deviceSize: deviceSize,
-          planting: plant,
-        ));
-    result.then((value) {
-      if (value) {
-        return null;
-      } else {
-        return;
-      }
-    });
+    print("planting List at ${dbQuery["type"]} has being updated");
+
+    navigatePushTo(context,
+        PlantingUpdate(deviceSize: deviceSize, index: index, dbQuery: dbQuery));
   }
 
   deleteItem(String index, BuildContext context, Size deviceSize,

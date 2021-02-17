@@ -1,10 +1,9 @@
-import 'package:farm_manager/models/tillage_model.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:farm_manager/shared/Constant.dart';
 import 'package:farm_manager/shared/custom_drawer.dart';
 import 'package:farm_manager/shared/custom_textfield.dart';
 import 'package:farm_manager/shared/rounded_container.dart';
 import 'package:farm_manager/shared/rounded_flat_button.dart';
-import 'package:farm_manager/utils/database_helper.dart';
 import 'package:flutter/material.dart';
 
 class TillageUpdateBody extends StatefulWidget {
@@ -12,7 +11,8 @@ class TillageUpdateBody extends StatefulWidget {
   final Widget profileImage;
   final String heroTag;
   final String title;
-  final Tillage tillage;
+  final String index;
+  final Map<dynamic, dynamic> dbQuery;
 
   TillageUpdateBody({
     Key key,
@@ -20,7 +20,8 @@ class TillageUpdateBody extends StatefulWidget {
     this.profileImage,
     this.title,
     this.heroTag,
-    this.tillage,
+    this.index,
+    this.dbQuery,
   }) : super(key: key);
 
   @override
@@ -29,8 +30,6 @@ class TillageUpdateBody extends StatefulWidget {
 
 class _TillageUpdateBodyState extends State<TillageUpdateBody> {
   // Database integration into the code
-
-  DatabaseHelper databaseHelper = DatabaseHelper();
 
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
@@ -42,40 +41,41 @@ class _TillageUpdateBodyState extends State<TillageUpdateBody> {
 
   TextEditingController idCardNoController = new TextEditingController();
 
-  updateTillage(context, Tillage model) async {
-    Tillage tillageModel = new Tillage.withId(
-        model.getId,
-        tillageTypeController.text,
-        idCardNoController.text,
-        machineIDController.text,
-        double.parse(acreageController.text));
+  Future updateTillage(
+      context, String index, Map<dynamic, dynamic> dbQuery) async {
     print("Tillage Type is ${tillageTypeController.text}");
     print("Id Card No is ${idCardNoController.text}");
     print("Machine Type is ${machineIDController.text}");
     print("Acreage Type is ${acreageController.text}");
-    print("Acreage Type is ${acreageController.text}");
+    print("Id is $index");
 
-    int result = await databaseHelper.updateTillage(tillageModel);
-    if (result != 0) {
-      return navigationPopRoute(context);
-    } else {
-      print("Whoopsiiii");
+    try {
+      FirebaseFirestore.instance.collection("tillage").doc(index).update({
+        "type": tillageTypeController.text,
+        "id card no": idCardNoController.text,
+        "machine id": machineIDController.text,
+        "acreage done": acreageController.text,
+      });
+      print("Update Successful");
+      navigationPopRoute(context);
+    } catch (e) {
+      print("Update UnSuccessful\n error is $e");
     }
   }
 
   @override
   Widget build(BuildContext context) {
     if (this.tillageTypeController.text.isEmpty) {
-      this.tillageTypeController.text = widget.tillage.getType;
+      this.tillageTypeController.text = widget.dbQuery['type'];
     }
     if (this.idCardNoController.text.isEmpty) {
-      this.idCardNoController.text = widget.tillage.getIdCardNo;
+      this.idCardNoController.text = widget.dbQuery['id card no'];
     }
     if (this.acreageController.text.isEmpty) {
-      this.acreageController.text = widget.tillage.getAcreage.toString();
+      this.acreageController.text = widget.dbQuery['acreage done'];
     }
     if (this.machineIDController.text.isEmpty) {
-      this.machineIDController.text = widget.tillage.getMachineId.toString();
+      this.machineIDController.text = widget.dbQuery['machine id'];
     }
     drawerList(context);
     return Scaffold(
@@ -142,7 +142,8 @@ class _TillageUpdateBodyState extends State<TillageUpdateBody> {
               ),
               Center(
                 child: Text(
-                  "Update Tillage ${widget.tillage.getId}",
+                  "Update Tillage \n${widget.index}",
+                  textAlign: TextAlign.center,
                   style: Theme.of(context)
                       .textTheme
                       .headline6
@@ -180,7 +181,10 @@ class _TillageUpdateBodyState extends State<TillageUpdateBody> {
                             textInputHintStyle:
                                 Theme.of(context).textTheme.bodyText2,
                             inputType: TextInputType.name,
-                            textInputHint: "Type Of Tillage",
+                            textInputHint:
+                                this.tillageTypeController.text == null
+                                    ? widget.dbQuery['type']
+                                    : tillageTypeController.text,
                           ),
                         ),
                         SizedBox(
@@ -199,7 +203,9 @@ class _TillageUpdateBodyState extends State<TillageUpdateBody> {
                             textInputHintStyle:
                                 Theme.of(context).textTheme.bodyText2,
                             inputType: TextInputType.number,
-                            textInputHint: "Enter Staff Id Card No",
+                            textInputHint: this.idCardNoController.text == null
+                                ? widget.dbQuery['id card no']
+                                : idCardNoController.text,
                           ),
                         ),
                         SizedBox(
@@ -219,7 +225,9 @@ class _TillageUpdateBodyState extends State<TillageUpdateBody> {
                                 Theme.of(context).textTheme.bodyText2,
                             inputType:
                                 TextInputType.numberWithOptions(decimal: true),
-                            textInputHint: "Enter the Acreage Covered",
+                            textInputHint: this.acreageController.text == null
+                                ? widget.dbQuery['acreage done']
+                                : acreageController.text,
                           ),
                         ),
                         SizedBox(
@@ -238,7 +246,9 @@ class _TillageUpdateBodyState extends State<TillageUpdateBody> {
                             textInputHintStyle:
                                 Theme.of(context).textTheme.bodyText2,
                             inputType: TextInputType.text,
-                            textInputHint: "Enter Machine ID",
+                            textInputHint: this.machineIDController.text == null
+                                ? widget.dbQuery['machine id']
+                                : machineIDController.text,
                           ),
                         ),
                         SizedBox(
@@ -249,8 +259,8 @@ class _TillageUpdateBodyState extends State<TillageUpdateBody> {
                           buttonBackgroundColor: Theme.of(context).accentColor,
                           buttonTextValue: "Update Tillage",
                           buttonTextStyle: Theme.of(context).textTheme.button,
-                          buttonFunction: () =>
-                              updateTillage(context, widget.tillage),
+                          buttonFunction: () => updateTillage(
+                              context, widget.index, widget.dbQuery),
                         ),
                       ],
                     )),

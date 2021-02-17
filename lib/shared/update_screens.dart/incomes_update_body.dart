@@ -1,10 +1,9 @@
-import 'package:farm_manager/models/incomes_models.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:farm_manager/shared/Constant.dart';
 import 'package:farm_manager/shared/custom_drawer.dart';
 import 'package:farm_manager/shared/custom_textfield.dart';
 import 'package:farm_manager/shared/rounded_container.dart';
 import 'package:farm_manager/shared/rounded_flat_button.dart';
-import 'package:farm_manager/utils/database_helper.dart';
 import 'package:flutter/material.dart';
 
 class IncomesUpdateBody extends StatefulWidget {
@@ -12,7 +11,8 @@ class IncomesUpdateBody extends StatefulWidget {
   final Widget profileImage;
   final String heroTag;
   final String title;
-  final Income income;
+  final String index;
+  final Map<dynamic, dynamic> dbQuery;
 
   IncomesUpdateBody({
     Key key,
@@ -20,7 +20,8 @@ class IncomesUpdateBody extends StatefulWidget {
     this.profileImage,
     this.title,
     this.heroTag,
-    this.income,
+    this.index,
+    this.dbQuery,
   }) : super(key: key);
 
   @override
@@ -29,8 +30,6 @@ class IncomesUpdateBody extends StatefulWidget {
 
 class _IncomesUpdateBodyState extends State<IncomesUpdateBody> {
   // Database integration into the code
-
-  DatabaseHelper databaseHelper = DatabaseHelper();
 
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
@@ -60,58 +59,60 @@ class _IncomesUpdateBodyState extends State<IncomesUpdateBody> {
     "USD",
   ];
 
-  updateIncome(context) async {
-    Income income = new Income.withId(
-        widget.income.id,
-        productTypeController.text,
-        wayBillNoController.text,
-        customerIDController.text,
-        _paymentModeSelected,
-        double.parse(quantitySoldController.text),
-        _unitSelected,
-        double.parse(rateController.text),
-        double.parse(amountController.text),
-        '');
+  Future updateIncome(
+      context, String index, Map<dynamic, dynamic> dbQuery) async {
     print("firstname is ${productTypeController.text}");
     print("Waybill is ${wayBillNoController.text}");
-    print("address is ${customerIDController.text}");
+    print("Customer ID is ${customerIDController.text}");
     print("Payment Mode is $_paymentModeSelected");
     print("qty Sold is ${quantitySoldController.text}");
     print("Unit is $_unitSelected");
     print("Rate is ${rateController.text}");
     print("Rate is ${amountController.text}");
 
-    int result = await databaseHelper.updateIncome(income);
-    if (result != 0) {
-      return navigationPopRoute(context);
+    try {
+      FirebaseFirestore.instance.collection("income").doc(index).update({
+        "product type": productTypeController.text,
+        "waybill no": wayBillNoController.text,
+        "customer id": customerIDController.text,
+        "payment mode": _paymentModeSelected,
+        "qty sold": quantitySoldController.text,
+        "unit": _unitSelected,
+        "rate": rateController.text,
+        "amount sold": amountController.text,
+      });
+      print("Update Successful");
+      navigationPopRoute(context);
+    } catch (e) {
+      print("Update UnSuccessful\n error is $e");
     }
   }
 
   @override
   Widget build(BuildContext context) {
     if (this.productTypeController.text.isEmpty) {
-      this.productTypeController.text = widget.income.getProductType;
+      this.productTypeController.text = widget.dbQuery['product type'];
     }
     if (this.wayBillNoController.text.isEmpty) {
-      this.wayBillNoController.text = widget.income.getWaybillNo;
+      this.wayBillNoController.text = widget.dbQuery['waybill no'];
     }
     if (this.customerIDController.text.isEmpty) {
-      this.customerIDController.text = widget.income.getCustomerID.toString();
+      this.customerIDController.text = widget.dbQuery['customer id'];
     }
     if (_paymentModeSelected == null) {
-      _paymentModeSelected = widget.income.getPaymentMode;
+      _paymentModeSelected = widget.dbQuery['payment mode'];
     }
     if (this.quantitySoldController.text.isEmpty) {
-      this.quantitySoldController.text = widget.income.getQtySold.toString();
+      this.quantitySoldController.text = widget.dbQuery['qty sold'];
     }
     if (this.rateController.text.isEmpty) {
-      this.rateController.text = widget.income.getRate.toString();
+      this.rateController.text = widget.dbQuery['rate'];
     }
     if (_unitSelected == null) {
-      _unitSelected = widget.income.getUnit;
+      _unitSelected = widget.dbQuery['unit'];
     }
     if (this.amountController.text.isEmpty) {
-      this.amountController.text = widget.income.getAmountSold.toString();
+      this.amountController.text = widget.dbQuery['amount sold'];
     }
     drawerList(context);
     return Scaffold(
@@ -178,7 +179,8 @@ class _IncomesUpdateBodyState extends State<IncomesUpdateBody> {
               ),
               Center(
                 child: Text(
-                  "Update Income ${widget.income.id}",
+                  "Update Income \n${widget.index}",
+                  textAlign: TextAlign.center,
                   style: Theme.of(context)
                       .textTheme
                       .headline6
@@ -217,7 +219,9 @@ class _IncomesUpdateBodyState extends State<IncomesUpdateBody> {
                                 Theme.of(context).textTheme.bodyText2,
                             inputType: TextInputType.name,
                             textInputHint:
-                                "What type of product is the income For",
+                                this.productTypeController.text == null
+                                    ? widget.dbQuery['product type']
+                                    : productTypeController.text,
                           ),
                         ),
                         SizedBox(
@@ -236,7 +240,9 @@ class _IncomesUpdateBodyState extends State<IncomesUpdateBody> {
                             textInputHintStyle:
                                 Theme.of(context).textTheme.bodyText2,
                             inputType: TextInputType.number,
-                            textInputHint: "Enter WayBill Number",
+                            textInputHint: this.wayBillNoController.text == null
+                                ? widget.dbQuery['waybill no']
+                                : wayBillNoController.text,
                           ),
                         ),
                         SizedBox(
@@ -255,7 +261,10 @@ class _IncomesUpdateBodyState extends State<IncomesUpdateBody> {
                             textInputHintStyle:
                                 Theme.of(context).textTheme.bodyText2,
                             inputType: TextInputType.text,
-                            textInputHint: "Enter Customer ID that bought it",
+                            textInputHint:
+                                this.customerIDController.text == null
+                                    ? widget.dbQuery['customer id']
+                                    : customerIDController.text,
                           ),
                         ),
                         SizedBox(
@@ -281,7 +290,9 @@ class _IncomesUpdateBodyState extends State<IncomesUpdateBody> {
                                                     .textTheme
                                                     .subtitle1)))
                                     .toList(),
-                                value: _paymentModeSelected,
+                                value: _unitSelected == null
+                                    ? widget.dbQuery['unit']
+                                    : _unitSelected,
                                 onChanged: (dynamic selectedDropdownItem) {
                                   setState(() {
                                     this._paymentModeSelected =
@@ -308,7 +319,10 @@ class _IncomesUpdateBodyState extends State<IncomesUpdateBody> {
                                 Theme.of(context).textTheme.bodyText2,
                             inputType: TextInputType.numberWithOptions(
                                 signed: true, decimal: true),
-                            textInputHint: "Enter Quantity Sold",
+                            textInputHint:
+                                this.quantitySoldController.text == null
+                                    ? widget.dbQuery['qty sold']
+                                    : quantitySoldController.text,
                           ),
                         ),
                         SizedBox(
@@ -328,41 +342,11 @@ class _IncomesUpdateBodyState extends State<IncomesUpdateBody> {
                                 Theme.of(context).textTheme.bodyText2,
                             inputType: TextInputType.numberWithOptions(
                                 signed: true, decimal: true),
-                            textInputHint: "Enter Rate Per One",
+                            textInputHint: this.rateController.text == null
+                                ? widget.dbQuery['rate']
+                                : rateController.text,
                           ),
                         ),
-                        SizedBox(
-                          height: 4.0,
-                        ),
-                        CustomRoundedContainer(
-                            deviceSize: widget.deviceSize,
-                            containerColor:
-                                Theme.of(context).secondaryHeaderColor,
-                            content: DropdownButton<dynamic>(
-                                isExpanded: true,
-                                underline: SizedBox(),
-                                hint: Text(
-                                  "Select the Unit",
-                                  style: Theme.of(context).textTheme.bodyText2,
-                                ),
-                                items: unit
-                                    .map((dynamic dropdownItem) =>
-                                        DropdownMenuItem<dynamic>(
-                                            value: dropdownItem,
-                                            child: Text(dropdownItem,
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .subtitle1)))
-                                    .toList(),
-                                value: _unitSelected,
-                                onChanged: (dynamic selectedDropdownItem) {
-                                  setState(() {
-                                    this._unitSelected = selectedDropdownItem;
-                                    print(
-                                        'This is the selected value ${this._unitSelected}');
-                                  });
-                                  print(selectedDropdownItem);
-                                })),
                         SizedBox(
                           height: 4.0,
                         ),
@@ -380,7 +364,9 @@ class _IncomesUpdateBodyState extends State<IncomesUpdateBody> {
                                 Theme.of(context).textTheme.bodyText2,
                             inputType: TextInputType.numberWithOptions(
                                 decimal: true, signed: true),
-                            textInputHint: "Enter Amount Recieved",
+                            textInputHint: this.amountController.text == null
+                                ? widget.dbQuery['amount sold']
+                                : amountController.text,
                           ),
                         ),
                         SizedBox(
@@ -391,7 +377,8 @@ class _IncomesUpdateBodyState extends State<IncomesUpdateBody> {
                           buttonBackgroundColor: Theme.of(context).accentColor,
                           buttonTextValue: "Update Income",
                           buttonTextStyle: Theme.of(context).textTheme.button,
-                          buttonFunction: () => updateIncome(context),
+                          buttonFunction: () => updateIncome(
+                              context, widget.index, widget.dbQuery),
                         ),
                       ],
                     )),

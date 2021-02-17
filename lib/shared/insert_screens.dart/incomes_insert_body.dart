@@ -195,7 +195,7 @@ class _IncomesInsertBodyState extends State<IncomesInsertBody> {
                             textInputHintStyle:
                                 Theme.of(context).textTheme.bodyText2,
                             inputType: TextInputType.name,
-                            textInputHint: "Type of product the income is For",
+                            textInputHint: "Type of product For income",
                           ),
                         ),
                         SizedBox(
@@ -233,7 +233,8 @@ class _IncomesInsertBodyState extends State<IncomesInsertBody> {
                             textInputHintStyle:
                                 Theme.of(context).textTheme.bodyText2,
                             inputType: TextInputType.text,
-                            textInputHint: "Enter Customer ID that bought it",
+                            textInputHint:
+                                "Enter Customer ID that bought prodect",
                           ),
                         ),
                         SizedBox(

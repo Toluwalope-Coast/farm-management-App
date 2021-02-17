@@ -1,10 +1,9 @@
-import 'package:farm_manager/models/planting_model.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:farm_manager/shared/Constant.dart';
 import 'package:farm_manager/shared/custom_drawer.dart';
 import 'package:farm_manager/shared/custom_textfield.dart';
 import 'package:farm_manager/shared/rounded_container.dart';
 import 'package:farm_manager/shared/rounded_flat_button.dart';
-import 'package:farm_manager/utils/database_helper.dart';
 import 'package:flutter/material.dart';
 
 class PlantingUpdateBody extends StatefulWidget {
@@ -12,15 +11,16 @@ class PlantingUpdateBody extends StatefulWidget {
   final Widget profileImage;
   final String heroTag;
   final String title;
-  final Planting planting;
-
+  final String index;
+  final Map<dynamic, dynamic> dbQuery;
   PlantingUpdateBody({
     Key key,
     @required this.deviceSize,
     this.profileImage,
     this.title,
     this.heroTag,
-    this.planting,
+    this.index,
+    this.dbQuery,
   }) : super(key: key);
 
   @override
@@ -29,8 +29,6 @@ class PlantingUpdateBody extends StatefulWidget {
 
 class _PlantingUpdateBodyState extends State<PlantingUpdateBody> {
   // Database integration into the code
-
-  DatabaseHelper databaseHelper = DatabaseHelper();
 
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
@@ -53,17 +51,8 @@ class _PlantingUpdateBodyState extends State<PlantingUpdateBody> {
     "pcs",
   ];
 
-  updatePlanting(context) async {
-    Planting planting = new Planting.withId(
-        widget.planting.getId,
-        plantingTypeController.text,
-        idCardNoController.text,
-        double.parse(qtyController.text),
-        double.parse(acreageController.text),
-        _unitSelected,
-        machineIDController.text,
-        seedIDController.text,
-        '');
+  Future updatePlanting(
+      context, String index, Map<dynamic, dynamic> dbQuery) async {
     print("Planting Type is ${plantingTypeController.text}");
     print("Id Card No is ${idCardNoController.text}");
     print("Quantity is ${qtyController.text}");
@@ -72,34 +61,45 @@ class _PlantingUpdateBodyState extends State<PlantingUpdateBody> {
     print("Machine Type is ${machineIDController.text}");
     print("Acreage Type is ${acreageController.text}");
 
-    int result = await databaseHelper.updatePlanting(planting);
-    if (result != 0) {
-      return navigationPopRoute(context);
+    try {
+      FirebaseFirestore.instance.collection("planting").doc(index).update({
+        "type": plantingTypeController.text,
+        "id card no": idCardNoController.text,
+        "machine id ": machineIDController.text,
+        "seed id": seedIDController.text,
+        "qty": qtyController.text,
+        "unit": _unitSelected,
+        "acreage done": acreageController.text,
+      });
+      print("Update Successful");
+      navigationPopRoute(context);
+    } catch (e) {
+      print("Update UnSuccessful\n error is $e");
     }
   }
 
   @override
   Widget build(BuildContext context) {
     if (this.plantingTypeController.text.isEmpty) {
-      this.plantingTypeController.text = widget.planting.getType;
+      this.plantingTypeController.text = widget.dbQuery['type'];
     }
     if (this.idCardNoController.text.isEmpty) {
-      this.idCardNoController.text = widget.planting.getIdCardNo;
+      this.idCardNoController.text = widget.dbQuery['id card no'];
     }
     if (this.acreageController.text.isEmpty) {
-      this.acreageController.text = widget.planting.getAcreage.toString();
+      this.acreageController.text = widget.dbQuery['acreage done'];
     }
     if (_unitSelected == null) {
-      _unitSelected = widget.planting.getUnit;
+      _unitSelected = widget.dbQuery['unit'];
     }
     if (this.qtyController.text.isEmpty) {
-      this.qtyController.text = widget.planting.getQty.toString();
+      this.qtyController.text = widget.dbQuery['qty'];
     }
     if (this.machineIDController.text.isEmpty) {
-      this.machineIDController.text = widget.planting.getMachineId.toString();
+      this.machineIDController.text = widget.dbQuery['machine id'];
     }
     if (this.seedIDController.text.isEmpty) {
-      this.seedIDController.text = widget.planting.getSeedId.toString();
+      this.seedIDController.text = widget.dbQuery['seed id'];
     }
 
     drawerList(context);
@@ -167,7 +167,8 @@ class _PlantingUpdateBodyState extends State<PlantingUpdateBody> {
               ),
               Center(
                 child: Text(
-                  "Update Planting ${widget.planting.getId}",
+                  "Update Planting \n${widget.index}",
+                  textAlign: TextAlign.center,
                   style: Theme.of(context)
                       .textTheme
                       .headline6
@@ -205,7 +206,10 @@ class _PlantingUpdateBodyState extends State<PlantingUpdateBody> {
                             textInputHintStyle:
                                 Theme.of(context).textTheme.bodyText2,
                             inputType: TextInputType.name,
-                            textInputHint: "Type Plant",
+                            textInputHint:
+                                this.plantingTypeController.text == null
+                                    ? widget.dbQuery['type']
+                                    : plantingTypeController.text,
                           ),
                         ),
                         SizedBox(
@@ -224,7 +228,9 @@ class _PlantingUpdateBodyState extends State<PlantingUpdateBody> {
                             textInputHintStyle:
                                 Theme.of(context).textTheme.bodyText2,
                             inputType: TextInputType.number,
-                            textInputHint: "Enter Staff Id Card No",
+                            textInputHint: this.idCardNoController.text == null
+                                ? widget.dbQuery['id card no']
+                                : idCardNoController.text,
                           ),
                         ),
                         SizedBox(
@@ -244,7 +250,9 @@ class _PlantingUpdateBodyState extends State<PlantingUpdateBody> {
                                 Theme.of(context).textTheme.bodyText2,
                             inputType:
                                 TextInputType.numberWithOptions(decimal: true),
-                            textInputHint: "Enter the Acreage Covered",
+                            textInputHint: this.acreageController.text == null
+                                ? widget.dbQuery['acreage done']
+                                : acreageController.text,
                           ),
                         ),
                         CustomRoundedContainer(
@@ -267,7 +275,9 @@ class _PlantingUpdateBodyState extends State<PlantingUpdateBody> {
                                                     .textTheme
                                                     .subtitle1)))
                                     .toList(),
-                                value: _unitSelected,
+                                value: _unitSelected == null
+                                    ? widget.dbQuery['unit']
+                                    : _unitSelected,
                                 onChanged: (dynamic selectedDropdownItem) {
                                   setState(() {
                                     this._unitSelected = selectedDropdownItem;
@@ -294,7 +304,9 @@ class _PlantingUpdateBodyState extends State<PlantingUpdateBody> {
                             inputType: TextInputType.numberWithOptions(
                               decimal: true,
                             ),
-                            textInputHint: "Enter Quantity Planted",
+                            textInputHint: this.qtyController.text == null
+                                ? widget.dbQuery['qty']
+                                : qtyController.text,
                           ),
                         ),
                         SizedBox(
@@ -313,7 +325,9 @@ class _PlantingUpdateBodyState extends State<PlantingUpdateBody> {
                             textInputHintStyle:
                                 Theme.of(context).textTheme.bodyText2,
                             inputType: TextInputType.text,
-                            textInputHint: "Enter Machine ID",
+                            textInputHint: this.machineIDController.text == null
+                                ? widget.dbQuery['machine id']
+                                : machineIDController.text,
                           ),
                         ),
                         SizedBox(
@@ -332,7 +346,9 @@ class _PlantingUpdateBodyState extends State<PlantingUpdateBody> {
                             textInputHintStyle:
                                 Theme.of(context).textTheme.bodyText2,
                             inputType: TextInputType.number,
-                            textInputHint: "Enter Seed ID",
+                            textInputHint: this.seedIDController.text == null
+                                ? widget.dbQuery['seed id']
+                                : seedIDController.text,
                           ),
                         ),
                         SizedBox(
@@ -343,7 +359,8 @@ class _PlantingUpdateBodyState extends State<PlantingUpdateBody> {
                           buttonBackgroundColor: Theme.of(context).accentColor,
                           buttonTextValue: "Update Planting",
                           buttonTextStyle: Theme.of(context).textTheme.button,
-                          buttonFunction: () => updatePlanting(context),
+                          buttonFunction: () => updatePlanting(
+                              context, widget.index, widget.dbQuery),
                         ),
                       ],
                     )),

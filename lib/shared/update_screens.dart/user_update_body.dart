@@ -6,8 +6,6 @@ import 'package:farm_manager/shared/rounded_container.dart';
 import 'package:farm_manager/shared/rounded_flat_button.dart';
 import 'package:flutter/material.dart';
 
-import '../Constant.dart';
-
 class UserUpdateBody extends StatefulWidget {
   final Size deviceSize;
   final Widget profileImage;

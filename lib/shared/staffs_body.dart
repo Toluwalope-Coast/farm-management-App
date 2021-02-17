@@ -8,7 +8,6 @@ import 'package:farm_manager/shared/insert_screens.dart/staff_insert.dart';
 import 'package:farm_manager/shared/report_screens/staff_report.dart';
 import 'package:farm_manager/shared/staff_data_card.dart';
 import 'package:farm_manager/shared/update_screens.dart/staff_update.dart';
-import 'package:farm_manager/utils/database_helper.dart';
 import 'package:flutter/material.dart';
 
 class StaffsBody extends StatefulWidget {
@@ -33,7 +32,6 @@ class StaffsBody extends StatefulWidget {
 class _StaffsBodyState extends State<StaffsBody> {
   // Database integration into the code
 
-  DatabaseHelper databaseHelper = DatabaseHelper();
   List<Staff> staffList;
 
   // Database codes closes here
@@ -54,22 +52,14 @@ class _StaffsBodyState extends State<StaffsBody> {
     return navigatePushTo(context, StaffReport(staff: staff));
   }
 
-  updateItem(int index, Size deviceSize, Staff staff) {
+  Future updateItem(
+      String index, Size deviceSize, Map<dynamic, dynamic> dbQuery) async {
     print("item at $index has being updated");
 
-    Future<dynamic> result = navigatePushTo(
-        context,
-        StaffUpdate(
-          deviceSize: deviceSize,
-          staff: staff,
-        ));
-    result.then((value) {
-      if (value) {
-        return;
-      } else {
-        return;
-      }
-    });
+    print("staff List at ${dbQuery["firstname"]} has being updated");
+
+    navigatePushTo(context,
+        StaffUpdate(deviceSize: deviceSize, index: index, dbQuery: dbQuery));
   }
 
   deleteItem(String index, BuildContext context, Size deviceSize,
@@ -227,10 +217,14 @@ class _StaffsBodyState extends State<StaffsBody> {
                               itemCount: snapshot.data.docs.length,
                               itemBuilder: (BuildContext context, int index) {
                                 return GestureDetector(
-                                  // onDoubleTap: () => updateItem(
-                                  //     index, widget.deviceSize, staffList[index]),
-                                  // onLongPress: () => updateItem(
-                                  //     index, widget.deviceSize, staffList[index]),
+                                  onDoubleTap: () => updateItem(
+                                      snapshot.data.docs[index].id,
+                                      widget.deviceSize,
+                                      snapshot.data.docs[index].data()),
+                                  onLongPress: () => updateItem(
+                                      snapshot.data.docs[index].id,
+                                      widget.deviceSize,
+                                      snapshot.data.docs[index].data()),
                                   onHorizontalDragEnd:
                                       (DragEndDetails details) {
                                     if (details.primaryVelocity > 0) {

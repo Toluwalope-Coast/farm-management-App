@@ -1,10 +1,9 @@
-import 'package:farm_manager/models/harvesting_model.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:farm_manager/shared/Constant.dart';
 import 'package:farm_manager/shared/custom_drawer.dart';
 import 'package:farm_manager/shared/custom_textfield.dart';
 import 'package:farm_manager/shared/rounded_container.dart';
 import 'package:farm_manager/shared/rounded_flat_button.dart';
-import 'package:farm_manager/utils/database_helper.dart';
 import 'package:flutter/material.dart';
 
 class HarvestingUpdateBody extends StatefulWidget {
@@ -12,7 +11,8 @@ class HarvestingUpdateBody extends StatefulWidget {
   final Widget profileImage;
   final String heroTag;
   final String title;
-  final Harvesting harvesting;
+  final String index;
+  final Map<dynamic, dynamic> dbQuery;
 
   HarvestingUpdateBody({
     Key key,
@@ -20,7 +20,8 @@ class HarvestingUpdateBody extends StatefulWidget {
     this.profileImage,
     this.title,
     this.heroTag,
-    this.harvesting,
+    this.index,
+    this.dbQuery,
   }) : super(key: key);
 
   @override
@@ -29,8 +30,6 @@ class HarvestingUpdateBody extends StatefulWidget {
 
 class _HarvestingUpdateBodyState extends State<HarvestingUpdateBody> {
   // Database integration into the code
-
-  DatabaseHelper databaseHelper = DatabaseHelper();
 
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
@@ -55,19 +54,9 @@ class _HarvestingUpdateBodyState extends State<HarvestingUpdateBody> {
     "USD",
   ];
 
-  updateHarvesting(context) async {
-    Harvesting harvesting = new Harvesting.withId(
-        widget.harvesting.getId,
-        harvestingTypeController.text,
-        idCardNoController.text,
-        double.parse(qtyController.text),
-        _unitSelected,
-        double.parse(totalQtyStockController.text),
-        double.parse(acreageController.text),
-        machineIDController.text,
-        seedIDController.text,
-        '');
-    print("Planting Type is ${harvestingTypeController.text}");
+  Future updateHarvest(
+      context, String index, Map<dynamic, dynamic> dbQuery) async {
+    print("Harvest Type is ${harvestingTypeController.text}");
     print("Id Card No is ${idCardNoController.text}");
     print("Quantity is ${qtyController.text}");
     print("Acreage Type is ${acreageController.text}");
@@ -75,42 +64,47 @@ class _HarvestingUpdateBodyState extends State<HarvestingUpdateBody> {
     print("Machine Type is ${machineIDController.text}");
     print("Quantity in Stock is ${totalQtyStockController.text}");
 
-    int result = await databaseHelper.updateHarvesting(harvesting);
-    if (result != 0) {
-      return navigationPopRoute(context);
+    try {
+      FirebaseFirestore.instance.collection("harvest").doc(index).update({
+        "type": harvestingTypeController.text,
+        "id card no": idCardNoController.text,
+        "machine id ": machineIDController.text,
+        "seed id": seedIDController.text,
+        "qty": qtyController.text,
+        "unit": _unitSelected,
+        "acreage done": acreageController.text,
+      });
+      print("Update Successful");
+      navigationPopRoute(context);
+    } catch (e) {
+      print("Update UnSuccessful\n error is $e");
     }
   }
 
   @override
   Widget build(BuildContext context) {
     if (this.harvestingTypeController.text.isEmpty) {
-      this.harvestingTypeController.text = widget.harvesting.getType;
+      this.harvestingTypeController.text = widget.dbQuery['type'];
     }
     if (this.idCardNoController.text.isEmpty) {
-      this.idCardNoController.text = widget.harvesting.getIdCardNo;
-    }
-    if (this.harvestingTypeController.text.isEmpty) {
-      this.harvestingTypeController.text = widget.harvesting.getType;
+      this.idCardNoController.text = widget.dbQuery['id card no'];
     }
     if (this.acreageController.text.isEmpty) {
-      this.acreageController.text = widget.harvesting.getAcreage.toString();
+      this.acreageController.text = widget.dbQuery['acreage done'];
     }
     if (_unitSelected == null) {
-      _unitSelected = widget.harvesting.getUnit;
+      _unitSelected = widget.dbQuery['unit'];
     }
     if (this.qtyController.text.isEmpty) {
-      this.qtyController.text = widget.harvesting.getQty.toString();
-    }
-    if (this.totalQtyStockController.text.isEmpty) {
-      this.totalQtyStockController.text =
-          widget.harvesting.getTotalQtyStock.toString();
+      this.qtyController.text = widget.dbQuery['qty'];
     }
     if (this.machineIDController.text.isEmpty) {
-      this.machineIDController.text = widget.harvesting.getMachineId.toString();
+      this.machineIDController.text = widget.dbQuery['machine id'];
     }
     if (this.seedIDController.text.isEmpty) {
-      this.seedIDController.text = widget.harvesting.getSeedId.toString();
+      this.seedIDController.text = widget.dbQuery['seed id'];
     }
+
     drawerList(context);
     return Scaffold(
         key: _scaffoldKey,
@@ -176,7 +170,7 @@ class _HarvestingUpdateBodyState extends State<HarvestingUpdateBody> {
               ),
               Center(
                 child: Text(
-                  "Update Harvesting ${widget.harvesting.getId}",
+                  "Update Harvesting \n${widget.index}",
                   style: Theme.of(context)
                       .textTheme
                       .headline6
@@ -214,7 +208,10 @@ class _HarvestingUpdateBodyState extends State<HarvestingUpdateBody> {
                             textInputHintStyle:
                                 Theme.of(context).textTheme.bodyText2,
                             inputType: TextInputType.name,
-                            textInputHint: "Type Of Harvest",
+                            textInputHint:
+                                this.harvestingTypeController.text == null
+                                    ? widget.dbQuery['type']
+                                    : harvestingTypeController.text,
                           ),
                         ),
                         SizedBox(
@@ -233,7 +230,9 @@ class _HarvestingUpdateBodyState extends State<HarvestingUpdateBody> {
                             textInputHintStyle:
                                 Theme.of(context).textTheme.bodyText2,
                             inputType: TextInputType.number,
-                            textInputHint: "Enter Staff Id Card No",
+                            textInputHint: this.idCardNoController.text == null
+                                ? widget.dbQuery['id card no']
+                                : idCardNoController.text,
                           ),
                         ),
                         SizedBox(
@@ -253,11 +252,10 @@ class _HarvestingUpdateBodyState extends State<HarvestingUpdateBody> {
                                 Theme.of(context).textTheme.bodyText2,
                             inputType:
                                 TextInputType.numberWithOptions(decimal: true),
-                            textInputHint: "Enter the Acreage Covered",
+                            textInputHint: this.acreageController.text == null
+                                ? widget.dbQuery['acreage done']
+                                : acreageController.text,
                           ),
-                        ),
-                        SizedBox(
-                          height: 4.0,
                         ),
                         CustomRoundedContainer(
                             deviceSize: widget.deviceSize,
@@ -279,7 +277,9 @@ class _HarvestingUpdateBodyState extends State<HarvestingUpdateBody> {
                                                     .textTheme
                                                     .subtitle1)))
                                     .toList(),
-                                value: _unitSelected,
+                                value: _unitSelected == null
+                                    ? widget.dbQuery['unit']
+                                    : _unitSelected,
                                 onChanged: (dynamic selectedDropdownItem) {
                                   setState(() {
                                     this._unitSelected = selectedDropdownItem;
@@ -306,28 +306,9 @@ class _HarvestingUpdateBodyState extends State<HarvestingUpdateBody> {
                             inputType: TextInputType.numberWithOptions(
                               decimal: true,
                             ),
-                            textInputHint: "Enter Quantity Harvested",
-                          ),
-                        ),
-                        SizedBox(
-                          height: 4.0,
-                        ),
-                        CustomRoundedContainer(
-                          deviceSize: widget.deviceSize,
-                          containerColor:
-                              Theme.of(context).secondaryHeaderColor,
-                          content: CustomTextfield(
-                            textInputValue: totalQtyStockController,
-                            deviceSize: widget.deviceSize,
-                            inputIcon: Icon(Icons.format_list_numbered,
-                                color: Theme.of(context).accentColor),
-                            obscureText: false,
-                            textInputHintStyle:
-                                Theme.of(context).textTheme.bodyText2,
-                            inputType: TextInputType.numberWithOptions(
-                              decimal: true,
-                            ),
-                            textInputHint: "Enter Harvest Quantity In Stock",
+                            textInputHint: this.qtyController.text == null
+                                ? widget.dbQuery['qty']
+                                : qtyController.text,
                           ),
                         ),
                         SizedBox(
@@ -346,7 +327,9 @@ class _HarvestingUpdateBodyState extends State<HarvestingUpdateBody> {
                             textInputHintStyle:
                                 Theme.of(context).textTheme.bodyText2,
                             inputType: TextInputType.text,
-                            textInputHint: "Enter Machine ID",
+                            textInputHint: this.machineIDController.text == null
+                                ? widget.dbQuery['machine id']
+                                : machineIDController.text,
                           ),
                         ),
                         SizedBox(
@@ -364,8 +347,10 @@ class _HarvestingUpdateBodyState extends State<HarvestingUpdateBody> {
                             obscureText: false,
                             textInputHintStyle:
                                 Theme.of(context).textTheme.bodyText2,
-                            inputType: TextInputType.text,
-                            textInputHint: "Enter Seed ID",
+                            inputType: TextInputType.number,
+                            textInputHint: this.seedIDController.text == null
+                                ? widget.dbQuery['seed id']
+                                : seedIDController.text,
                           ),
                         ),
                         SizedBox(
@@ -376,7 +361,8 @@ class _HarvestingUpdateBodyState extends State<HarvestingUpdateBody> {
                           buttonBackgroundColor: Theme.of(context).accentColor,
                           buttonTextValue: "Update Harvesting",
                           buttonTextStyle: Theme.of(context).textTheme.button,
-                          buttonFunction: () => updateHarvesting(context),
+                          buttonFunction: () => updateHarvest(
+                              context, widget.index, widget.dbQuery),
                         ),
                       ],
                     )),

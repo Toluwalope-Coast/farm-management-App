@@ -7,7 +7,7 @@ import 'package:farm_manager/shared/customer_data_card.dart';
 import 'package:farm_manager/shared/dialogue_box.dart';
 import 'package:farm_manager/shared/insert_screens.dart/customers_insert.dart';
 import 'package:farm_manager/shared/report_screens/customer_report.dart';
-import 'package:farm_manager/utils/database_helper.dart';
+import 'package:farm_manager/shared/update_screens.dart/customers_update.dart';
 import 'package:flutter/material.dart';
 
 class CustomersBody extends StatefulWidget {
@@ -32,7 +32,6 @@ class CustomersBody extends StatefulWidget {
 class _CustomersBodyState extends State<CustomersBody> {
   // Database integration into the code
 
-  DatabaseHelper databaseHelper = DatabaseHelper();
   List<Customer> customerList;
 
   backIconFunction(context) {
@@ -51,23 +50,15 @@ class _CustomersBodyState extends State<CustomersBody> {
     return navigatePushTo(context, CustomerReport(customer: customer));
   }
 
-  // updateItem(int index, Size deviceSize, Customer customer) {
-  //   print("item at $index has being updated");
+  Future updateItem(
+      String index, Size deviceSize, Map<dynamic, dynamic> dbQuery) async {
+    print("item at $index has being updated");
 
-  //   Future<dynamic> result = navigatePushTo(
-  //       context,
-  //       CustomerUpdate(
-  //         deviceSize: deviceSize,
-  //         customer: customer,
-  //       ));
-  //   result.then((value) {
-  //     if (value) {
-  //       return updateListView();
-  //     } else {
-  //       return;
-  //     }
-  //   });
-  // }
+    print("Customer List at ${dbQuery["name"]} has being updated");
+
+    navigatePushTo(context,
+        CustomerUpdate(deviceSize: deviceSize, index: index, dbQuery: dbQuery));
+  }
 
   deleteItem(String index, BuildContext context, Size deviceSize,
       String updateTable, AsyncCallback delFunc) {
@@ -218,10 +209,14 @@ class _CustomersBodyState extends State<CustomersBody> {
                               itemCount: snapshot.data.docs.length,
                               itemBuilder: (BuildContext context, int index) {
                                 return GestureDetector(
-                                  // onDoubleTap: () => updateItem(index,
-                                  //     widget.deviceSize, customerList[index]),
-                                  // onLongPress: () => updateItem(index,
-                                  //     widget.deviceSize, customerList[index]),
+                                  onDoubleTap: () => updateItem(
+                                      snapshot.data.docs[index].id,
+                                      widget.deviceSize,
+                                      snapshot.data.docs[index].data()),
+                                  onLongPress: () => updateItem(
+                                      snapshot.data.docs[index].id,
+                                      widget.deviceSize,
+                                      snapshot.data.docs[index].data()),
                                   onHorizontalDragEnd:
                                       (DragEndDetails details) {
                                     if (details.primaryVelocity > 0) {

@@ -1,10 +1,9 @@
-import 'package:farm_manager/models/machineries_model.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:farm_manager/shared/Constant.dart';
 import 'package:farm_manager/shared/custom_drawer.dart';
 import 'package:farm_manager/shared/custom_textfield.dart';
 import 'package:farm_manager/shared/rounded_container.dart';
 import 'package:farm_manager/shared/rounded_flat_button.dart';
-import 'package:farm_manager/utils/database_helper.dart';
 import 'package:flutter/material.dart';
 
 class MachinesUpdateBody extends StatefulWidget {
@@ -12,7 +11,8 @@ class MachinesUpdateBody extends StatefulWidget {
   final Widget profileImage;
   final String heroTag;
   final String title;
-  final Machinery machinery;
+  final String index;
+  final Map<dynamic, dynamic> dbQuery;
 
   MachinesUpdateBody({
     Key key,
@@ -20,7 +20,8 @@ class MachinesUpdateBody extends StatefulWidget {
     this.profileImage,
     this.title,
     this.heroTag,
-    this.machinery,
+    this.index,
+    this.dbQuery,
   }) : super(key: key);
 
   @override
@@ -30,33 +31,36 @@ class MachinesUpdateBody extends StatefulWidget {
 class _MachinesUpdateBodyState extends State<MachinesUpdateBody> {
   // Database integration into the code
 
-  DatabaseHelper databaseHelper = DatabaseHelper();
-
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
   TextEditingController machinesTypeController = new TextEditingController();
 
   TextEditingController idCardNoController = new TextEditingController();
 
-  updateMachines(context) async {
-    Machinery machine = new Machinery.withId(widget.machinery.getId,
-        machinesTypeController.text, idCardNoController.text, '');
+  Future updateMachine(
+      context, String index, Map<dynamic, dynamic> dbQuery) async {
     print("Machine Type is ${machinesTypeController.text}");
     print("Id Card No is ${idCardNoController.text}");
 
-    int result = await databaseHelper.updateMachines(machine);
-    if (result != 0) {
-      return navigationPopRoute(context);
+    try {
+      FirebaseFirestore.instance.collection("machine").doc(index).update({
+        "type": machinesTypeController.text,
+        "id card no": idCardNoController.text,
+      });
+      print("Update Successful");
+      navigationPopRoute(context);
+    } catch (e) {
+      print("Update UnSuccessful\n error is $e");
     }
   }
 
   @override
   Widget build(BuildContext context) {
     if (this.machinesTypeController.text.isEmpty) {
-      this.machinesTypeController.text = widget.machinery.getType;
+      this.machinesTypeController.text = widget.dbQuery['type'];
     }
     if (this.idCardNoController.text.isEmpty) {
-      this.idCardNoController.text = widget.machinery.getIdCardNo;
+      this.idCardNoController.text = widget.dbQuery['id card no'];
     }
     drawerList(context);
     return Scaffold(
@@ -123,7 +127,8 @@ class _MachinesUpdateBodyState extends State<MachinesUpdateBody> {
               ),
               Center(
                 child: Text(
-                  "UpdateMachines ${widget.machinery.getId}",
+                  "UpdateMachines \n${widget.index}",
+                  textAlign: TextAlign.center,
                   style: Theme.of(context)
                       .textTheme
                       .headline6
@@ -161,7 +166,10 @@ class _MachinesUpdateBodyState extends State<MachinesUpdateBody> {
                             textInputHintStyle:
                                 Theme.of(context).textTheme.bodyText2,
                             inputType: TextInputType.name,
-                            textInputHint: "Type Of Machine",
+                            textInputHint:
+                                this.machinesTypeController.text == null
+                                    ? widget.dbQuery['type']
+                                    : machinesTypeController.text,
                           ),
                         ),
                         SizedBox(
@@ -180,7 +188,9 @@ class _MachinesUpdateBodyState extends State<MachinesUpdateBody> {
                             textInputHintStyle:
                                 Theme.of(context).textTheme.bodyText2,
                             inputType: TextInputType.number,
-                            textInputHint: "Enter Staff Id Card No",
+                            textInputHint: this.idCardNoController.text == null
+                                ? widget.dbQuery['id card no']
+                                : idCardNoController.text,
                           ),
                         ),
                         SizedBox(
@@ -191,7 +201,8 @@ class _MachinesUpdateBodyState extends State<MachinesUpdateBody> {
                           buttonBackgroundColor: Theme.of(context).accentColor,
                           buttonTextValue: "Update Machine",
                           buttonTextStyle: Theme.of(context).textTheme.button,
-                          buttonFunction: () => updateMachines(context),
+                          buttonFunction: () => updateMachine(
+                              context, widget.index, widget.dbQuery),
                         ),
                       ],
                     )),

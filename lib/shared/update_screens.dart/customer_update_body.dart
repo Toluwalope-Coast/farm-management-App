@@ -1,10 +1,9 @@
-import 'package:farm_manager/models/customers_model.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:farm_manager/shared/Constant.dart';
 import 'package:farm_manager/shared/custom_drawer.dart';
 import 'package:farm_manager/shared/custom_textfield.dart';
 import 'package:farm_manager/shared/rounded_container.dart';
 import 'package:farm_manager/shared/rounded_flat_button.dart';
-import 'package:farm_manager/utils/database_helper.dart';
 import 'package:flutter/material.dart';
 
 class CustomerUpdateBody extends StatefulWidget {
@@ -12,7 +11,8 @@ class CustomerUpdateBody extends StatefulWidget {
   final Widget profileImage;
   final String heroTag;
   final String title;
-  final Customer customer;
+  final String index;
+  final Map<dynamic, dynamic> dbQuery;
 
   CustomerUpdateBody({
     Key key,
@@ -20,7 +20,8 @@ class CustomerUpdateBody extends StatefulWidget {
     this.profileImage,
     this.title,
     this.heroTag,
-    this.customer,
+    this.index,
+    this.dbQuery,
   }) : super(key: key);
 
   @override
@@ -29,8 +30,6 @@ class CustomerUpdateBody extends StatefulWidget {
 
 class _CustomerUpdateBodyState extends State<CustomerUpdateBody> {
   // Database integration into the code
-
-  DatabaseHelper databaseHelper = DatabaseHelper();
 
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
@@ -50,43 +49,45 @@ class _CustomerUpdateBodyState extends State<CustomerUpdateBody> {
     "Cheque",
   ];
 
-  updateCustomer(context) async {
-    Customer customer = new Customer.withId(
-        widget.customer.getId,
-        nameController.text,
-        emailController.text,
-        addressController.text,
-        telNoController.text,
-        _modeOfTransactionSelected,
-        '');
+  Future updateCustomer(
+      context, String index, Map<dynamic, dynamic> dbQuery) async {
     print("name is ${nameController.text}");
     print("email is ${emailController.text}");
     print("address is ${addressController.text}");
     print("TelNo is ${telNoController.text}");
     print("TelNo is $_modeOfTransactionSelected");
 
-    int result = await databaseHelper.updateCustomer(customer);
-    if (result != 0) {
-      return navigationPopRoute(context);
+    try {
+      FirebaseFirestore.instance.collection("customer").doc(index).update({
+        "name": nameController.text,
+        "address": addressController.text,
+        "mode of transaction": _modeOfTransactionSelected,
+        "email": emailController.text,
+        "tel no": telNoController.text,
+      });
+      print("Update Successful");
+      navigationPopRoute(context);
+    } catch (e) {
+      print("Update UnSuccessful\n error is $e");
     }
   }
 
   @override
   Widget build(BuildContext context) {
     if (this.nameController.text.isEmpty) {
-      this.nameController.text = widget.customer.getName;
+      this.nameController.text = widget.dbQuery['name'];
     }
     if (this.emailController.text.isEmpty) {
-      this.emailController.text = widget.customer.getEmail;
+      this.emailController.text = widget.dbQuery['email'];
     }
     if (this.addressController.text.isEmpty) {
-      this.addressController.text = widget.customer.getAddress;
+      this.addressController.text = widget.dbQuery['address'];
     }
     if (this.telNoController.text.isEmpty) {
-      this.telNoController.text = widget.customer.getTelNo;
+      this.telNoController.text = widget.dbQuery['tel no'];
     }
     if (_modeOfTransactionSelected == null) {
-      _modeOfTransactionSelected = widget.customer.getModeOfTransaction;
+      _modeOfTransactionSelected = widget.dbQuery['mode of transaction'];
     }
     drawerList(context);
     return Scaffold(
@@ -153,7 +154,8 @@ class _CustomerUpdateBodyState extends State<CustomerUpdateBody> {
               ),
               Center(
                 child: Text(
-                  "Update Customer ${widget.customer.getId}",
+                  "Update Customer \n${widget.index}",
+                  textAlign: TextAlign.center,
                   style: Theme.of(context)
                       .textTheme
                       .headline6
@@ -191,7 +193,9 @@ class _CustomerUpdateBodyState extends State<CustomerUpdateBody> {
                             textInputHintStyle:
                                 Theme.of(context).textTheme.bodyText2,
                             inputType: TextInputType.name,
-                            textInputHint: "Enter new Customer Name",
+                            textInputHint: this.nameController.text == null
+                                ? widget.dbQuery['name']
+                                : nameController.text,
                           ),
                         ),
                         SizedBox(
@@ -210,7 +214,9 @@ class _CustomerUpdateBodyState extends State<CustomerUpdateBody> {
                             textInputHintStyle:
                                 Theme.of(context).textTheme.bodyText2,
                             inputType: TextInputType.emailAddress,
-                            textInputHint: "Enter new Customer Email",
+                            textInputHint: this.emailController.text == null
+                                ? widget.dbQuery['email']
+                                : emailController.text,
                           ),
                         ),
                         SizedBox(
@@ -229,7 +235,9 @@ class _CustomerUpdateBodyState extends State<CustomerUpdateBody> {
                             textInputHintStyle:
                                 Theme.of(context).textTheme.bodyText2,
                             inputType: TextInputType.text,
-                            textInputHint: "Enter new Customer Address",
+                            textInputHint: this.addressController.text == null
+                                ? widget.dbQuery['address']
+                                : addressController.text,
                           ),
                         ),
                         SizedBox(
@@ -248,7 +256,9 @@ class _CustomerUpdateBodyState extends State<CustomerUpdateBody> {
                             textInputHintStyle:
                                 Theme.of(context).textTheme.bodyText2,
                             inputType: TextInputType.name,
-                            textInputHint: "Enter new Customer Phone No",
+                            textInputHint: this.telNoController.text == null
+                                ? widget.dbQuery['tel no']
+                                : telNoController.text,
                           ),
                         ),
                         SizedBox(
@@ -274,7 +284,9 @@ class _CustomerUpdateBodyState extends State<CustomerUpdateBody> {
                                                     .textTheme
                                                     .subtitle1)))
                                     .toList(),
-                                value: _modeOfTransactionSelected,
+                                value: _modeOfTransactionSelected == null
+                                    ? widget.dbQuery['mode of transaction']
+                                    : _modeOfTransactionSelected,
                                 onChanged: (dynamic selectedDropdownItem) {
                                   setState(() {
                                     this._modeOfTransactionSelected =
@@ -292,7 +304,8 @@ class _CustomerUpdateBodyState extends State<CustomerUpdateBody> {
                           buttonBackgroundColor: Theme.of(context).accentColor,
                           buttonTextValue: "Update Customer",
                           buttonTextStyle: Theme.of(context).textTheme.button,
-                          buttonFunction: () => updateCustomer(context),
+                          buttonFunction: () => updateCustomer(
+                              context, widget.index, widget.dbQuery),
                         ),
                       ],
                     )),

@@ -1,10 +1,9 @@
-import 'package:farm_manager/models/fuels_model.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:farm_manager/shared/Constant.dart';
 import 'package:farm_manager/shared/custom_drawer.dart';
 import 'package:farm_manager/shared/custom_textfield.dart';
 import 'package:farm_manager/shared/rounded_container.dart';
 import 'package:farm_manager/shared/rounded_flat_button.dart';
-import 'package:farm_manager/utils/database_helper.dart';
 import 'package:flutter/material.dart';
 
 class FuelUpdateBody extends StatefulWidget {
@@ -12,7 +11,8 @@ class FuelUpdateBody extends StatefulWidget {
   final Widget profileImage;
   final String heroTag;
   final String title;
-  final Fuel fuel;
+  final String index;
+  final Map<dynamic, dynamic> dbQuery;
 
   FuelUpdateBody({
     Key key,
@@ -20,7 +20,8 @@ class FuelUpdateBody extends StatefulWidget {
     this.profileImage,
     this.title,
     this.heroTag,
-    this.fuel,
+    this.index,
+    this.dbQuery,
   }) : super(key: key);
 
   @override
@@ -30,8 +31,6 @@ class FuelUpdateBody extends StatefulWidget {
 class _FuelUpdateBodyState extends State<FuelUpdateBody> {
   // Database integration into the code
 
-  DatabaseHelper databaseHelper = DatabaseHelper();
-
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
   TextEditingController fuelTypeController = new TextEditingController();
@@ -40,29 +39,35 @@ class _FuelUpdateBodyState extends State<FuelUpdateBody> {
 
   TextEditingController idCardNoController = new TextEditingController();
 
-  updateFuel(context) async {
-    Fuel fuel = new Fuel.withId(widget.fuel.getId, fuelTypeController.text,
-        idCardNoController.text, machineIDController.text, '');
+  Future updateFuel(
+      context, String index, Map<dynamic, dynamic> dbQuery) async {
     print("Fuel Type is ${fuelTypeController.text}");
     print("Id Card No is ${idCardNoController.text}");
     print("Machine Type is ${machineIDController.text}");
 
-    int result = await databaseHelper.updateFuel(fuel);
-    if (result != 0) {
-      return navigationPopRoute(context);
+    try {
+      FirebaseFirestore.instance.collection("fuel").doc(index).update({
+        "type": fuelTypeController.text,
+        "id card no": idCardNoController.text,
+        "machine id": machineIDController.text,
+      });
+      print("Update Successful");
+      navigationPopRoute(context);
+    } catch (e) {
+      print("Update UnSuccessful\n error is $e");
     }
   }
 
   @override
   Widget build(BuildContext context) {
     if (this.fuelTypeController.text.isEmpty) {
-      this.fuelTypeController.text = widget.fuel.getType;
+      this.fuelTypeController.text = widget.dbQuery['type'];
     }
     if (this.idCardNoController.text.isEmpty) {
-      this.idCardNoController.text = widget.fuel.getIdCardNo;
+      this.idCardNoController.text = widget.dbQuery['id card no'];
     }
     if (this.machineIDController.text.isEmpty) {
-      this.machineIDController.text = widget.fuel.getMachineId.toString();
+      this.machineIDController.text = widget.dbQuery['machine id'];
     }
     drawerList(context);
     return Scaffold(
@@ -129,7 +134,7 @@ class _FuelUpdateBodyState extends State<FuelUpdateBody> {
               ),
               Center(
                 child: Text(
-                  "Update Fuel ${widget.fuel.getId}",
+                  "Update Fuel \n${widget.index}",
                   style: Theme.of(context)
                       .textTheme
                       .headline6
@@ -167,7 +172,9 @@ class _FuelUpdateBodyState extends State<FuelUpdateBody> {
                             textInputHintStyle:
                                 Theme.of(context).textTheme.bodyText2,
                             inputType: TextInputType.name,
-                            textInputHint: "Type Of Fuel",
+                            textInputHint: this.fuelTypeController.text == null
+                                ? widget.dbQuery['type']
+                                : fuelTypeController.text,
                           ),
                         ),
                         SizedBox(
@@ -186,7 +193,9 @@ class _FuelUpdateBodyState extends State<FuelUpdateBody> {
                             textInputHintStyle:
                                 Theme.of(context).textTheme.bodyText2,
                             inputType: TextInputType.number,
-                            textInputHint: "Enter Staff Id Card No",
+                            textInputHint: this.idCardNoController.text == null
+                                ? widget.dbQuery['id card no']
+                                : idCardNoController.text,
                           ),
                         ),
                         SizedBox(
@@ -205,7 +214,9 @@ class _FuelUpdateBodyState extends State<FuelUpdateBody> {
                             textInputHintStyle:
                                 Theme.of(context).textTheme.bodyText2,
                             inputType: TextInputType.text,
-                            textInputHint: "Enter Machine ID",
+                            textInputHint: this.machineIDController.text == null
+                                ? widget.dbQuery['machine id']
+                                : machineIDController.text,
                           ),
                         ),
                         SizedBox(
@@ -216,7 +227,8 @@ class _FuelUpdateBodyState extends State<FuelUpdateBody> {
                           buttonBackgroundColor: Theme.of(context).accentColor,
                           buttonTextValue: "Update Fuel",
                           buttonTextStyle: Theme.of(context).textTheme.button,
-                          buttonFunction: () => updateFuel(context),
+                          buttonFunction: () =>
+                              updateFuel(context, widget.index, widget.dbQuery),
                         ),
                       ],
                     )),

@@ -53,22 +53,14 @@ class _TillagesBodyState extends State<TillagesBody> {
         ));
   }
 
-  updateItem(int index, Size deviceSize, Tillage tillage) {
+  Future updateItem(
+      String index, Size deviceSize, Map<dynamic, dynamic> dbQuery) async {
     print("item at $index has being updated");
 
-    Future<dynamic> result = navigatePushTo(
-        context,
-        TillageUpdate(
-          deviceSize: deviceSize,
-          tillage: tillage,
-        ));
-    result.then((value) {
-      if (value) {
-        return null;
-      } else {
-        return;
-      }
-    });
+    print("tillage List at ${dbQuery["type"]} has being updated");
+
+    navigatePushTo(context,
+        TillageUpdate(deviceSize: deviceSize, index: index, dbQuery: dbQuery));
   }
 
   deleteItem(String index, BuildContext context, Size deviceSize,
@@ -220,10 +212,14 @@ class _TillagesBodyState extends State<TillagesBody> {
                               itemCount: snapshot.data.docs.length,
                               itemBuilder: (BuildContext context, int index) {
                                 return GestureDetector(
-                                  // onDoubleTap: () => updateItem(index,
-                                  //     widget.deviceSize, tillageList[index]),
-                                  // onLongPress: () => updateItem(index,
-                                  //     widget.deviceSize, tillageList[index]),
+                                  onDoubleTap: () => updateItem(
+                                      snapshot.data.docs[index].id,
+                                      widget.deviceSize,
+                                      snapshot.data.docs[index].data()),
+                                  onLongPress: () => updateItem(
+                                      snapshot.data.docs[index].id,
+                                      widget.deviceSize,
+                                      snapshot.data.docs[index].data()),
                                   onHorizontalDragEnd:
                                       (DragEndDetails details) {
                                     if (details.primaryVelocity > 0) {

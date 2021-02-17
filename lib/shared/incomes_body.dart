@@ -49,22 +49,14 @@ class _IncomesBodyState extends State<IncomesBody> {
     return navigatePushTo(context, IncomesReport(incomes: income));
   }
 
-  updateItem(int index, Size deviceSize, Income incomes) {
+  Future updateItem(
+      String index, Size deviceSize, Map<dynamic, dynamic> dbQuery) async {
     print("item at $index has being updated");
 
-    Future<dynamic> result = navigatePushTo(
-        context,
-        IncomesUpdate(
-          deviceSize: deviceSize,
-          income: incomes,
-        ));
-    result.then((value) {
-      if (value) {
-        return;
-      } else {
-        return;
-      }
-    });
+    print("Income List at ${dbQuery["product type"]} has being updated");
+
+    navigatePushTo(context,
+        IncomesUpdate(deviceSize: deviceSize, index: index, dbQuery: dbQuery));
   }
 
   deleteItem(String index, BuildContext context, Size deviceSize,
@@ -216,10 +208,14 @@ class _IncomesBodyState extends State<IncomesBody> {
                               itemCount: snapshot.data.docs.length,
                               itemBuilder: (BuildContext context, int index) {
                                 return GestureDetector(
-                                  // onDoubleTap: () => updateItem(index,
-                                  //     widget.deviceSize, incomeList[index]),
-                                  // onLongPress: () => updateItem(index,
-                                  //     widget.deviceSize, incomeList[index]),
+                                  onDoubleTap: () => updateItem(
+                                      snapshot.data.docs[index].id,
+                                      widget.deviceSize,
+                                      snapshot.data.docs[index].data()),
+                                  onLongPress: () => updateItem(
+                                      snapshot.data.docs[index].id,
+                                      widget.deviceSize,
+                                      snapshot.data.docs[index].data()),
                                   onHorizontalDragEnd:
                                       (DragEndDetails details) {
                                     if (details.primaryVelocity > 0) {

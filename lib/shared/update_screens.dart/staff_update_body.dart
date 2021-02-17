@@ -1,10 +1,9 @@
-import 'package:farm_manager/models/staffs_model.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:farm_manager/shared/Constant.dart';
 import 'package:farm_manager/shared/custom_drawer.dart';
 import 'package:farm_manager/shared/custom_textfield.dart';
 import 'package:farm_manager/shared/rounded_container.dart';
 import 'package:farm_manager/shared/rounded_flat_button.dart';
-import 'package:farm_manager/utils/database_helper.dart';
 import 'package:flutter/material.dart';
 
 class StaffUpdateBody extends StatefulWidget {
@@ -12,7 +11,8 @@ class StaffUpdateBody extends StatefulWidget {
   final Widget profileImage;
   final String heroTag;
   final String title;
-  final Staff staff;
+  final String index;
+  final Map<dynamic, dynamic> dbQuery;
 
   StaffUpdateBody({
     Key key,
@@ -20,7 +20,8 @@ class StaffUpdateBody extends StatefulWidget {
     this.profileImage,
     this.title,
     this.heroTag,
-    this.staff,
+    this.index,
+    this.dbQuery,
   }) : super(key: key);
 
   @override
@@ -29,8 +30,6 @@ class StaffUpdateBody extends StatefulWidget {
 
 class _StaffUpdateBodyState extends State<StaffUpdateBody> {
   // Database integration into the code
-
-  DatabaseHelper databaseHelper = DatabaseHelper();
 
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
@@ -59,19 +58,8 @@ class _StaffUpdateBodyState extends State<StaffUpdateBody> {
     "Field Operator"
   ];
 
-  updateStaff(context) async {
-    Staff staff = new Staff.withId(
-        widget.staff.getId,
-        firstnameController.text,
-        lastnameController.text,
-        usernameController.text,
-        _designationSelected,
-        idCardNoController.text,
-        emailController.text,
-        addressController.text,
-        cityController.text,
-        telNoController.text,
-        '');
+  Future updateStaff(
+      context, String index, Map<dynamic, dynamic> dbQuery) async {
     print("firstname is ${firstnameController.text}");
     print("lastname is ${lastnameController.text}");
     print("username is ${usernameController.text}");
@@ -80,43 +68,55 @@ class _StaffUpdateBodyState extends State<StaffUpdateBody> {
     print("email is ${emailController.text}");
     print("address is ${addressController.text}");
     print("city is ${cityController.text}");
-    print("TelNo is ${telNoController.text}");
+    print("Id is ${widget.index}");
 
-    int result = await databaseHelper.updateStaff(staff);
-    print('The result: $result');
-    if (result != 0) {
-      return navigationPopRoute(context);
+    try {
+      FirebaseFirestore.instance.collection("staff").doc(index).update({
+        "firstname": firstnameController.text,
+        "lastname": lastnameController.text,
+        "username": usernameController.text,
+        "designation": _designationSelected,
+        "id card no": idCardNoController.text,
+        "home address": addressController.text,
+        "city": cityController.text,
+        "email": emailController.text,
+        "tel no": telNoController.text,
+      });
+      print("Update Successful");
+      navigationPopRoute(context);
+    } catch (e) {
+      print("Update UnSuccessful\n error is $e");
     }
   }
 
   @override
   Widget build(BuildContext context) {
     if (this.firstnameController.text.isEmpty) {
-      this.firstnameController.text = widget.staff.getFirstname;
+      this.firstnameController.text = widget.dbQuery['firstname'];
     }
     if (this.lastnameController.text.isEmpty) {
-      this.lastnameController.text = widget.staff.getLastname;
+      this.lastnameController.text = widget.dbQuery['lastname'];
     }
     if (this.usernameController.text.isEmpty) {
-      this.usernameController.text = widget.staff.getUsername;
+      this.usernameController.text = widget.dbQuery['username'];
     }
     if (_designationSelected == null) {
-      _designationSelected = widget.staff.getDesignation;
+      _designationSelected = widget.dbQuery['designation'];
     }
     if (this.idCardNoController.text.isEmpty) {
-      this.idCardNoController.text = widget.staff.getIdCardNo;
+      this.idCardNoController.text = widget.dbQuery['id card no'];
     }
     if (this.emailController.text.isEmpty) {
-      this.emailController.text = widget.staff.getEmail;
+      this.emailController.text = widget.dbQuery['email'];
     }
     if (this.addressController.text.isEmpty) {
-      this.addressController.text = widget.staff.getHomeAddress;
+      this.addressController.text = widget.dbQuery['home address'];
     }
     if (this.cityController.text.isEmpty) {
-      this.cityController.text = widget.staff.getCity;
+      this.cityController.text = widget.dbQuery['city'];
     }
     if (this.telNoController.text.isEmpty) {
-      this.telNoController.text = widget.staff.getTelNo;
+      this.telNoController.text = widget.dbQuery['tel no'];
     }
     drawerList(context);
     return Scaffold(
@@ -183,7 +183,8 @@ class _StaffUpdateBodyState extends State<StaffUpdateBody> {
               ),
               Center(
                 child: Text(
-                  "Update Staff ${widget.staff.getId}",
+                  "Update Staff \n ${widget.index}",
+                  textAlign: TextAlign.center,
                   style: Theme.of(context)
                       .textTheme
                       .headline6
@@ -221,7 +222,9 @@ class _StaffUpdateBodyState extends State<StaffUpdateBody> {
                             textInputHintStyle:
                                 Theme.of(context).textTheme.bodyText2,
                             inputType: TextInputType.name,
-                            textInputHint: "Enter new Firstname",
+                            textInputHint: this.firstnameController.text == null
+                                ? widget.dbQuery['firstname']
+                                : firstnameController.text,
                           ),
                         ),
                         SizedBox(
@@ -240,7 +243,9 @@ class _StaffUpdateBodyState extends State<StaffUpdateBody> {
                             textInputHintStyle:
                                 Theme.of(context).textTheme.bodyText2,
                             inputType: TextInputType.name,
-                            textInputHint: "Enter new Lastname",
+                            textInputHint: this.lastnameController.text == null
+                                ? widget.dbQuery['lastname']
+                                : lastnameController.text,
                           ),
                         ),
                         SizedBox(
@@ -259,7 +264,9 @@ class _StaffUpdateBodyState extends State<StaffUpdateBody> {
                             textInputHintStyle:
                                 Theme.of(context).textTheme.bodyText2,
                             inputType: TextInputType.name,
-                            textInputHint: "Enter new Username",
+                            textInputHint: this.usernameController.text == null
+                                ? widget.dbQuery['username']
+                                : usernameController.text,
                           ),
                         ),
                         SizedBox(
@@ -285,7 +292,9 @@ class _StaffUpdateBodyState extends State<StaffUpdateBody> {
                                                     .textTheme
                                                     .subtitle1)))
                                     .toList(),
-                                value: _designationSelected,
+                                value: _designationSelected == null
+                                    ? widget.dbQuery['designation']
+                                    : _designationSelected,
                                 onChanged: (dynamic selectedDropdownItem) {
                                   setState(() {
                                     this._designationSelected =
@@ -311,7 +320,9 @@ class _StaffUpdateBodyState extends State<StaffUpdateBody> {
                             textInputHintStyle:
                                 Theme.of(context).textTheme.bodyText2,
                             inputType: TextInputType.text,
-                            textInputHint: "Enter new Id Card No",
+                            textInputHint: this.idCardNoController.text == null
+                                ? widget.dbQuery['id card no']
+                                : idCardNoController.text,
                           ),
                         ),
                         SizedBox(
@@ -330,7 +341,9 @@ class _StaffUpdateBodyState extends State<StaffUpdateBody> {
                             textInputHintStyle:
                                 Theme.of(context).textTheme.bodyText2,
                             inputType: TextInputType.emailAddress,
-                            textInputHint: "Enter new Email Address",
+                            textInputHint: this.emailController.text == null
+                                ? widget.dbQuery['email']
+                                : emailController.text,
                           ),
                         ),
                         SizedBox(
@@ -349,7 +362,9 @@ class _StaffUpdateBodyState extends State<StaffUpdateBody> {
                             textInputHintStyle:
                                 Theme.of(context).textTheme.bodyText2,
                             inputType: TextInputType.text,
-                            textInputHint: "Enter new Staff Home address",
+                            textInputHint: this.addressController.text == null
+                                ? widget.dbQuery['home address']
+                                : addressController.text,
                           ),
                         ),
                         SizedBox(
@@ -368,7 +383,9 @@ class _StaffUpdateBodyState extends State<StaffUpdateBody> {
                             textInputHintStyle:
                                 Theme.of(context).textTheme.bodyText2,
                             inputType: TextInputType.text,
-                            textInputHint: "Enter new Staff Residing City",
+                            textInputHint: this.cityController.text == null
+                                ? widget.dbQuery['city']
+                                : cityController.text,
                           ),
                         ),
                         SizedBox(
@@ -387,7 +404,9 @@ class _StaffUpdateBodyState extends State<StaffUpdateBody> {
                             textInputHintStyle:
                                 Theme.of(context).textTheme.bodyText2,
                             inputType: TextInputType.phone,
-                            textInputHint: "Enter new staff phone number",
+                            textInputHint: this.telNoController.text == null
+                                ? widget.dbQuery['tel no']
+                                : telNoController.text,
                           ),
                         ),
                         SizedBox(
@@ -398,7 +417,8 @@ class _StaffUpdateBodyState extends State<StaffUpdateBody> {
                           buttonBackgroundColor: Theme.of(context).accentColor,
                           buttonTextValue: "Update Staff",
                           buttonTextStyle: Theme.of(context).textTheme.button,
-                          buttonFunction: () => updateStaff(context),
+                          buttonFunction: () => updateStaff(
+                              context, widget.index, widget.dbQuery),
                         ),
                       ],
                     )),

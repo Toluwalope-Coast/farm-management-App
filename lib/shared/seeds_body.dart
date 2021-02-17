@@ -50,22 +50,14 @@ class _SeedsBodyState extends State<SeedsBody> {
     return navigatePushTo(context, SeedsReport(seed: seed));
   }
 
-  updateItem(int index, Size deviceSize, Seed seed) {
+  Future updateItem(
+      String index, Size deviceSize, Map<dynamic, dynamic> dbQuery) async {
     print("item at $index has being updated");
 
-    Future<dynamic> result = navigatePushTo(
-        context,
-        SeedsUpdate(
-          deviceSize: deviceSize,
-          seed: seed,
-        ));
-    result.then((value) {
-      if (value) {
-        return null;
-      } else {
-        return;
-      }
-    });
+    print("Seed List at ${dbQuery["type"]} has being updated");
+
+    navigatePushTo(context,
+        SeedsUpdate(deviceSize: deviceSize, index: index, dbQuery: dbQuery));
   }
 
   deleteItem(String index, BuildContext context, Size deviceSize,
@@ -217,10 +209,14 @@ class _SeedsBodyState extends State<SeedsBody> {
                               itemCount: snapshot.data.docs.length,
                               itemBuilder: (BuildContext context, int index) {
                                 return GestureDetector(
-                                  // onDoubleTap: () => updateItem(
-                                  //     index, widget.deviceSize, seedsList[index]),
-                                  // onLongPress: () => updateItem(
-                                  //     index, widget.deviceSize, seedsList[index]),
+                                  onDoubleTap: () => updateItem(
+                                      snapshot.data.docs[index].id,
+                                      widget.deviceSize,
+                                      snapshot.data.docs[index].data()),
+                                  onLongPress: () => updateItem(
+                                      snapshot.data.docs[index].id,
+                                      widget.deviceSize,
+                                      snapshot.data.docs[index].data()),
                                   onHorizontalDragEnd:
                                       (DragEndDetails details) {
                                     if (details.primaryVelocity > 0) {

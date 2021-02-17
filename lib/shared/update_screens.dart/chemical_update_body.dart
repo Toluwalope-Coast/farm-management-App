@@ -1,10 +1,9 @@
-import 'package:farm_manager/models/chemicals_model.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:farm_manager/shared/Constant.dart';
 import 'package:farm_manager/shared/custom_drawer.dart';
 import 'package:farm_manager/shared/custom_textfield.dart';
 import 'package:farm_manager/shared/rounded_container.dart';
 import 'package:farm_manager/shared/rounded_flat_button.dart';
-import 'package:farm_manager/utils/database_helper.dart';
 import 'package:flutter/material.dart';
 
 class ChemicalUpdateBody extends StatefulWidget {
@@ -12,7 +11,8 @@ class ChemicalUpdateBody extends StatefulWidget {
   final Widget profileImage;
   final String heroTag;
   final String title;
-  final Chemical chemical;
+  final String index;
+  final Map<dynamic, dynamic> dbQuery;
 
   ChemicalUpdateBody({
     Key key,
@@ -20,7 +20,8 @@ class ChemicalUpdateBody extends StatefulWidget {
     this.profileImage,
     this.title,
     this.heroTag,
-    this.chemical,
+    this.index,
+    this.dbQuery,
   }) : super(key: key);
 
   @override
@@ -29,8 +30,6 @@ class ChemicalUpdateBody extends StatefulWidget {
 
 class _ChemicalUpdateBodyState extends State<ChemicalUpdateBody> {
   // Database integration into the code
-
-  DatabaseHelper databaseHelper = DatabaseHelper();
 
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
@@ -42,39 +41,41 @@ class _ChemicalUpdateBodyState extends State<ChemicalUpdateBody> {
 
   TextEditingController idCardNoController = new TextEditingController();
 
-  updateChemical(context) async {
-    Chemical chemical = new Chemical.withId(
-        widget.chemical.getId,
-        chemicalTypeController.text,
-        idCardNoController.text,
-        machineIDController.text,
-        double.parse(acreageController.text),
-        '');
+  Future updateChemical(
+      context, String index, Map<dynamic, dynamic> dbQuery) async {
     print("Chemical Type is ${chemicalTypeController.text}");
     print("Id Card No is ${idCardNoController.text}");
     print("Machine Type is ${machineIDController.text}");
     print("Acreage Type is ${acreageController.text}");
-    print("Acreage Type is ${acreageController.text}");
+    print("Id is ${widget.index}");
 
-    int result = await databaseHelper.updateChemical(chemical);
-    if (result != 0) {
-      return navigationPopRoute(context);
+    try {
+      FirebaseFirestore.instance.collection("chemical").doc(index).update({
+        "type": chemicalTypeController.text,
+        "id card no": idCardNoController.text,
+        "machine id": machineIDController.text,
+        "acreage done": acreageController.text,
+      });
+      print("Update Successful");
+      navigationPopRoute(context);
+    } catch (e) {
+      print("Update UnSuccessful\n error is $e");
     }
   }
 
   @override
   Widget build(BuildContext context) {
     if (this.chemicalTypeController.text.isEmpty) {
-      this.chemicalTypeController.text = widget.chemical.getType;
+      this.chemicalTypeController.text = widget.dbQuery['type'];
     }
     if (this.idCardNoController.text.isEmpty) {
-      this.idCardNoController.text = widget.chemical.getIdCardNo;
+      this.idCardNoController.text = widget.dbQuery['id card no'];
     }
     if (this.acreageController.text.isEmpty) {
-      this.acreageController.text = widget.chemical.getAcreage.toString();
+      this.acreageController.text = widget.dbQuery['acreage done'];
     }
     if (this.machineIDController.text.isEmpty) {
-      this.machineIDController.text = widget.chemical.getMachineId.toString();
+      this.machineIDController.text = widget.dbQuery['machine id'];
     }
     drawerList(context);
     return Scaffold(
@@ -141,7 +142,8 @@ class _ChemicalUpdateBodyState extends State<ChemicalUpdateBody> {
               ),
               Center(
                 child: Text(
-                  "Update chemical ${widget.chemical.getId}",
+                  "Update chemical \n${widget.index}",
+                  textAlign: TextAlign.center,
                   style: Theme.of(context)
                       .textTheme
                       .headline6
@@ -179,7 +181,10 @@ class _ChemicalUpdateBodyState extends State<ChemicalUpdateBody> {
                             textInputHintStyle:
                                 Theme.of(context).textTheme.bodyText2,
                             inputType: TextInputType.name,
-                            textInputHint: "Type Of Chemical",
+                            textInputHint:
+                                this.chemicalTypeController.text == null
+                                    ? widget.dbQuery['type']
+                                    : chemicalTypeController.text,
                           ),
                         ),
                         SizedBox(
@@ -198,7 +203,9 @@ class _ChemicalUpdateBodyState extends State<ChemicalUpdateBody> {
                             textInputHintStyle:
                                 Theme.of(context).textTheme.bodyText2,
                             inputType: TextInputType.number,
-                            textInputHint: "Enter Staff Id Card No",
+                            textInputHint: this.idCardNoController.text == null
+                                ? widget.dbQuery['id card no']
+                                : idCardNoController.text,
                           ),
                         ),
                         SizedBox(
@@ -218,7 +225,9 @@ class _ChemicalUpdateBodyState extends State<ChemicalUpdateBody> {
                                 Theme.of(context).textTheme.bodyText2,
                             inputType:
                                 TextInputType.numberWithOptions(decimal: true),
-                            textInputHint: "Enter the Acreage Covered",
+                            textInputHint: this.acreageController.text == null
+                                ? widget.dbQuery['acreage done']
+                                : acreageController.text,
                           ),
                         ),
                         SizedBox(
@@ -237,7 +246,9 @@ class _ChemicalUpdateBodyState extends State<ChemicalUpdateBody> {
                             textInputHintStyle:
                                 Theme.of(context).textTheme.bodyText2,
                             inputType: TextInputType.text,
-                            textInputHint: "Enter Machine ID",
+                            textInputHint: this.machineIDController.text == null
+                                ? widget.dbQuery['machine id']
+                                : machineIDController.text,
                           ),
                         ),
                         SizedBox(
@@ -248,7 +259,8 @@ class _ChemicalUpdateBodyState extends State<ChemicalUpdateBody> {
                           buttonBackgroundColor: Theme.of(context).accentColor,
                           buttonTextValue: "Update Chemical",
                           buttonTextStyle: Theme.of(context).textTheme.button,
-                          buttonFunction: () => updateChemical(context),
+                          buttonFunction: () => updateChemical(
+                              context, widget.index, widget.dbQuery),
                         ),
                       ],
                     )),
